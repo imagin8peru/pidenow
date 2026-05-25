@@ -9,7 +9,7 @@
         body { background-color: #f8f9fa; color: #212529; padding: 16px; padding-bottom: 110px; display: flex; flex-direction: column; align-items: center; }
         .app-container { width: 100%; max-width: 480px; display: flex; flex-direction: column; gap: 16px; }
         
-        /* HEADER Y ANUNCIO */
+        /* HEADERS */
         .header { text-align: center; padding: 20px 0; background: white; border-radius: 16px; box-shadow: 0 4px 6px rgba(0,0,0,0.02); }
         .header h1 { font-size: 1.6rem; font-weight: 800; color: #1a1a1a; }
         .status-badge { display: inline-block; background-color: #e6f4ea; color: #137333; padding: 4px 12px; border-radius: 20px; font-size: 0.85rem; font-weight: 700; margin-top: 8px; }
@@ -42,18 +42,18 @@
         .form-control { width: 100%; padding: 12px; border: 1px solid #ced4da; border-radius: 10px; font-size: 1rem; background: #f8f9fa; }
         .form-control:focus { outline: none; border-color: #22c55e; background: white; }
 
-        /* BOTONES DE MÉTODO DE PAGO */
+        /* MÉTODOS DE PAGO */
         .payment-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
         .payment-method { border: 1px solid #ced4da; padding: 12px; text-align: center; border-radius: 10px; font-weight: 700; cursor: pointer; background: #f8f9fa; user-select: none; }
         .payment-method.selected { border-color: #22c55e; background-color: #e6f4ea; color: #137333; }
+        #group-efectivo { display: none; }
 
-        /* RESUMEN DE COMPRA Y ELEMENTOS DINÁMICOS */
+        /* RESUMEN */
         .summary-box { background: #f8f9fa; padding: 16px; border-radius: 12px; border: 1px solid #e9ecef; display: flex; flex-direction: column; gap: 10px; }
         .cart-items-list { display: flex; flex-direction: column; gap: 6px; padding-bottom: 8px; border-bottom: 1px solid #e9ecef; }
         .item-row { display: flex; justify-content: space-between; font-size: 0.95rem; color: #212529; }
         .item-row .item-name { font-weight: 600; }
         .item-row .item-qty { color: #6c757d; margin-right: 4px; }
-        
         .summary-row { display: flex; justify-content: space-between; font-size: 0.9rem; color: #495057; }
         .summary-total { display: flex; justify-content: space-between; font-size: 1.2rem; font-weight: 800; color: #1a1a1a; border-top: 1px dashed #ced4da; padding-top: 8px; margin-top: 4px; }
 
@@ -65,6 +65,17 @@
         .cart-qty { font-size: 0.85rem; color: #adb5bd; font-weight: 500; }
         .cart-total { font-size: 1.2rem; font-weight: 800; color: #ffffff; }
         .cart-btn { background-color: #22c55e; color: white; border: none; padding: 10px 18px; border-radius: 10px; font-size: 0.95rem; font-weight: 700; cursor: pointer; }
+
+        /* MODAL EMERGENTE DE PAGO */
+        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 10000; justify-content: center; align-items: center; padding: 16px; }
+        .modal-box { background: white; padding: 24px; border-radius: 20px; width: 100%; max-width: 400px; text-align: center; display: flex; flex-direction: column; gap: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.3); }
+        .modal-box h3 { font-size: 1.3rem; font-weight: 800; color: #1a1a1a; }
+        .modal-box p { font-size: 0.95rem; color: #495057; line-height: 1.4; }
+        .qr-placeholder { background: #f1f3f5; width: 180px; height: 180px; margin: 0 auto; display: flex; justify-content: center; align-items: center; font-weight: 700; border: 2px dashed #ced4da; border-radius: 12px; color: #6c757d; }
+        .copy-container { display: flex; gap: 8px; background: #f8f9fa; border: 1px solid #ced4da; padding: 10px 14px; border-radius: 12px; align-items: center; justify-content: space-between; margin-top: 4px; }
+        .copy-number { font-weight: 800; font-size: 1.1rem; color: #1a1a1a; }
+        .btn-copy { background: #1a1a1a; color: white; border: none; padding: 6px 12px; border-radius: 8px; font-size: 0.85rem; font-weight: 700; cursor: pointer; }
+        .btn-close-modal { background: #22c55e; color: white; border: none; padding: 14px; border-radius: 12px; font-weight: 700; font-size: 1rem; cursor: pointer; margin-top: 8px; }
     </style>
 </head>
 <body>
@@ -95,9 +106,9 @@
             <div class="form-group">
                 <label>Zona de delivery</label>
                 <select id="form-zona" class="form-control" onchange="manejarCambioZona()">
-                    <option value="san-miguel" data-costo="3.00">San Miguel (Estudio) - S/ 3.00</option>
-                    <option value="pueblo-libre" data-costo="5.00">Pueblo Libre - S/ 5.00</option>
-                    <option value="recojo" data-costo="0.00">Recojo en Local - S/ 0.00</option>
+                    <option value="San Miguel (Estudio)" data-costo="3.00">San Miguel (Estudio) - S/ 3.00</option>
+                    <option value="Pueblo Libre" data-costo="5.00">Pueblo Libre - S/ 5.00</option>
+                    <option value="Recojo en Local" data-costo="0.00">Recojo en Local - S/ 0.00</option>
                 </select>
             </div>
             
@@ -123,7 +134,7 @@
                 <div class="payment-method" onclick="seleccionarPago('Efectivo', this)">Efectivo</div>
             </div>
             
-            <div id="group-efectivo" class="form-group" style="display: none;">
+            <div id="group-efectivo" class="form-group">
                 <label>¿Con cuánto vas a pagar?</label>
                 <input type="number" id="form-efectivo-monto" class="form-control" placeholder="Ej. 100">
             </div>
@@ -131,7 +142,6 @@
             <div class="section-title">🧾 Verifica el Detalle de tu Pedido</div>
             <div class="summary-box">
                 <div id="checkout-items-list" class="cart-items-list"></div>
-
                 <div class="summary-row">
                     <span>Subtotal Productos:</span>
                     <span id="sum-subtotal">S/ 0.00</span>
@@ -146,7 +156,7 @@
                 </div>
             </div>
 
-            <button class="btn-submit" onclick="alert('¡Aquí se disparará el mensaje estructurado hacia tu WhatsApp en el siguiente paso!')">
+            <button class="btn-submit" onclick="procesarYEnviar()">
                 Enviar Pedido por WhatsApp
             </button>
         </div>
@@ -162,7 +172,27 @@
         </button>
     </div>
 
+    <div id="payment-modal" class="modal-overlay">
+        <div class="modal-box">
+            <h3>¡Casi listo! 🍕</h3>
+            <p>Para proceder con tu pedido, yapea o plinea el monto total. Copia el número abajo para pegarlo en tu app:</p>
+            
+            <div class="copy-container">
+                <span id="number-to-copy" class="copy-number">987654321</span>
+                <button class="btn-copy" onclick="copiarNumeroAlPortapapeles()">Copiar</button>
+            </div>
+
+            <div class="qr-placeholder">
+                [ QR Izipay Pulcinella ]
+            </div>
+            
+            <p style="font-size: 0.85rem; color: #6c757d;">No olvides adjuntar la captura del pago en el chat de WhatsApp que se acaba de abrir.</p>
+            <button class="btn-close-modal" onclick="cerrarModal()">✅ Entendido (Ya pagué)</button>
+        </div>
+    </div>
+
     <script>
+        const WHATSAPP_RESTAURANTE = "51999888777"; // Cambia por tu número de pruebas
         const PRODUCTOS = [
             { id: 1, categoria: "Pizzas 🍕", nombre: "Pizza Americana", desc: "Salsa de tomate, muzzarella y jamón inglés.", precio: 35.00 },
             { id: 2, categoria: "Pizzas 🍕", nombre: "Pizza Pepperoni", desc: "Salsa de tomate, muzzarella y harto pepperoni americano.", precio: 38.00 },
@@ -172,6 +202,7 @@
 
         let memoriaCarrito = {};
         let metodoPagoSeleccionado = "";
+        let montoTotalGlobal = 0;
 
         function renderizarMenu() {
             const container = document.getElementById('menu-container');
@@ -180,7 +211,6 @@
             categorias.forEach(cat => {
                 const item = document.createElement('div');
                 item.className = 'accordion-item';
-                
                 let htmlProductos = '';
                 PRODUCTOS.filter(p => p.categoria === cat).forEach(p => {
                     htmlProductos += `
@@ -198,19 +228,9 @@
                         </div>
                     `;
                 });
-
-                item.innerHTML = `
-                    <div class="accordion-header">
-                        <span>${cat}</span>
-                        <span class="accordion-icon">▼</span>
-                    </div>
-                    <div class="accordion-content">
-                        ${htmlProductos}
-                    </div>
-                `;
+                item.innerHTML = `<div class="accordion-header"><span>${cat}</span><span class="accordion-icon">▼</span></div><div class="accordion-content">${htmlProductos}</div>`;
                 container.appendChild(item);
             });
-
             configurarEventos();
         }
 
@@ -218,22 +238,11 @@
             const container = document.getElementById('menu-container');
             container.addEventListener('click', function(e) {
                 const header = e.target.closest('.accordion-header');
-                if (header) {
-                    header.parentElement.classList.toggle('active');
-                    return;
-                }
+                if (header) { header.parentElement.classList.toggle('active'); return; }
                 const btnMas = e.target.closest('.btn-mas');
-                if (btnMas) {
-                    const id = btnMas.getAttribute('data-id');
-                    modificarCarrito(id, 1);
-                    return;
-                }
+                if (btnMas) { modificarCarrito(btnMas.getAttribute('data-id'), 1); return; }
                 const btnMenos = e.target.closest('.btn-menos');
-                if (btnMenos) {
-                    const id = btnMenos.getAttribute('data-id');
-                    modificarCarrito(id, -1);
-                    return;
-                }
+                if (btnMenos) { modificarCarrito(btnMenos.getAttribute('data-id'), -1); return; }
             });
         }
 
@@ -241,99 +250,114 @@
             let cantActual = memoriaCarrito[productoId] || 0;
             let nuevaCant = cantActual + cambio;
             if (nuevaCant < 0) nuevaCant = 0;
-            
-            if (nuevaCant === 0) {
-                delete memoriaCarrito[productoId];
-            } else {
-                memoriaCarrito[productoId] = nuevaCant;
-            }
-            
+            if (nuevaCant === 0) { delete memoriaCarrito[productoId]; } else { memoriaCarrito[productoId] = nuevaCant; }
             document.getElementById(`qty-${productoId}`).innerText = nuevaCant;
             calcularPrecios();
         }
 
         function manejarCambioZona() {
             const selectZona = document.getElementById('form-zona');
-            if (selectZona.value === 'recojo') {
-                document.getElementById('group-direccion').style.display = 'none';
-                document.getElementById('group-referencia').style.display = 'none';
-            } else {
-                document.getElementById('group-direccion').style.display = 'flex';
-                document.getElementById('group-referencia').style.display = 'flex';
-            }
+            const status = selectZona.value === 'Recojo en Local' ? 'none' : 'flex';
+            document.getElementById('group-direccion').style.display = status;
+            document.getElementById('group-referencia').style.display = status;
             calcularPrecios();
         }
 
-        // MOTOR RECALCULADOR CON LISTADO DINÁMICO DE PRODUCTOS
         function calcularPrecios() {
-            let totalProductos = 0;
-            let montoSubtotal = 0;
-            let htmlDesglose = '';
-            
+            let totalProductos = 0, montoSubtotal = 0, htmlDesglose = '';
             for (const id in memoriaCarrito) {
-                const cantidad = memoriaCarrito[id];
-                const producto = PRODUCTOS.find(p => p.id == id);
+                const cantidad = memoriaCarrito[id], producto = PRODUCTOS.find(p => p.id == id);
                 if (producto) {
                     totalProductos += cantidad;
                     const subtotalItem = producto.precio * cantidad;
                     montoSubtotal += subtotalItem;
-                    
-                    // Construir la fila en texto limpio para la lista de verificación
-                    htmlDesglose += `
-                        <div class="item-row">
-                            <span><span class="item-qty">${cantidad}x</span><span class="item-name">${producto.nombre}</span></span>
-                            <span>S/ ${subtotalItem.toFixed(2)}</span>
-                        </div>
-                    `;
+                    htmlDesglose += `<div class="item-row"><span><span class="item-qty">${cantidad}x</span><span class="item-name">${producto.nombre}</span></span><span>S/ ${subtotalItem.toFixed(2)}</span></div>`;
                 }
             }
-
-            const bar = document.getElementById('cart-bar');
-            const checkoutContainer = document.getElementById('checkout-container');
-            
+            const bar = document.getElementById('cart-bar'), checkoutContainer = document.getElementById('checkout-container');
             if (totalProductos > 0) {
-                if (checkoutContainer.style.display !== 'flex') {
-                    bar.style.display = 'flex';
-                }
-                
-                document.getElementById('cart-qty-text').innerText = `${totalProductos} ${totalProductos === 1 ? 'producto' : 'productos'}`;
+                if (checkoutContainer.style.display !== 'flex') bar.style.display = 'flex';
+                document.getElementById('cart-qty-text').innerText = `${totalProductos} productos`;
                 document.getElementById('cart-total-text').innerText = `S/ ${montoSubtotal.toFixed(2)}`;
-                
-                // Inyectar la listita de productos dentro del recuadro
                 document.getElementById('checkout-items-list').innerHTML = htmlDesglose;
                 
                 const selectZona = document.getElementById('form-zona');
                 const costoDelivery = parseFloat(selectZona.options[selectZona.selectedIndex].getAttribute('data-costo'));
-                const montoTotal = montoSubtotal + costoDelivery;
+                montoTotalGlobal = montoSubtotal + costoDelivery;
                 
                 document.getElementById('sum-subtotal').innerText = `S/ ${montoSubtotal.toFixed(2)}`;
                 document.getElementById('sum-delivery').innerText = `S/ ${costoDelivery.toFixed(2)}`;
-                document.getElementById('sum-total').innerText = `S/ ${montoTotal.toFixed(2)}`;
+                document.getElementById('sum-total').innerText = `S/ ${montoTotalGlobal.toFixed(2)}`;
             } else {
-                bar.style.display = 'none';
-                checkoutContainer.style.display = 'none';
+                bar.style.display = 'none'; checkoutContainer.style.display = 'none';
             }
         }
 
-        function irAlCheckout() {
-            document.getElementById('cart-bar').style.display = 'none';
-            const checkout = document.getElementById('checkout-container');
-            checkout.style.display = 'flex';
-            checkout.scrollIntoView({ behavior: 'smooth' });
-        }
+        function irAlCheckout() { document.getElementById('cart-bar').style.display = 'none'; const checkout = document.getElementById('checkout-container'); checkout.style.display = 'flex'; checkout.scrollIntoView({ behavior: 'smooth' }); }
 
         function seleccionarPago(metodo, elemento) {
             metodoPagoSeleccionado = metodo;
             document.querySelectorAll('.payment-method').forEach(el => el.classList.remove('selected'));
             elemento.classList.add('selected');
+            document.getElementById('group-efectivo').style.display = metodo === 'Efectivo' ? 'flex' : 'none';
+        }
+
+        // MOTOR RECOPILADOR Y GATILLO DE WHATSAPP
+        function procesarYEnviar() {
+            const nombre = document.getElementById('form-nombre').value.trim();
+            const telefono = document.getElementById('form-telefono').value.trim();
+            const zona = document.getElementById('form-zona').value;
+            const direccion = document.getElementById('form-direccion').value.trim();
+            const referencia = document.getElementById('form-referencia').value.trim();
+            const notas = document.getElementById('form-notas').value.trim();
             
-            const groupEfectivo = document.getElementById('group-efectivo');
-            if (metodo === 'Efectivo') {
-                groupEfectivo.style.display = 'flex';
-            } else {
-                groupEfectivo.style.display = 'none';
+            if(!nombre || !telefono || !metodoPagoSeleccionado) {
+                alert("Por favor, llena tu Nombre, Teléfono y selecciona un Método de Pago.");
+                return;
+            }
+
+            // Armar texto estructurado para el WhatsApp de la empresa
+            let textoWA = `*NUEVO PEDIDO - PIDENOW* 🍕\n\n`;
+            textoWA += `👤 *Cliente:* ${nombre}\n`;
+            textoWA += `📱 *WhatsApp:* ${telefono}\n`;
+            textoWA += `📍 *Tipo/Zona:* ${zona}\n`;
+            if(zona !== 'Recojo en Local') {
+                textoWA += `🏠 *Dirección:* ${direccion}\n`;
+                if(referencia) textoWA += `🔍 *Ref:* ${referencia}\n`;
+            }
+            if(notas) textoWA += `📝 *Notas:* ${notas}\n`;
+            textoWA += `\n🧾 *DETALLE DEL PEDIDO:*\n`;
+
+            for (const id in memoriaCarrito) {
+                const producto = PRODUCTOS.find(p => p.id == id);
+                textoWA += `• ${memoriaCarrito[id]}x ${producto.nombre} (S/ ${(producto.precio * memoriaCarrito[id]).toFixed(2)})\n`;
+            }
+
+            textoWA += `\n💵 *Pago:* ${metodoPagoSeleccionado}\n`;
+            if(metodoPagoSeleccionado === 'Efectivo') {
+                const cuanto = document.getElementById('form-efectivo-monto').value;
+                textoWA += `   Paga con: S/ ${cuanto || montoTotalGlobal}\n`;
+            }
+            textoWA += `💰 *TOTAL A PAGAR: S/ ${montoTotalGlobal.toFixed(2)}*`;
+
+            const urlWA = `https://api.whatsapp.com/send?phone=${WHATSAPP_RESTAURANTE}&text=${encodeURIComponent(textoWA)}`;
+            
+            // Disparar WhatsApp en pestaña nueva
+            window.open(urlWA, '_blank');
+
+            // Si el método de pago requiere QR (Yape/Plin), levantar el modal emergente
+            if(metodoPagoSeleccionado === 'Yape' || metodoPagoSeleccionado === 'Plin') {
+                document.getElementById('payment-modal').style.display = 'flex';
             }
         }
+
+        function copiarNumeroAlPortapapeles() {
+            const numero = document.getElementById('number-to-copy').innerText;
+            navigator.clipboard.writeText(numero);
+            alert("¡Número copiado! Abre tu Yape o Plin y pégalo.");
+        }
+
+        function cerrarModal() { document.getElementById('payment-modal').style.display = 'none'; }
 
         renderizarMenu();
     </script>
