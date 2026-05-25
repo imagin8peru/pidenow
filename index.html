@@ -6,45 +6,64 @@
     <title>Pidenow - Maqueta Funcional</title>
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: system-ui, -apple-system, sans-serif; }
-        body { background-color: #f8f9fa; color: #212529; padding: 16px; display: flex; flex-direction: column; align-items: center; }
+        body { background-color: #f8f9fa; color: #212529; padding: 16px; padding-bottom: 90px; display: flex; flex-direction: column; align-items: center; }
         .app-container { width: 100%; max-width: 480px; display: flex; flex-direction: column; gap: 16px; }
         
-        /* 1. HERO HEADER */
+        /* HEADER */
         .header { text-align: center; padding: 20px 0; background: white; border-radius: 16px; box-shadow: 0 4px 6px rgba(0,0,0,0.02); }
         .header h1 { font-size: 1.6rem; font-weight: 800; color: #1a1a1a; }
         .status-badge { display: inline-block; background-color: #e6f4ea; color: #137333; padding: 4px 12px; border-radius: 20px; font-size: 0.85rem; font-weight: 700; margin-top: 8px; }
 
-        /* 2. MÓDULO DE ANUNCIOS */
+        /* MÓDULO DE ANUNCIOS */
         .announcement-banner { background-color: #fff3cd; border-left: 5px solid #ffc107; color: #856404; padding: 16px; border-radius: 12px; font-size: 0.95rem; line-height: 1.4; font-weight: 500; }
 
-        /* 3. ACORDEONES VERTICALES (Estilo Pulcinella) */
+        /* ACORDEONES VERTICALES */
         .accordion-item { background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 6px rgba(0,0,0,0.02); }
         .accordion-header { background: white; padding: 18px; font-size: 1.1rem; font-weight: 700; display: flex; justify-content: space-between; align-items: center; cursor: pointer; border-bottom: 1px solid #f1f3f5; }
         .accordion-icon { transition: transform 0.2s; font-size: 0.9rem; color: #6c757d; }
         .accordion-content { display: none; padding: 12px; flex-direction: column; gap: 12px; background: #fafafa; }
         
-        /* Estado abierto del acordeón */
         .accordion-item.active .accordion-content { display: flex; }
         .accordion-item.active .accordion-icon { transform: rotate(180deg); }
 
-        /* 4. TARJETAS DE PRODUCTO */
+        /* TARJETAS DE PRODUCTO */
         .product-card { display: flex; background: white; padding: 12px; border-radius: 12px; border: 1px solid #e9ecef; gap: 12px; align-items: center; }
         .product-info { flex: 1; }
         .product-name { font-size: 1rem; font-weight: 700; margin-bottom: 4px; }
         .product-desc { font-size: 0.85rem; color: #6c757d; line-height: 1.3; margin-bottom: 8px; }
         .product-price { font-size: 1.05rem; font-weight: 800; color: #1a1a1a; }
         
-        /* Controles de cantidad */
-        .product-controls { display: flex; align-items: center; gap: 12px; background: #f1f3f5; padding: 6px 12px; border-radius: 20px; }
-        .control-btn { border: none; background: transparent; font-size: 1.2rem; font-weight: 700; color: #495057; cursor: pointer; width: 24px; height: 24px; }
-        .qty-num { font-weight: 700; font-size: 1rem; min-width: 16px; text-align: center; }
+        /* Controles de cantidad modernos */
+        .product-controls { display: flex; align-items: center; gap: 14px; background: #f1f3f5; padding: 6px 14px; border-radius: 20px; }
+        .control-btn { border: none; background: transparent; font-size: 1.3rem; font-weight: 700; color: #495057; cursor: pointer; width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; user-select: none; }
+        .qty-num { font-weight: 700; font-size: 1.05rem; min-width: 16px; text-align: center; color: #212529; }
+
+        /* BARRA FLOTANTE DEL CARRITO (Abajo) */
+        .cart-floating-bar { 
+            position: fixed; bottom: 16px; left: 50%; transform: translateX(-50%); 
+            width: calc(100% - 32px); max-width: 448px; 
+            background-color: #1a1a1a; color: white; 
+            padding: 16px 20px; border-radius: 16px; 
+            display: none; justify-content: space-between; align-items: center; 
+            box-shadow: 0 8px 24px rgba(0,0,0,0.2); z-index: 999;
+            animation: slideUp 0.3s ease-out;
+        }
+        .cart-info { display: flex; flex-direction: column; gap: 2px; }
+        .cart-qty { font-size: 0.85rem; color: #adb5bd; font-weight: 500; }
+        .cart-total { font-size: 1.2rem; font-weight: 800; color: #ffffff; }
+        .cart-btn { background-color: #22c55e; color: white; border: none; padding: 10px 18px; border-radius: 10px; font-size: 0.95rem; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 8px; }
+        
+        @keyframes slideUp {
+            from { transform: translate(-50(), 100px); opacity: 0; }
+            to { transform: translate(-50%, 0); opacity: 1; }
+        }
     </style>
 </head>
 <body>
 
     <div class="app-container">
         <header class="header">
-            <h1 id="restaurante-nombre">Pizzería Pulcinella</h1>
+            <h1>Pizzería Pulcinella</h1>
             <div class="status-badge">● Abierto ahora</div>
         </header>
 
@@ -55,25 +74,36 @@
         <div id="menu-container" style="display: flex; flex-direction: column; gap: 12px;"></div>
     </div>
 
+    <div id="cart-bar" class="cart-floating-bar">
+        <div class="cart-info">
+            <span id="cart-qty-text" class="cart-qty">0 productos</span>
+            <span id="cart-total-text" class="cart-total">S/ 0.00</span>
+        </div>
+        <button class="cart-btn" onclick="alert('Aquí se desplegará el Formulario de Cierre en el siguiente paso')">
+            Ver Pedido ➔
+        </button>
+    </div>
+
     <script>
-        // Datos de prueba para ver el comportamiento
+        // DATA DE PRODUCTOS
         const PRODUCTOS = [
-            { id: 1, categoria: "Pizzas 🍕", nombre: "Pizza Americana", desc: "Salsa de tomate, muzzarella y jamón inglés.", precio: "35.00" },
-            { id: 2, categoria: "Pizzas 🍕", nombre: "Pizza Pepperoni", desc: "Salsa de tomate, muzzarella y harto pepperoni americano.", precio: "38.00" },
-            { id: 3, categoria: "Combos 🎁", nombre: "Combo Maradoniano", desc: "1 Pizza Grande + 2 Calzones + 1 Gaseosa 1L.", precio: "50.00" },
-            { id: 4, categoria: "Bebidas 🥤", nombre: "Inca Kola 1 Litro", desc: "Heladita, como debe ser.", precio: "8.00" }
+            { id: 1, categoria: "Pizzas 🍕", nombre: "Pizza Americana", desc: "Salsa de tomate, muzzarella y jamón inglés.", precio: 35.00 },
+            { id: 2, categoria: "Pizzas 🍕", nombre: "Pizza Pepperoni", desc: "Salsa de tomate, muzzarella y harto pepperoni americano.", precio: 38.00 },
+            { id: 3, categoria: "Combos 🎁", nombre: "Combo Maradoniano", desc: "1 Pizza Grande + 2 Calzones + 1 Gaseosa 1L.", precio: 50.00 },
+            { id: 4, categoria: "Bebidas 🥤", nombre: "Inca Kola 1 Litro", desc: "Heladita, como debe ser.", precio: 8.00 }
         ];
+
+        // MEMORIA DEL CARRITO (Guarda: { productoId: cantidad })
+        let memoriaCarrito = {};
 
         function renderizarMenu() {
             const container = document.getElementById('menu-container');
-            // Agrupar productos por categoría
             const categorias = [...new Set(PRODUCTOS.map(p => p.categoria))];
             
             categorias.forEach(cat => {
                 const item = document.createElement('div');
                 item.className = 'accordion-item';
                 
-                // HTML del Acordeón
                 let htmlProductos = '';
                 PRODUCTOS.filter(p => p.categoria === cat).forEach(p => {
                     htmlProductos += `
@@ -81,12 +111,12 @@
                             <div class="product-info">
                                 <div class="product-name">${p.nombre}</div>
                                 <div class="product-desc">${p.desc}</div>
-                                <div class="product-price">S/ ${p.precio}</div>
+                                <div class="product-price">S/ ${p.precio.toFixed(2)}</div>
                             </div>
                             <div class="product-controls">
-                                <button class="control-btn">−</button>
-                                <span class="qty-num">0</span>
-                                <button class="control-btn">+</button>
+                                <button class="control-btn" onclick="cambiarCantidad(${p.id}, -1, event)">−</button>
+                                <span id="qty-${p.id}" class="qty-num">0</span>
+                                <button class="control-btn" onclick="cambiarCantidad(${p.id}, 1, event)">+</button>
                             </div>
                         </div>
                     `;
@@ -106,11 +136,58 @@
         }
 
         function toggleAccordion(header) {
-            const item = header.parentElement;
-            item.classList.toggle('active');
+            header.parentElement.classList.toggle('active');
         }
 
-        // Arrancar el motor al cargar
+        // LÓGICA DEL MOTOR DE COMPRAS
+        function cambiarCantidad(productoId, cambio, event) {
+            event.stopPropagation(); // Evita que el acordeón se cierre al tocar los botones
+            
+            let cantActual = memoriaCarrito[productoId] || 0;
+            let nuevaCant = cantActual + cambio;
+            
+            if (nuevaCant < 0) nuevaCant = 0;
+            
+            if (nuevaCant === 0) {
+                delete memoriaCarrito[productoId];
+            } else {
+                memoriaCarrito[productoId] = nuevaCant;
+            }
+            
+            // Actualizar número en la tarjeta del producto
+            document.getElementById(`qty-${productoId}`).innerText = nuevaCant;
+            
+            // Recalcular barra flotante
+            actualizarBarraFlotante();
+        }
+
+        function actualizarBarraFlotante() {
+            const bar = document.getElementById('cart-bar');
+            const qtyText = document.getElementById('cart-qty-text');
+            const totalText = document.getElementById('cart-total-text');
+            
+            let totalProductos = 0;
+            let montoTotal = 0;
+            
+            for (const id in memoriaCarrito) {
+                const cantidad = memoriaCarrito[id];
+                const producto = PRODUCTOS.find(p => p.id == id);
+                if (producto) {
+                    totalProductos += cantidad;
+                    montoTotal += (producto.precio * cantidad);
+                }
+            }
+            
+            if (totalProductos > 0) {
+                bar.style.display = 'flex'; // Muestra la barra si hay algo seleccionado
+                qtyText.innerText = `${totalProductos} ${totalProductos === 1 ? 'producto' : 'productos'}`;
+                totalText.innerText = `S/ ${montoTotal.toFixed(2)}`;
+            } else {
+                bar.style.display = 'none'; // La esconde si se queda en cero
+            }
+        }
+
+        // Encendido automático
         renderizarMenu();
     </script>
 </body>
