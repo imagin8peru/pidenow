@@ -36,7 +36,6 @@
         /* FORMULARIO DE CIERRE */
         .checkout-section { display: none; background: white; padding: 20px; border-radius: 16px; box-shadow: 0 4px 6px rgba(0,0,0,0.02); flex-direction: column; gap: 16px; margin-top: 8px; }
         .section-title { font-size: 1.2rem; font-weight: 800; color: #1a1a1a; border-bottom: 2px solid #f1f3f5; padding-bottom: 8px; margin-bottom: 4px; }
-        
         .form-group { display: flex; flex-direction: column; gap: 6px; }
         .form-group label { font-size: 0.9rem; font-weight: 700; color: #495057; }
         .form-control { width: 100%; padding: 12px; border: 1px solid #ced4da; border-radius: 10px; font-size: 1rem; background: #f8f9fa; }
@@ -72,7 +71,6 @@
         .modal-box h3 { font-size: 1.3rem; font-weight: 800; color: #1a1a1a; }
         .modal-box p { font-size: 0.95rem; color: #495057; line-height: 1.4; }
         
-        /* Contenedores de opciones */
         .copy-container { display: flex; gap: 8px; background: #f8f9fa; border: 1px solid #ced4da; padding: 10px 14px; border-radius: 12px; align-items: center; justify-content: space-between; }
         .copy-number { font-weight: 800; font-size: 1.1rem; color: #1a1a1a; }
         .btn-copy { background: #1a1a1a; color: white; border: none; padding: 8px 14px; border-radius: 8px; font-size: 0.85rem; font-weight: 700; cursor: pointer; }
@@ -80,7 +78,6 @@
         .qr-placeholder-box { display: flex; flex-direction: column; gap: 8px; align-items: center; }
         .qr-placeholder { background: #f1f3f5; width: 160px; height: 160px; display: flex; justify-content: center; align-items: center; font-weight: 700; border: 2px dashed #ced4da; border-radius: 12px; color: #6c757d; font-size: 0.9rem; }
         .btn-download-qr { background: #007bff; color: white; border: none; padding: 8px 14px; border-radius: 8px; font-size: 0.85rem; font-weight: 700; cursor: pointer; width: 160px; }
-        
         .btn-action-direct { background: #6c757d; color: white; border: none; padding: 14px; border-radius: 12px; font-weight: 700; font-size: 1rem; cursor: pointer; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
     </style>
 </head>
@@ -182,36 +179,40 @@
         <div class="modal-box">
             <h3 id="modal-titulo">¡Casi listo! 🍕</h3>
             <p id="modal-descripcion">Realiza una de las siguientes opciones para proceder con tu orden en WhatsApp:</p>
-            
             <div id="modal-copy-box" class="copy-container">
                 <span id="number-to-copy" class="copy-number">987654321</span>
                 <button class="btn-copy" onclick="accionCopiar()">Copiar Número</button>
             </div>
-
             <div id="modal-qr-box" class="qr-placeholder-box">
                 <div class="qr-placeholder">[ QR Izipay ]</div>
                 <button class="btn-download-qr" onclick="accionDescargarQR()">Descargar QR</button>
             </div>
-            
-            <button id="btn-entendido" class="btn-action-direct" onclick="accionEntendido()">
-                Entendido
-            </button>
+            <button id="btn-entendido" class="btn-action-direct" onclick="accionEntendido()">Entendido</button>
         </div>
     </div>
 
     <script>
-        const WHATSAPP_RESTAURANTE = "51999888777"; // Pon tu número real para tus pruebas
-        const PRODUCTOS = [
-            { id: 1, categoria: "Pizzas 🍕", nombre: "Pizza Americana", desc: "Salsa de tomate, muzzarella y jamón inglés.", precio: 35.00 },
-            { id: 2, categoria: "Pizzas 🍕", nombre: "Pizza Pepperoni", desc: "Salsa de tomate, muzzarella y harto pepperoni americano.", precio: 38.00 },
-            { id: 3, categoria: "Combos 🎁", nombre: "Combo Maradoniano", desc: "1 Pizza Grande + 2 Calzones + 1 Gaseosa 1L.", precio: 50.00 },
-            { id: 4, categoria: "Bebidas 🥤", nombre: "Inca Kola 1 Litro", desc: "Heladita, como debe ser.", precio: 8.00 }
-        ];
-
+        const WHATSAPP_RESTAURANTE = "51999888777"; // Recuerda cambiar por tu número real para tus pruebas
+        let PRODUCTOS = []; // La lista nace vacía, se llenará desde el JSON externo
         let memoriaCarrito = {};
         let metodoPagoSeleccionado = "";
         let montoTotalGlobal = 0;
         let enlaceWhatsAppGlobal = "";
+
+        // INYECTOR ASÍNCRONO AUTOMÁTICO (Trae la data desde fuera)
+        async function cargarProductosDesdeJSON() {
+            try {
+                // Hace un fetch al archivo productos.json que está en la misma carpeta del servidor
+                const respuesta = await fetch('productos.json');
+                PRODUCTOS = await respuesta.json();
+                
+                // Una vez cargada la data con éxito, procedemos a renderizar los acordeones
+                renderizarMenu();
+            } catch (error) {
+                console.error("Error cargando la lista de platos:", error);
+                document.getElementById('menu-container').innerHTML = "<p style='text-align:center; padding:20px; color:red;'>⚠️ Error al cargar el menú. Intenta de nuevo.</p>";
+            }
+        }
 
         function renderizarMenu() {
             const container = document.getElementById('menu-container');
@@ -356,7 +357,6 @@
                 document.getElementById('modal-qr-box').style.display = 'flex';
                 document.getElementById('btn-entendido').innerText = "Entendido";
             } else {
-                // Si es Efectivo o Tarjeta, no hay QR, va directo con un botón limpio
                 document.getElementById('modal-titulo').innerText = "¡Pedido Listo! 🧾";
                 document.getElementById('modal-descripcion').innerText = "Presiona el botón de abajo para enviar tu orden por WhatsApp.";
                 document.getElementById('modal-copy-box').style.display = 'none';
@@ -367,7 +367,6 @@
             document.getElementById('payment-modal').style.display = 'flex';
         }
 
-        // LAS 3 ACCIONES DETONANTES INTELIGENTES
         function ejecutadoExitoso() {
             document.getElementById('payment-modal').style.display = 'none';
             window.open(enlaceWhatsAppGlobal, '_blank');
@@ -381,14 +380,12 @@
         }
 
         function accionDescargarQR() {
-            // Simulador de descarga de archivo para la maqueta
             const link = document.createElement('a');
-            link.href = 'https://imagin8peru.github.io/pulcinella-app/imagenes/qr-izipay.jpg'; // Url de muestra
+            link.href = 'https://imagin8peru.github.io/pulcinella-app/imagenes/qr-izipay.jpg';
             link.download = 'qr-pago-pulcinella.jpg';
             document.body.appendChild(link);
             link.click();
             document.body.removeChild(link);
-            
             alert("¡QR Descargado! Te estamos redirigiendo a WhatsApp...");
             ejecutadoExitoso();
         }
@@ -397,7 +394,8 @@
             ejecutadoExitoso();
         }
 
-        renderizarMenu();
+        // DISPARADOR INICIAL: Arranca el lector asíncrono
+        cargarProductosDesdeJSON();
     </script>
 </body>
 </html>
