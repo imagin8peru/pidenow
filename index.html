@@ -33,7 +33,7 @@
         .control-btn { border: none; background: transparent; font-size: 1.4rem; font-weight: 700; color: #495057; cursor: pointer; width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; user-select: none; }
         .qty-num { font-weight: 700; font-size: 1.1rem; min-width: 20px; text-align: center; color: #212529; }
 
-        /* FORMULARIO DE CIERRE (Oculto hasta que haya productos) */
+        /* FORMULARIO DE CIERRE */
         .checkout-section { display: none; background: white; padding: 20px; border-radius: 16px; box-shadow: 0 4px 6px rgba(0,0,0,0.02); flex-direction: column; gap: 16px; margin-top: 8px; }
         .section-title { font-size: 1.2rem; font-weight: 800; color: #1a1a1a; border-bottom: 2px solid #f1f3f5; padding-bottom: 8px; margin-bottom: 4px; }
         
@@ -54,7 +54,7 @@
 
         .btn-submit { background-color: #22c55e; color: white; border: none; width: 100%; padding: 16px; border-radius: 12px; font-size: 1.1rem; font-weight: 700; cursor: pointer; text-align: center; margin-top: 8px; box-shadow: 0 4px 12px rgba(34,197,94,0.2); }
 
-        /* BARRA FLOTANTE ACTUALIZADA */
+        /* BARRA FLOTANTE */
         .cart-floating-bar { position: fixed; bottom: 16px; left: 50%; transform: translateX(-50%); width: calc(100% - 32px); max-width: 448px; background-color: #1a1a1a; color: white; padding: 16px 20px; border-radius: 16px; display: none; justify-content: space-between; align-items: center; box-shadow: 0 8px 24px rgba(0,0,0,0.2); z-index: 999; }
         .cart-info { display: flex; flex-direction: column; gap: 2px; }
         .cart-qty { font-size: 0.85rem; color: #adb5bd; font-weight: 500; }
@@ -84,16 +84,30 @@
                 <input type="text" id="form-nombre" class="form-control" placeholder="Ej. Juan Pérez">
             </div>
             <div class="form-group">
-                <label>Zona de delivery</label>
-                <select id="form-zona" class="form-control" onchange="calcularPrecios()">
-                    <option value="0" data-costo="3.00">San Miguel (Estudio) - S/ 3.00</option>
-                    <option value="1" data-costo="5.00">Pueblo Libre - S/ 5.00</option>
-                    <option value="2" data-costo="0.00">Recojo en Local - S/ 0.00</option>
-                </select>
+                <label>Teléfono / WhatsApp (Perú)</label>
+                <input type="tel" id="form-telefono" class="form-control" placeholder="Ej. 999888777">
             </div>
             <div class="form-group">
+                <label>Zona de delivery</label>
+                <select id="form-zona" class="form-control" onchange="manejarCambioZona()">
+                    <option value="san-miguel" data-costo="3.00">San Miguel (Estudio) - S/ 3.00</option>
+                    <option value="pueblo-libre" data-costo="5.00">Pueblo Libre - S/ 5.00</option>
+                    <option value="recojo" data-costo="0.00">Recojo en Local - S/ 0.00</option>
+                </select>
+            </div>
+            
+            <div id="group-direccion" class="form-group">
                 <label>Dirección de entrega</label>
                 <input type="text" id="form-direccion" class="form-control" placeholder="Av. La Marina 123...">
+            </div>
+            <div id="group-referencia" class="form-group">
+                <label>Referencia de ubicación (Opcional)</label>
+                <input type="text" id="form-referencia" class="form-control" placeholder="Frente al parque, portón marrón...">
+            </div>
+
+            <div class="form-group">
+                <label>Notas adicionales para el pizzero</label>
+                <input type="text" id="form-notas" class="form-control" placeholder="Ej. Sin cebolla, harto orégano...">
             </div>
 
             <div class="section-title">💳 Método de Pago</div>
@@ -231,7 +245,25 @@
             calcularPrecios();
         }
 
-        // CONTROLADOR CENTRAL DE PRECIOS Y VISIBILIDAD
+        // LÓGICA INTELIGENTE DE CONTROL DE ZONA (OCULTAMIENTO)
+        function manejarCambioZona() {
+            const selectZona = document.getElementById('form-zona');
+            const zonaElegida = selectZona.value;
+            
+            const groupDireccion = document.getElementById('group-direccion');
+            const groupReferencia = document.getElementById('group-referencia');
+            
+            if (zonaElegida === 'recojo') {
+                groupDireccion.style.display = 'none';
+                groupReferencia.style.display = 'none';
+            } else {
+                groupDireccion.style.display = 'flex';
+                groupReferencia.style.display = 'flex';
+            }
+            
+            calcularPrecios();
+        }
+
         function calcularPrecios() {
             let totalProductos = 0;
             let montoSubtotal = 0;
@@ -249,7 +281,6 @@
             const checkoutContainer = document.getElementById('checkout-container');
             
             if (totalProductos > 0) {
-                // Si el checkout no está visible, muestra la barra flotante
                 if (checkoutContainer.style.display !== 'flex') {
                     bar.style.display = 'flex';
                 }
@@ -257,7 +288,6 @@
                 document.getElementById('cart-qty-text').innerText = `${totalProductos} ${totalProductos === 1 ? 'producto' : 'productos'}`;
                 document.getElementById('cart-total-text').innerText = `S/ ${montoSubtotal.toFixed(2)}`;
                 
-                // Actualizar el cuadro de resumen del checkout
                 const selectZona = document.getElementById('form-zona');
                 const costoDelivery = parseFloat(selectZona.options[selectZona.selectedIndex].getAttribute('data-costo'));
                 const montoTotal = montoSubtotal + costoDelivery;
@@ -266,14 +296,12 @@
                 document.getElementById('sum-delivery').innerText = `S/ ${costoDelivery.toFixed(2)}`;
                 document.getElementById('sum-total').innerText = `S/ ${montoTotal.toFixed(2)}`;
             } else {
-                // Si se vacía el carrito, esconde todo
                 bar.style.display = 'none';
                 checkoutContainer.style.display = 'none';
             }
         }
 
         function irAlCheckout() {
-            // Oculta la barra flotante y abre el formulario abajo con un scroll suave
             document.getElementById('cart-bar').style.display = 'none';
             const checkout = document.getElementById('checkout-container');
             checkout.style.display = 'flex';
@@ -282,12 +310,9 @@
 
         function seleccionarPago(metodo, elemento) {
             metodoPagoSeleccionado = metodo;
-            
-            // Limpiar selección anterior
             document.querySelectorAll('.payment-method').forEach(el => el.classList.remove('selected'));
             elemento.classList.add('selected');
             
-            // Mostrar campo de efectivo si corresponde
             const groupEfectivo = document.getElementById('group-efectivo');
             if (metodo === 'Efectivo') {
                 groupEfectivo.style.display = 'flex';
