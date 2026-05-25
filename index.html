@@ -13,7 +13,7 @@
         .header { text-align: center; padding: 20px 0; background: white; border-radius: 16px; box-shadow: 0 4px 6px rgba(0,0,0,0.02); }
         .header h1 { font-size: 1.6rem; font-weight: 800; color: #1a1a1a; }
         .status-badge { display: inline-block; background-color: #e6f4ea; color: #137333; padding: 4px 12px; border-radius: 20px; font-size: 0.85rem; font-weight: 700; margin-top: 8px; }
-        .announcement-banner { background-color: #fff3cd; border-left: 5px solid #ffc107; color: #856404; padding: 16px; border-radius: 12px; font-size: 0.95rem; line-height: 1.4; font-weight: 500; }
+        .announcement-banner { background-color: #fff3cd; border-left: 5px solid #ffc107; color: #856404; padding: 16px; border-radius: 12px; font-size: 0.95rem; line-height: 1.4; font-weight: 500; display: none; }
 
         /* ACORDEONES VERTICALES */
         .accordion-item { background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 6px rgba(0,0,0,0.02); }
@@ -85,13 +85,11 @@
 
     <div class="app-container">
         <header class="header">
-            <h1>Pizzería Pulcinella</h1>
+            <h1 id="app-nombre-restaurante">Cargando...</h1>
             <div class="status-badge">● Abierto ahora</div>
         </header>
 
-        <div class="announcement-banner">
-            ⚠️ <strong>Aviso importante:</strong> Queridos clientes, este sábado 24 de junio no atenderemos por modificaciones en el local. Agradecemos su comprensión y los esperamos como siempre desde el 25 de junio.
-        </div>
+        <div id="app-banner" class="announcement-banner"></div>
 
         <div id="menu-container" style="display: flex; flex-direction: column; gap: 12px;"></div>
 
@@ -108,11 +106,7 @@
             </div>
             <div class="form-group">
                 <label>Zona de delivery</label>
-                <select id="form-zona" class="form-control" onchange="manejarCambioZona()">
-                    <option value="San Miguel (Estudio)" data-costo="3.00">San Miguel (Estudio) - S/ 3.00</option>
-                    <option value="Pueblo Libre" data-costo="5.00">Pueblo Libre - S/ 5.00</option>
-                    <option value="Recojo en Local" data-costo="0.00">Recojo en Local - S/ 0.00</option>
-                </select>
+                <select id="form-zona" class="form-control" onchange="manejarCambioZona()"></select>
             </div>
             
             <div id="group-direccion" class="form-group">
@@ -180,11 +174,11 @@
             <h3 id="modal-titulo">¡Casi listo! 🍕</h3>
             <p id="modal-descripcion">Realiza una de las siguientes opciones para proceder con tu orden en WhatsApp:</p>
             <div id="modal-copy-box" class="copy-container">
-                <span id="number-to-copy" class="copy-number">987654321</span>
+                <span id="number-to-copy" class="copy-number">000000000</span>
                 <button class="btn-copy" onclick="accionCopiar()">Copiar Número</button>
             </div>
             <div id="modal-qr-box" class="qr-placeholder-box">
-                <div class="qr-placeholder">[ QR Izipay ]</div>
+                <div class="qr-placeholder">[ QR Pago ]</div>
                 <button class="btn-download-qr" onclick="accionDescargarQR()">Descargar QR</button>
             </div>
             <button id="btn-entendido" class="btn-action-direct" onclick="accionEntendido()">Entendido</button>
@@ -192,30 +186,72 @@
     </div>
 
     <script>
-        const WHATSAPP_RESTAURANTE = "51999888777"; // Recuerda cambiar por tu número real para tus pruebas
-        let PRODUCTOS = []; // La lista nace vacía, se llenará desde el JSON externo
+        // Memoria centralizada de la aplicación
+        let CONFIG = {};
+        let PRODUCTOS = [];
         let memoriaCarrito = {};
         let metodoPagoSeleccionado = "";
         let montoTotalGlobal = 0;
         let enlaceWhatsAppGlobal = "";
 
-        // INYECTOR ASÍNCRONO AUTOMÁTICO (Trae la data desde fuera)
-        async function cargarProductosDesdeJSON() {
+        // CAPTURA SIMULTÁNEA DE AMBOS ARCHIVOS JSON
+        async function inicializarAplicacion() {
             try {
-                // Hace un fetch al archivo productos.json que está en la misma carpeta del servidor
-                const respuesta = await fetch('productos.json');
-                PRODUCTOS = await respuesta.json();
+                // Hacemos las peticiones en paralelo para ahorrar milisegundos de carga
+                const [resConfig, resProductos] = await Promise.all([
+                    fetch('config.json'),
+                    fetch('productos.json')
+                ]);
                 
-                // Una vez cargada la data con éxito, procedemos a renderizar los acordeones
+                CONFIG = await resConfig.json();
+                PRODUCTOS = await resProductos.json();
+                
+                // Inyectamos la configuración en la interfaz visual
+                aplicarConfiguracion();
+                
+                // Renderizamos los platos de la carta
                 renderizarMenu();
             } catch (error) {
-                console.error("Error cargando la lista de platos:", error);
-                document.getElementById('menu-container').innerHTML = "<p style='text-align:center; padding:20px; color:red;'>⚠️ Error al cargar el menú. Intenta de nuevo.</p>";
+                console.error("Error inicializando el sistema modular:", error);
+                document.getElementById('menu-container').innerHTML = "<p style='text-align:center; padding:20px; color:red;'>⚠️ Error crítico al inicializar la app. Revisa las configuraciones.</p>";
             }
+        }
+
+        function aplicarConfiguracion() {
+            // 1. Nombre del local
+            document.getElementById('app-nombre-restaurante').innerText = CONFIG.nombre_restaurante;
+            document.title = `${CONFIG.nombre_restaurante} - Pidenow`;
+            
+            // 2. Control del banner de avisos
+            const banner = document.getElementById('app-banner');
+            if (CONFIG.banner_activo && CONFIG.banner_texto) {
+                banner.innerHTML = CONFIG.banner_texto;
+                banner.style.display = 'block';
+            } else {
+                banner.style.display = 'none';
+            }
+            
+            // 3. Número de cobro en el modal
+            document.getElementById('number-to-copy').innerText = CONFIG.numero_pago_yape_plin;
+            
+            // 4. Inyectar zonas de delivery dinámicas
+            const selectZona = document.getElementById('form-zona');
+            selectZona.innerHTML = ''; // Limpiamos opciones fijas
+            CONFIG.zonas_delivery.forEach(z => {
+                const opt = document.createElement('option');
+                opt.value = z.nombre;
+                opt.setAttribute('data-costo', z.costo.toFixed(2));
+                opt.innerText = `${z.nombre} - S/ ${z.costo.toFixed(2)}`;
+                selectZona.appendChild(opt);
+            });
+            
+            // Ejecutamos para ocultar o mostrar dirección de arranque según la primera opción cargada
+            manejarCambioZona();
         }
 
         function renderizarMenu() {
             const container = document.getElementById('menu-container');
+            container.innerHTML = '';
             const categorias = [...new Set(PRODUCTOS.map(p => p.categoria))];
             
             categorias.forEach(cat => {
@@ -246,7 +282,11 @@
 
         function configurarEventos() {
             const container = document.getElementById('menu-container');
-            container.addEventListener('click', function(e) {
+            // Removemos listeners previos para evitar duplicados
+            const clonContainer = container.cloneNode(true);
+            container.parentNode.replaceChild(clonContainer, container);
+            
+            clonContainer.addEventListener('click', function(e) {
                 const header = e.target.closest('.accordion-header');
                 if (header) { header.parentElement.classList.toggle('active'); return; }
                 const btnMas = e.target.closest('.btn-mas');
@@ -267,6 +307,7 @@
 
         function manejarCambioZona() {
             const selectZona = document.getElementById('form-zona');
+            if(!selectZona.options.length) return;
             const status = selectZona.value === 'Recojo en Local' ? 'none' : 'flex';
             document.getElementById('group-direccion').style.display = status;
             document.getElementById('group-referencia').style.display = status;
@@ -292,7 +333,7 @@
                 document.getElementById('checkout-items-list').innerHTML = htmlDesglose;
                 
                 const selectZona = document.getElementById('form-zona');
-                const costoDelivery = parseFloat(selectZona.options[selectZona.selectedIndex].getAttribute('data-costo'));
+                const costoDelivery = selectZona.options.length ? parseFloat(selectZona.options[selectZona.selectedIndex].getAttribute('data-costo')) : 0;
                 montoTotalGlobal = montoSubtotal + costoDelivery;
                 
                 document.getElementById('sum-subtotal').innerText = `S/ ${montoSubtotal.toFixed(2)}`;
@@ -348,7 +389,8 @@
             }
             textoWA += `💰 *TOTAL A PAGAR: S/ ${montoTotalGlobal.toFixed(2)}*`;
 
-            enlaceWhatsAppGlobal = `https://api.whatsapp.com/send?phone=${WHATSAPP_RESTAURANTE}&text=${encodeURIComponent(textoWA)}`;
+            // Usa el número de WhatsApp dinámico traído desde config.json
+            enlaceWhatsAppGlobal = `https://api.whatsapp.com/send?phone=${CONFIG.whatsapp_receptor}&text=${encodeURIComponent(textoWA)}`;
 
             if(metodoPagoSeleccionado === 'Yape' || metodoPagoSeleccionado === 'Plin') {
                 document.getElementById('modal-titulo').innerText = "¡Casi listo! 🍕";
@@ -381,8 +423,9 @@
 
         function accionDescargarQR() {
             const link = document.createElement('a');
-            link.href = 'https://imagin8peru.github.io/pulcinella-app/imagenes/qr-izipay.jpg';
-            link.download = 'qr-pago-pulcinella.jpg';
+            // Usa la URL del QR dinámica configurada en el JSON
+            link.href = CONFIG.url_qr_pago;
+            link.download = 'qr-pago-pizzería.jpg';
             document.body.appendChild(link);
             link.click();
             document.body.removeChild(link);
@@ -394,8 +437,8 @@
             ejecutadoExitoso();
         }
 
-        // DISPARADOR INICIAL: Arranca el lector asíncrono
-        cargarProductosDesdeJSON();
+        // ARRANCAR EL MOTOR MODULAR
+        inicializarAplicacion();
     </script>
 </body>
 </html>
