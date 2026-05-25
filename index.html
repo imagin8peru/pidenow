@@ -47,9 +47,14 @@
         .payment-method { border: 1px solid #ced4da; padding: 12px; text-align: center; border-radius: 10px; font-weight: 700; cursor: pointer; background: #f8f9fa; user-select: none; }
         .payment-method.selected { border-color: #22c55e; background-color: #e6f4ea; color: #137333; }
 
-        /* RESUMEN DE COMPRA */
-        .summary-box { background: #f8f9fa; padding: 16px; border-radius: 12px; border: 1px solid #e9ecef; display: flex; flex-direction: column; gap: 8px; }
-        .summary-row { display: flex; justify-content: space-between; font-size: 0.95rem; color: #495057; }
+        /* RESUMEN DE COMPRA Y ELEMENTOS DINÁMICOS */
+        .summary-box { background: #f8f9fa; padding: 16px; border-radius: 12px; border: 1px solid #e9ecef; display: flex; flex-direction: column; gap: 10px; }
+        .cart-items-list { display: flex; flex-direction: column; gap: 6px; padding-bottom: 8px; border-bottom: 1px solid #e9ecef; }
+        .item-row { display: flex; justify-content: space-between; font-size: 0.95rem; color: #212529; }
+        .item-row .item-name { font-weight: 600; }
+        .item-row .item-qty { color: #6c757d; margin-right: 4px; }
+        
+        .summary-row { display: flex; justify-content: space-between; font-size: 0.9rem; color: #495057; }
         .summary-total { display: flex; justify-content: space-between; font-size: 1.2rem; font-weight: 800; color: #1a1a1a; border-top: 1px dashed #ced4da; padding-top: 8px; margin-top: 4px; }
 
         .btn-submit { background-color: #22c55e; color: white; border: none; width: 100%; padding: 16px; border-radius: 12px; font-size: 1.1rem; font-weight: 700; cursor: pointer; text-align: center; margin-top: 8px; box-shadow: 0 4px 12px rgba(34,197,94,0.2); }
@@ -125,6 +130,8 @@
 
             <div class="section-title">🧾 Verifica el Detalle de tu Pedido</div>
             <div class="summary-box">
+                <div id="checkout-items-list" class="cart-items-list"></div>
+
                 <div class="summary-row">
                     <span>Subtotal Productos:</span>
                     <span id="sum-subtotal">S/ 0.00</span>
@@ -245,35 +252,39 @@
             calcularPrecios();
         }
 
-        // LÓGICA INTELIGENTE DE CONTROL DE ZONA (OCULTAMIENTO)
         function manejarCambioZona() {
             const selectZona = document.getElementById('form-zona');
-            const zonaElegida = selectZona.value;
-            
-            const groupDireccion = document.getElementById('group-direccion');
-            const groupReferencia = document.getElementById('group-referencia');
-            
-            if (zonaElegida === 'recojo') {
-                groupDireccion.style.display = 'none';
-                groupReferencia.style.display = 'none';
+            if (selectZona.value === 'recojo') {
+                document.getElementById('group-direccion').style.display = 'none';
+                document.getElementById('group-referencia').style.display = 'none';
             } else {
-                groupDireccion.style.display = 'flex';
-                groupReferencia.style.display = 'flex';
+                document.getElementById('group-direccion').style.display = 'flex';
+                document.getElementById('group-referencia').style.display = 'flex';
             }
-            
             calcularPrecios();
         }
 
+        // MOTOR RECALCULADOR CON LISTADO DINÁMICO DE PRODUCTOS
         function calcularPrecios() {
             let totalProductos = 0;
             let montoSubtotal = 0;
+            let htmlDesglose = '';
             
             for (const id in memoriaCarrito) {
                 const cantidad = memoriaCarrito[id];
                 const producto = PRODUCTOS.find(p => p.id == id);
                 if (producto) {
                     totalProductos += cantidad;
-                    montoSubtotal += (producto.precio * cantidad);
+                    const subtotalItem = producto.precio * cantidad;
+                    montoSubtotal += subtotalItem;
+                    
+                    // Construir la fila en texto limpio para la lista de verificación
+                    htmlDesglose += `
+                        <div class="item-row">
+                            <span><span class="item-qty">${cantidad}x</span><span class="item-name">${producto.nombre}</span></span>
+                            <span>S/ ${subtotalItem.toFixed(2)}</span>
+                        </div>
+                    `;
                 }
             }
 
@@ -287,6 +298,9 @@
                 
                 document.getElementById('cart-qty-text').innerText = `${totalProductos} ${totalProductos === 1 ? 'producto' : 'productos'}`;
                 document.getElementById('cart-total-text').innerText = `S/ ${montoSubtotal.toFixed(2)}`;
+                
+                // Inyectar la listita de productos dentro del recuadro
+                document.getElementById('checkout-items-list').innerHTML = htmlDesglose;
                 
                 const selectZona = document.getElementById('form-zona');
                 const costoDelivery = parseFloat(selectZona.options[selectZona.selectedIndex].getAttribute('data-costo'));
