@@ -409,10 +409,47 @@
             document.getElementById('payment-modal').style.display = 'flex';
         }
 
-        function ejecutadoExitoso() {
-            document.getElementById('payment-modal').style.display = 'none';
-            window.open(enlaceWhatsAppGlobal, '_blank');
-        }
+        async function ejecutadoExitoso() {
+    // 1. Ocultar el modal de inmediato
+    document.getElementById('payment-modal').style.display = 'none';
+    
+    // 2. Recopilar la data limpia del pedido para tu n8n
+    const objetoPedido = {
+        cliente_nombre: document.getElementById('form-nombre').value.trim(),
+        cliente_telefono: document.getElementById('form-telefono').value.trim(),
+        zona_delivery: document.getElementById('form-zona').value,
+        direccion: document.getElementById('form-direccion').value.trim(),
+        referencia: document.getElementById('form-referencia').value.trim(),
+        notas_cocina: document.getElementById('form-notas').value.trim(),
+        metodo_pago: metodoPagoSeleccionado,
+        total_pago: montoTotalGlobal,
+        articulos: Object.keys(memoriaCarrito).map(id => {
+            const p = PRODUCTOS.find(prod => prod.id == id);
+            return {
+                nombre: p.nombre,
+                cantidad: memoriaCarrito[id],
+                subtotal: p.precio * memoriaCarrito[id]
+            };
+        })
+    };
+
+    // 3. Disparar el viaje asíncrono a tu n8n
+    try {
+        const urlN8N = "https://n8n.imagin8.net.pe/webhook-test/31539c40-dbd4-467e-ab3e-2403962992a3"; 
+        
+        fetch(urlN8N, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(objetoPedido)
+        });
+        
+    } catch (e) {
+        console.error("Error enviando a n8n:", e);
+    }
+
+    // 4. Viaje directo al WhatsApp de Nino
+    window.open(enlaceWhatsAppGlobal, '_blank');
+}
 
         function accionCopiar() {
             const numero = document.getElementById('number-to-copy').innerText;
