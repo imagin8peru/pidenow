@@ -71,11 +71,17 @@
         .modal-box { background: white; padding: 24px; border-radius: 20px; width: 100%; max-width: 400px; text-align: center; display: flex; flex-direction: column; gap: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.3); }
         .modal-box h3 { font-size: 1.3rem; font-weight: 800; color: #1a1a1a; }
         .modal-box p { font-size: 0.95rem; color: #495057; line-height: 1.4; }
-        .qr-placeholder { background: #f1f3f5; width: 180px; height: 180px; margin: 0 auto; display: flex; justify-content: center; align-items: center; font-weight: 700; border: 2px dashed #ced4da; border-radius: 12px; color: #6c757d; }
-        .copy-container { display: flex; gap: 8px; background: #f8f9fa; border: 1px solid #ced4da; padding: 10px 14px; border-radius: 12px; align-items: center; justify-content: space-between; margin-top: 4px; }
+        
+        /* Contenedores de opciones */
+        .copy-container { display: flex; gap: 8px; background: #f8f9fa; border: 1px solid #ced4da; padding: 10px 14px; border-radius: 12px; align-items: center; justify-content: space-between; }
         .copy-number { font-weight: 800; font-size: 1.1rem; color: #1a1a1a; }
-        .btn-copy { background: #1a1a1a; color: white; border: none; padding: 6px 12px; border-radius: 8px; font-size: 0.85rem; font-weight: 700; cursor: pointer; }
-        .btn-close-modal { background: #22c55e; color: white; border: none; padding: 14px; border-radius: 12px; font-weight: 700; font-size: 1rem; cursor: pointer; margin-top: 8px; }
+        .btn-copy { background: #1a1a1a; color: white; border: none; padding: 8px 14px; border-radius: 8px; font-size: 0.85rem; font-weight: 700; cursor: pointer; }
+        
+        .qr-placeholder-box { display: flex; flex-direction: column; gap: 8px; align-items: center; }
+        .qr-placeholder { background: #f1f3f5; width: 160px; height: 160px; display: flex; justify-content: center; align-items: center; font-weight: 700; border: 2px dashed #ced4da; border-radius: 12px; color: #6c757d; font-size: 0.9rem; }
+        .btn-download-qr { background: #007bff; color: white; border: none; padding: 8px 14px; border-radius: 8px; font-size: 0.85rem; font-weight: 700; cursor: pointer; width: 160px; }
+        
+        .btn-action-direct { background: #6c757d; color: white; border: none; padding: 14px; border-radius: 12px; font-weight: 700; font-size: 1rem; cursor: pointer; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
     </style>
 </head>
 <body>
@@ -156,8 +162,8 @@
                 </div>
             </div>
 
-            <button class="btn-submit" onclick="procesarYEnviar()">
-                Enviar Pedido por WhatsApp
+            <button class="btn-submit" onclick="prepararEnvio()">
+                Continuar Pedido
             </button>
         </div>
     </div>
@@ -174,25 +180,27 @@
 
     <div id="payment-modal" class="modal-overlay">
         <div class="modal-box">
-            <h3>¡Casi listo! 🍕</h3>
-            <p>Para proceder con tu pedido, yapea o plinea el monto total. Copia el número abajo para pegarlo en tu app:</p>
+            <h3 id="modal-titulo">¡Casi listo! 🍕</h3>
+            <p id="modal-descripcion">Realiza una de las siguientes opciones para proceder con tu orden en WhatsApp:</p>
             
-            <div class="copy-container">
+            <div id="modal-copy-box" class="copy-container">
                 <span id="number-to-copy" class="copy-number">987654321</span>
-                <button class="btn-copy" onclick="copiarNumeroAlPortapapeles()">Copiar</button>
+                <button class="btn-copy" onclick="accionCopiar()">Copiar Número</button>
             </div>
 
-            <div class="qr-placeholder">
-                [ QR Izipay Pulcinella ]
+            <div id="modal-qr-box" class="qr-placeholder-box">
+                <div class="qr-placeholder">[ QR Izipay ]</div>
+                <button class="btn-download-qr" onclick="accionDescargarQR()">Descargar QR</button>
             </div>
             
-            <p style="font-size: 0.85rem; color: #6c757d;">No olvides adjuntar la captura del pago en el chat de WhatsApp que se acaba de abrir.</p>
-            <button class="btn-close-modal" onclick="cerrarModal()">✅ Entendido (Ya pagué)</button>
+            <button id="btn-entendido" class="btn-action-direct" onclick="accionEntendido()">
+                Entendido
+            </button>
         </div>
     </div>
 
     <script>
-        const WHATSAPP_RESTAURANTE = "51999888777"; // Cambia por tu número de pruebas
+        const WHATSAPP_RESTAURANTE = "51999888777"; // Pon tu número real para tus pruebas
         const PRODUCTOS = [
             { id: 1, categoria: "Pizzas 🍕", nombre: "Pizza Americana", desc: "Salsa de tomate, muzzarella y jamón inglés.", precio: 35.00 },
             { id: 2, categoria: "Pizzas 🍕", nombre: "Pizza Pepperoni", desc: "Salsa de tomate, muzzarella y harto pepperoni americano.", precio: 38.00 },
@@ -203,6 +211,7 @@
         let memoriaCarrito = {};
         let metodoPagoSeleccionado = "";
         let montoTotalGlobal = 0;
+        let enlaceWhatsAppGlobal = "";
 
         function renderizarMenu() {
             const container = document.getElementById('menu-container');
@@ -302,8 +311,7 @@
             document.getElementById('group-efectivo').style.display = metodo === 'Efectivo' ? 'flex' : 'none';
         }
 
-        // MOTOR RECOPILADOR Y GATILLO DE WHATSAPP
-        function procesarYEnviar() {
+        function prepararEnvio() {
             const nombre = document.getElementById('form-nombre').value.trim();
             const telefono = document.getElementById('form-telefono').value.trim();
             const zona = document.getElementById('form-zona').value;
@@ -316,7 +324,6 @@
                 return;
             }
 
-            // Armar texto estructurado para el WhatsApp de la empresa
             let textoWA = `*NUEVO PEDIDO - PIDENOW* 🍕\n\n`;
             textoWA += `👤 *Cliente:* ${nombre}\n`;
             textoWA += `📱 *WhatsApp:* ${telefono}\n`;
@@ -340,24 +347,55 @@
             }
             textoWA += `💰 *TOTAL A PAGAR: S/ ${montoTotalGlobal.toFixed(2)}*`;
 
-            const urlWA = `https://api.whatsapp.com/send?phone=${WHATSAPP_RESTAURANTE}&text=${encodeURIComponent(textoWA)}`;
-            
-            // Disparar WhatsApp en pestaña nueva
-            window.open(urlWA, '_blank');
+            enlaceWhatsAppGlobal = `https://api.whatsapp.com/send?phone=${WHATSAPP_RESTAURANTE}&text=${encodeURIComponent(textoWA)}`;
 
-            // Si el método de pago requiere QR (Yape/Plin), levantar el modal emergente
             if(metodoPagoSeleccionado === 'Yape' || metodoPagoSeleccionado === 'Plin') {
-                document.getElementById('payment-modal').style.display = 'flex';
+                document.getElementById('modal-titulo').innerText = "¡Casi listo! 🍕";
+                document.getElementById('modal-descripcion').innerText = "Realiza una de las siguientes opciones para proceder con tu orden en WhatsApp:";
+                document.getElementById('modal-copy-box').style.display = 'flex';
+                document.getElementById('modal-qr-box').style.display = 'flex';
+                document.getElementById('btn-entendido').innerText = "Entendido";
+            } else {
+                // Si es Efectivo o Tarjeta, no hay QR, va directo con un botón limpio
+                document.getElementById('modal-titulo').innerText = "¡Pedido Listo! 🧾";
+                document.getElementById('modal-descripcion').innerText = "Presiona el botón de abajo para enviar tu orden por WhatsApp.";
+                document.getElementById('modal-copy-box').style.display = 'none';
+                document.getElementById('modal-qr-box').style.display = 'none';
+                document.getElementById('btn-entendido').innerText = "Enviar por WhatsApp ➔";
             }
+            
+            document.getElementById('payment-modal').style.display = 'flex';
         }
 
-        function copiarNumeroAlPortapapeles() {
+        // LAS 3 ACCIONES DETONANTES INTELIGENTES
+        function ejecutadoExitoso() {
+            document.getElementById('payment-modal').style.display = 'none';
+            window.open(enlaceWhatsAppGlobal, '_blank');
+        }
+
+        function accionCopiar() {
             const numero = document.getElementById('number-to-copy').innerText;
             navigator.clipboard.writeText(numero);
-            alert("¡Número copiado! Abre tu Yape o Plin y pégalo.");
+            alert("¡Número copiado! Te estamos redirigiendo a WhatsApp...");
+            ejecutadoExitoso();
         }
 
-        function cerrarModal() { document.getElementById('payment-modal').style.display = 'none'; }
+        function accionDescargarQR() {
+            // Simulador de descarga de archivo para la maqueta
+            const link = document.createElement('a');
+            link.href = 'https://imagin8peru.github.io/pulcinella-app/imagenes/qr-izipay.jpg'; // Url de muestra
+            link.download = 'qr-pago-pulcinella.jpg';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            
+            alert("¡QR Descargado! Te estamos redirigiendo a WhatsApp...");
+            ejecutadoExitoso();
+        }
+
+        function accionEntendido() {
+            ejecutadoExitoso();
+        }
 
         renderizarMenu();
     </script>
