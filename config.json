@@ -2,7 +2,7 @@
   "nombre_restaurante": "Hamburguesas de Víctor",
   "whatsapp_receptor": "51999888777",
   "banner_activo": true,
-  "banner_texto": "⚠️ <strong>Local Cerrado:</strong> Estamos en mantenimiento técnico para mejorar nuestra plataforma. Volveremos muy pronto.",
+  "banner_texto": "https://imagin8peru.github.io/pulcinella-app/imagenes/qr-izipay.jpg",
   "numero_pago_yape_plin": "987654321",
   "url_qr_pago": "https://imagin8peru.github.io/pulcinella-app/imagenes/qr-izipay.jpg",
   "zonas_delivery": [
