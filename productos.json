@@ -4,14 +4,14 @@
     "categoria": "Pizzas 🍕",
     "nombre": "Pizza Americana",
     "desc": "Salsa de tomate, muzzarella y jamón inglés.",
-    "precio": 41
+    "precio": 15
   },
   {
     "id": 2,
     "categoria": "Pizzas 🍕",
     "nombre": "Pizza Pepperoni",
     "desc": "Salsa de tomate, muzzarella y harto pepperoni americano.",
-    "precio": 38
+    "precio": 23
   },
   {
     "id": 3,
