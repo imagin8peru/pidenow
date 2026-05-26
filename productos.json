@@ -2,16 +2,16 @@
   {
     "id": 1,
     "categoria": "Pizzas 🍕",
-    "nombre": "Pizza Americana",
+    "nombre": "Pizza Americana NY",
     "desc": "Salsa de tomate, muzzarella y jamón inglés.",
-    "precio": 750
+    "precio": 75
   },
   {
     "id": 2,
     "categoria": "Pizzas 🍕",
-    "nombre": "Pizza Pepperoni",
+    "nombre": "Pizza Pepperoni NY",
     "desc": "Salsa de tomate, muzzarella y harto pepperoni americano.",
-    "precio": 1500,
+    "precio": 85,
     "activo": true
   },
   {
