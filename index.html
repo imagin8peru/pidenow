@@ -279,13 +279,14 @@
         function renderizarMenu() {
             const container = document.getElementById('menu-container');
             container.innerHTML = '';
-            const categories = [...new Set(PRODUCTOS.map(p => p.categoria))];
+            const productosActivos = PRODUCTOS.filter(p => p.activo !== false);
+            const categories = [...new Set(productosActivos.map(p => p.categoria))];
             
             categories.forEach(cat => {
                 const item = document.createElement('div');
                 item.className = 'accordion-item';
                 let htmlProductos = '';
-                PRODUCTOS.filter(p => p.categoria === cat).forEach(p => {
+                productosActivos.filter(p => p.categoria === cat).forEach(p => {
                     htmlProductos += `
                         <div class="product-card">
                             <div class="product-info">
