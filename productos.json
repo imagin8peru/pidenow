@@ -11,7 +11,8 @@
     "categoria": "Pizzas 🍕",
     "nombre": "Pizza Pepperoni",
     "desc": "Salsa de tomate, muzzarella y harto pepperoni americano.",
-    "precio": 23
+    "precio": 23,
+    "activo": false
   },
   {
     "id": 3,
@@ -26,6 +27,6 @@
     "nombre": "Inca Kola 1 Litro",
     "desc": "Heladita, como debe ser.",
     "precio": 8,
-    "activo": false
+    "activo": true
   }
 ]
