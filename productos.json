@@ -4,7 +4,7 @@
     "categoria": "Pizzas 🍕",
     "nombre": "Pizza Americana",
     "desc": "Salsa de tomate, muzzarella y jamón inglés.",
-    "precio": 15
+    "precio": 19.5
   },
   {
     "id": 2,
@@ -18,7 +18,7 @@
     "categoria": "Combos 🎁",
     "nombre": "Combo Maradoniano",
     "desc": "1 Pizza Grande + 2 Calzones + 1 Gaseosa 1L.",
-    "precio": 50
+    "precio": 7.85
   },
   {
     "id": 4,
