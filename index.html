@@ -197,7 +197,6 @@
         // CAPTURA SIMULTÁNEA DE AMBOS ARCHIVOS JSON
         async function inicializarAplicacion() {
             try {
-                // Hacemos las peticiones en paralelo para ahorrar milisegundos de carga
                 const [resConfig, resProductos] = await Promise.all([
                     fetch('config.json'),
                     fetch('productos.json')
@@ -206,10 +205,7 @@
                 CONFIG = await resConfig.json();
                 PRODUCTOS = await resProductos.json();
                 
-                // Inyectamos la configuración en la interfaz visual
                 aplicarConfiguracion();
-                
-                // Renderizamos los platos de la carta
                 renderizarMenu();
             } catch (error) {
                 console.error("Error inicializando el sistema modular:", error);
@@ -218,11 +214,9 @@
         }
 
         function aplicarConfiguracion() {
-            // 1. Nombre del local
             document.getElementById('app-nombre-restaurante').innerText = CONFIG.nombre_restaurante;
             document.title = `${CONFIG.nombre_restaurante} - Pidenow`;
             
-            // 2. Control del banner de avisos
             const banner = document.getElementById('app-banner');
             if (CONFIG.banner_activo && CONFIG.banner_texto) {
                 banner.innerHTML = CONFIG.banner_texto;
@@ -231,12 +225,10 @@
                 banner.style.display = 'none';
             }
             
-            // 3. Número de cobro en el modal
             document.getElementById('number-to-copy').innerText = CONFIG.numero_pago_yape_plin;
             
-            // 4. Inyectar zonas de delivery dinámicas
             const selectZona = document.getElementById('form-zona');
-            selectZona.innerHTML = ''; // Limpiamos opciones fijas
+            selectZona.innerHTML = ''; 
             CONFIG.zonas_delivery.forEach(z => {
                 const opt = document.createElement('option');
                 opt.value = z.nombre;
@@ -245,16 +237,15 @@
                 selectZona.appendChild(opt);
             });
             
-            // Ejecutamos para ocultar o mostrar dirección de arranque según la primera opción cargada
             manejarCambioZona();
         }
 
         function renderizarMenu() {
             const container = document.getElementById('menu-container');
             container.innerHTML = '';
-            const categorias = [...new Set(PRODUCTOS.map(p => p.categoria))];
+            const categories = [...new Set(PRODUCTOS.map(p => p.categoria))];
             
-            categorias.forEach(cat => {
+            categories.forEach(cat => {
                 const item = document.createElement('div');
                 item.className = 'accordion-item';
                 let htmlProductos = '';
@@ -282,7 +273,6 @@
 
         function configurarEventos() {
             const container = document.getElementById('menu-container');
-            // Removemos listeners previos para evitar duplicados
             const clonContainer = container.cloneNode(true);
             container.parentNode.replaceChild(clonContainer, container);
             
@@ -349,7 +339,7 @@
         function seleccionarPago(metodo, elemento) {
             metodoPagoSeleccionado = metodo;
             document.querySelectorAll('.payment-method').forEach(el => el.classList.remove('selected'));
-            element.classList.add('selected');
+            elemento.classList.add('selected'); 
             document.getElementById('group-efectivo').style.display = metodo === 'Efectivo' ? 'flex' : 'none';
         }
 
@@ -366,7 +356,6 @@
                 return;
             }
 
-            // Candado estricto para número telefónico peruano (Exactamente 9 dígitos)
             if(telefono.length !== 9) {
                 alert("Por favor, llena correctamente su número telefónico (debe tener 9 dígitos).");
                 return;
@@ -395,7 +384,6 @@
             }
             textoWA += `💰 *TOTAL A PAGAR: S/ ${montoTotalGlobal.toFixed(2)}*`;
 
-            // Usa el número de WhatsApp dinámico traído desde config.json
             enlaceWhatsAppGlobal = `https://api.whatsapp.com/send?phone=${CONFIG.whatsapp_receptor}&text=${encodeURIComponent(textoWA)}`;
 
             if(metodoPagoSeleccionado === 'Yape' || metodoPagoSeleccionado === 'Plin') {
@@ -416,10 +404,8 @@
         }
 
         async function ejecutadoExitoso() {
-            // 1. Ocultar el modal de inmediato
             document.getElementById('payment-modal').style.display = 'none';
             
-            // 2. Recopilar la data limpia del pedido para tu n8n
             const objetoPedido = {
                 cliente_nombre: document.getElementById('form-nombre').value.trim(),
                 cliente_telefono: document.getElementById('form-telefono').value.trim(),
@@ -439,7 +425,6 @@
                 })
             };
 
-            // 3. Disparar el viaje asíncrono a tu n8n
             try {
                 const urlN8N = "https://n8n.imagin8.net.pe/webhook/31539c40-dbd4-467e-ab3e-2403962992a3"; 
                 
@@ -453,7 +438,6 @@
                 console.error("Error enviando a n8n:", e);
             }
 
-            // 4. Viaje directo al WhatsApp de Nino
             window.open(enlaceWhatsAppGlobal, '_blank');
         }
 
@@ -479,7 +463,6 @@
             ejecutadoExitoso();
         }
 
-        // ARRANCAR EL MOTOR MODULAR
         inicializarAplicacion();
     </script>
 </body>
