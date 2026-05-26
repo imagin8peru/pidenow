@@ -158,8 +158,8 @@ body { background-color: #f8f9fa; color: #212529; padding: 16px; padding-bottom:
       <button class="btn-copy" onclick="accionCopiar()">Copiar Número</button>
     </div>
     <div id="modal-qr-box" class="qr-placeholder-box">
-      <div class="qr-placeholder">[ QR Pago ]</div>
-      <button class="btn-download-qr" onclick="accionDescargarQR()">Descargar QR</button>
+      <img id="qr-imagen" src="" alt="QR de Pago" style="width:160px; height:160px; border-radius:12px; object-fit:contain; border:2px solid #e9ecef;">
+      <button class="btn-download-qr" onclick="accionDescargarQR()">⬇️ Descargar QR</button>
     </div>
     <button id="btn-entendido" class="btn-action-direct" onclick="accionEntendido()">Entendido</button>
   </div>
@@ -229,6 +229,7 @@ function aplicarConfiguracion() {
   }
 
   document.getElementById('number-to-copy').innerText = CONFIG.numero_pago_yape_plin;
+  document.getElementById('qr-imagen').src = CONFIG.url_qr_pago;
 
   // Zonas de delivery
   const selectZona = document.getElementById('form-zona');
