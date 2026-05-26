@@ -9,23 +9,19 @@
         body { background-color: #f1f3f5; color: #212529; padding: 16px; display: flex; flex-direction: column; align-items: center; }
         .admin-container { width: 100%; max-width: 600px; display: flex; flex-direction: column; gap: 20px; padding-bottom: 60px; }
         
-        /* CABECERA */
         .admin-header { background: #1a1a1a; color: white; padding: 20px; border-radius: 16px; text-align: center; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
         .admin-header h1 { font-size: 1.5rem; font-weight: 800; margin-bottom: 4px; }
         .admin-header p { font-size: 0.9rem; color: #adb5bd; }
 
-        /* SECCIONES / TARJETAS */
         .admin-card { background: white; padding: 20px; border-radius: 16px; box-shadow: 0 4px 6px rgba(0,0,0,0.02); display: flex; flex-direction: column; gap: 14px; }
         .card-title { font-size: 1.15rem; font-weight: 800; color: #1a1a1a; border-bottom: 2px solid #f1f3f5; padding-bottom: 8px; display: flex; justify-content: space-between; align-items: center; }
 
-        /* FORMULARIOS STYLE PEDIDOS YA */
         .form-group { display: flex; flex-direction: column; gap: 6px; }
         .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
         label { font-size: 0.85rem; font-weight: 700; color: #495057; }
         .form-control { width: 100%; padding: 12px; border: 1px solid #ced4da; border-radius: 10px; font-size: 1rem; background: #f8f9fa; }
         .form-control:focus { outline: none; border-color: #22c55e; background: white; }
         
-        /* SWITCH VISUAL */
         .switch-container { display: flex; align-items: center; justify-content: space-between; background: #f8f9fa; padding: 12px; border-radius: 10px; border: 1px solid #e9ecef; }
         .switch-label { display: flex; flex-direction: column; gap: 2px; }
         .switch-title { font-weight: 700; font-size: 0.95rem; }
@@ -38,14 +34,12 @@
         input:checked + .slider { background-color: #22c55e; }
         input:checked + .slider:before { transform: translateX(24px); }
 
-        /* LISTAS DE GESTIÓN (CATEGORÍAS Y PRODUCTOS) */
         .item-list { display: flex; flex-direction: column; gap: 10px; margin-top: 6px; }
         .list-row { background: #f8f9fa; padding: 12px; border-radius: 12px; border: 1px solid #e9ecef; display: flex; align-items: center; justify-content: space-between; gap: 10px; }
         .list-info { flex: 1; }
         .list-name { font-weight: 700; font-size: 0.95rem; }
         .list-sub { font-size: 0.8rem; color: #6c757d; margin-top: 2px; }
         
-        /* BOTONES */
         .btn { padding: 10px 14px; border-radius: 10px; font-weight: 700; font-size: 0.9rem; cursor: pointer; border: none; text-align: center; display: flex; align-items: center; justify-content: center; gap: 6px; }
         .btn-primary { background: #22c55e; color: white; }
         .btn-danger { background: #ef4444; color: white; }
@@ -53,7 +47,6 @@
         .btn-sm { padding: 6px 10px; font-size: 0.8rem; border-radius: 6px; }
         .btn-block { width: 100%; padding: 16px; font-size: 1.1rem; border-radius: 12px; box-shadow: 0 4px 12px rgba(34,197,94,0.3); }
 
-        /* MODAL SIMPLE */
         .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 2000; justify-content: center; align-items: center; padding: 16px; }
         .modal-content { background: white; padding: 20px; border-radius: 16px; width: 100%; max-width: 440px; display: flex; flex-direction: column; gap: 14px; }
     </style>
@@ -183,9 +176,10 @@
 
         async function cargarDatos() {
             try {
+                const timestamp = Date.now();
                 const [resConfig, resProductos] = await Promise.all([
-                    fetch('config.json'),
-                    fetch('productos.json')
+                    fetch(`https://raw.githubusercontent.com/imagin8peru/pidenow/main/config.json?v=${timestamp}`),
+                    fetch(`https://raw.githubusercontent.com/imagin8peru/pidenow/main/productos.json?v=${timestamp}`)
                 ]);
                 CONFIG_LOCAL = await resConfig.json();
                 PRODUCTOS_LOCAL = await resProductos.json();
@@ -284,7 +278,6 @@
         function guardarCategoria() {
             const nombre = document.getElementById('form-cat-nombre').value.trim();
             if(!nombre) return alert("Escribe el nombre de la categoría.");
-            
             CATEGORIAS_LOCAL.push({ nombre: nombre, activa: true });
             cerrarModal('modal-categoria');
             renderizarListasAdmin();
@@ -374,7 +367,7 @@
             botonSubmit.innerText = "⏳ Sincronizando con el servidor...";
             botonSubmit.disabled = true;
 
-            const urlAdminN8N = "https://n8n.imagin8.net.pe/webhook/admin-pidenow-update"; 
+            const urlAdminN8N = "https://n8n.imagin8.net.pe/webhook/admin-pidenow-update";
 
             fetch(urlAdminN8N, {
                 method: 'POST',
@@ -383,9 +376,9 @@
             })
             .then(response => {
                 if(response.ok) {
-                    alert("¡Éxito! Los cambios fueron enviados a n8n. El servidor se está actualizando en este momento.");
+                    alert("¡Éxito! Los cambios fueron enviados. El servidor se está actualizando.");
                 } else {
-                    alert("El panel procesó la data pero n8n devolvió un error. Revisa el flujo de administración.");
+                    alert("El panel procesó la data pero n8n devolvió un error. Revisa el flujo.");
                 }
             })
             .catch(error => {
@@ -398,7 +391,6 @@
             });
         }
 
-        // Ejecutar carga inicial al abrir el panel
         cargarDatos();
     </script>
 </body>
