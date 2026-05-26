@@ -1,6 +1,6 @@
 {
-  "nombre_restaurante": "Pirus Salchis",
-  "whatsapp_receptor": "51999888777",
+  "nombre_restaurante": "PALETA PILÓN",
+  "whatsapp_receptor": "51922291813",
   "banner_activo": true,
   "banner_texto": "⚠️ <strong>Aviso importante:</strong> Queridos clientes, este sábado 24 de junio no atenderemos por modificaciones en el local. Agradecemos su comprensión y los esperamos como siempre desde el 25 de junio.",
   "numero_pago_yape_plin": "987654321",
@@ -15,9 +15,19 @@
       "costo": 10
     },
     {
+      "nombre": "Magdalena",
+      "costo": 15
+    },
+    {
       "nombre": "Recojo en Local",
       "costo": 0
     }
   ],
-  "url_logo": ""
+  "url_logo": "",
+  "metodos_pago": {
+    "yape": true,
+    "plin": true,
+    "tarjeta": true,
+    "efectivo": true
+  }
 }
