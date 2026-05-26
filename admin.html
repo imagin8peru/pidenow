@@ -97,8 +97,8 @@ input:checked + .slider:before { transform: translateX(24px); }
   <div class="card-title">💳 Canales de Cobro y Contacto</div>
   <div class="form-row">
     <div class="form-group">
-      <label>Número Yape / Plin</label>
-      <input type="text" id="cfg-numero-pago" class="form-control">
+      <label>Número Yape / Plin <span style="color:#6c757d; font-weight:400;">(opcional)</span></label>
+      <input type="text" id="cfg-numero-pago" class="form-control" placeholder="Déjalo vacío para no mostrar">
     </div>
     <div class="form-group">
       <label>WhatsApp Receptor Pedidos</label>
@@ -117,8 +117,18 @@ input:checked + .slider:before { transform: translateX(24px); }
     <span>🛵 Zonas de Delivery</span>
     <button class="btn btn-secondary btn-sm" onclick="agregarZona()">+ Agregar Zona</button>
   </div>
-  <p class="zona-hint">Edita el nombre y el costo de cada zona. "Recojo en Local" siempre estará disponible.</p>
+  <p class="zona-hint">Edita el nombre y el costo de cada zona de envío.</p>
   <div id="lista-zonas" class="item-list"></div>
+  <div class="switch-container" style="margin-top: 4px;">
+    <div class="switch-label">
+      <span class="switch-title">🏪 Recojo en Local</span>
+      <span class="switch-desc">El cliente puede recoger su pedido en el local (sin costo de delivery)</span>
+    </div>
+    <label class="switch">
+      <input type="checkbox" id="cfg-recojo-local">
+      <span class="slider"></span>
+    </label>
+  </div>
 </section>
 
 <!-- MÉTODOS DE PAGO -->
@@ -259,8 +269,13 @@ async function cargarDatos() {
     const deProductos = [...new Set(PRODUCTOS_LOCAL.map(p => p.categoria))];
     CATEGORIAS_LOCAL = deProductos.map(cat => ({ nombre: cat, activa: true }));
 
-    // Cargar zonas existentes del config
-    ZONAS_LOCAL = (CONFIG_LOCAL.zonas_delivery || []).map(z => ({ ...z }));
+    // Cargar zonas existentes del config (sin "Recojo en Local", se maneja por separado)
+    ZONAS_LOCAL = (CONFIG_LOCAL.zonas_delivery || [])
+      .filter(z => z.nombre !== 'Recojo en Local')
+      .map(z => ({ ...z }));
+
+    // Toggle de recojo en local
+    document.getElementById('cfg-recojo-local').checked = CONFIG_LOCAL.recojo_local !== false;
 
     // Cargar métodos de pago del config (con fallback a todos activos)
     METODOS_PAGO_LOCAL = CONFIG_LOCAL.metodos_pago || { yape: true, plin: true, tarjeta: true, efectivo: true };
@@ -290,10 +305,7 @@ function renderizarZonas() {
   const contenedor = document.getElementById('lista-zonas');
   contenedor.innerHTML = '';
 
-  // Zonas editables (todas excepto "Recojo en Local")
-  const zonasFiltradas = ZONAS_LOCAL.filter(z => z.nombre !== 'Recojo en Local');
-
-  zonasFiltradas.forEach((zona, index) => {
+  ZONAS_LOCAL.forEach((zona, index) => {
     const row = document.createElement('div');
     row.className = 'zona-row';
     row.innerHTML = `
@@ -303,52 +315,24 @@ function renderizarZonas() {
     `;
     contenedor.appendChild(row);
   });
-
-  // Recojo en Local siempre fijo al final
-  const rowFija = document.createElement('div');
-  rowFija.className = 'zona-row zona-fija';
-  rowFija.innerHTML = `
-    <input type="text" class="zona-nombre-input form-control" value="Recojo en Local" disabled style="color:#137333; font-weight:700;">
-    <input type="number" class="zona-costo-input form-control" value="0" disabled style="color:#137333; font-weight:700;">
-    <span style="font-size:0.75rem; color:#137333; font-weight:700; white-space:nowrap;">Fijo</span>
-  `;
-  contenedor.appendChild(rowFija);
 }
 
 function actualizarZona(index, campo, valor) {
-  // Mapeamos al índice real en ZONAS_LOCAL (saltando "Recojo en Local")
-  const zonasFiltradas = ZONAS_LOCAL.filter(z => z.nombre !== 'Recojo en Local');
-  const zonaReal = zonasFiltradas[index];
-  const indexReal = ZONAS_LOCAL.indexOf(zonaReal);
-  if (indexReal === -1) return;
-
   if (campo === 'nombre') {
-    ZONAS_LOCAL[indexReal].nombre = valor.trim();
+    ZONAS_LOCAL[index].nombre = valor.trim();
   } else if (campo === 'costo') {
-    ZONAS_LOCAL[indexReal].costo = parseFloat(valor) || 0;
+    ZONAS_LOCAL[index].costo = parseFloat(valor) || 0;
   }
 }
 
 function agregarZona() {
-  // Insertar antes de "Recojo en Local"
-  const indexRecojo = ZONAS_LOCAL.findIndex(z => z.nombre === 'Recojo en Local');
-  const nuevaZona = { nombre: 'Nueva Zona', costo: 0 };
-  if (indexRecojo >= 0) {
-    ZONAS_LOCAL.splice(indexRecojo, 0, nuevaZona);
-  } else {
-    ZONAS_LOCAL.push(nuevaZona);
-  }
+  ZONAS_LOCAL.push({ nombre: 'Nueva Zona', costo: 0 });
   renderizarZonas();
 }
 
 function eliminarZona(index) {
-  const zonasFiltradas = ZONAS_LOCAL.filter(z => z.nombre !== 'Recojo en Local');
-  const zonaReal = zonasFiltradas[index];
-  const indexReal = ZONAS_LOCAL.indexOf(zonaReal);
-  if (indexReal === -1) return;
-
-  if (confirm(`¿Eliminar la zona "${ZONAS_LOCAL[indexReal].nombre}"?`)) {
-    ZONAS_LOCAL.splice(indexReal, 1);
+  if (confirm(`¿Eliminar la zona "${ZONAS_LOCAL[index].nombre}"?`)) {
+    ZONAS_LOCAL.splice(index, 1);
     renderizarZonas();
   }
 }
@@ -532,16 +516,19 @@ function procesarGuardadoGlobal() {
   CONFIG_LOCAL.url_qr_pago = document.getElementById('cfg-qr-pago').value.trim();
 
   // Leer zonas actualizadas directamente de los inputs del DOM antes de guardar
-  const zonasInputs = document.querySelectorAll('#lista-zonas .zona-row:not(.zona-fija)');
+  const zonasInputs = document.querySelectorAll('#lista-zonas .zona-row');
   const zonasEditadas = [];
   zonasInputs.forEach(row => {
     const nombre = row.querySelector('.zona-nombre-input').value.trim();
     const costo = parseFloat(row.querySelector('.zona-costo-input').value) || 0;
     if (nombre) zonasEditadas.push({ nombre, costo });
   });
-  // Siempre agregar "Recojo en Local" al final
-  zonasEditadas.push({ nombre: 'Recojo en Local', costo: 0 });
+  // Agregar "Recojo en Local" al final solo si está activado
+  if (document.getElementById('cfg-recojo-local').checked) {
+    zonasEditadas.push({ nombre: 'Recojo en Local', costo: 0 });
+  }
   CONFIG_LOCAL.zonas_delivery = zonasEditadas;
+  CONFIG_LOCAL.recojo_local = document.getElementById('cfg-recojo-local').checked;
 
   // Guardar métodos de pago
   CONFIG_LOCAL.metodos_pago = { ...METODOS_PAGO_LOCAL };
