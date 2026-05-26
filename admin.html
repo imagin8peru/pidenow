@@ -1,398 +1,589 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pidenow - Panel de Administración</title>
-    <style>
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: system-ui, -apple-system, sans-serif; }
-        body { background-color: #f1f3f5; color: #212529; padding: 16px; display: flex; flex-direction: column; align-items: center; }
-        .admin-container { width: 100%; max-width: 600px; display: flex; flex-direction: column; gap: 20px; padding-bottom: 60px; }
-        
-        .admin-header { background: #1a1a1a; color: white; padding: 20px; border-radius: 16px; text-align: center; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
-        .admin-header h1 { font-size: 1.5rem; font-weight: 800; margin-bottom: 4px; }
-        .admin-header p { font-size: 0.9rem; color: #adb5bd; }
-
-        .admin-card { background: white; padding: 20px; border-radius: 16px; box-shadow: 0 4px 6px rgba(0,0,0,0.02); display: flex; flex-direction: column; gap: 14px; }
-        .card-title { font-size: 1.15rem; font-weight: 800; color: #1a1a1a; border-bottom: 2px solid #f1f3f5; padding-bottom: 8px; display: flex; justify-content: space-between; align-items: center; }
-
-        .form-group { display: flex; flex-direction: column; gap: 6px; }
-        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-        label { font-size: 0.85rem; font-weight: 700; color: #495057; }
-        .form-control { width: 100%; padding: 12px; border: 1px solid #ced4da; border-radius: 10px; font-size: 1rem; background: #f8f9fa; }
-        .form-control:focus { outline: none; border-color: #22c55e; background: white; }
-        
-        .switch-container { display: flex; align-items: center; justify-content: space-between; background: #f8f9fa; padding: 12px; border-radius: 10px; border: 1px solid #e9ecef; }
-        .switch-label { display: flex; flex-direction: column; gap: 2px; }
-        .switch-title { font-weight: 700; font-size: 0.95rem; }
-        .switch-desc { font-size: 0.8rem; color: #6c757d; }
-        
-        .switch { position: relative; display: inline-block; width: 50px; height: 26px; }
-        .switch input { opacity: 0; width: 0; height: 0; }
-        .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #ced4da; transition: .3s; border-radius: 34px; }
-        .slider:before { position: absolute; content: ""; height: 20px; width: 20px; left: 3px; bottom: 3px; background-color: white; transition: .3s; border-radius: 50%; }
-        input:checked + .slider { background-color: #22c55e; }
-        input:checked + .slider:before { transform: translateX(24px); }
-
-        .item-list { display: flex; flex-direction: column; gap: 10px; margin-top: 6px; }
-        .list-row { background: #f8f9fa; padding: 12px; border-radius: 12px; border: 1px solid #e9ecef; display: flex; align-items: center; justify-content: space-between; gap: 10px; }
-        .list-info { flex: 1; }
-        .list-name { font-weight: 700; font-size: 0.95rem; }
-        .list-sub { font-size: 0.8rem; color: #6c757d; margin-top: 2px; }
-        
-        .btn { padding: 10px 14px; border-radius: 10px; font-weight: 700; font-size: 0.9rem; cursor: pointer; border: none; text-align: center; display: flex; align-items: center; justify-content: center; gap: 6px; }
-        .btn-primary { background: #22c55e; color: white; }
-        .btn-danger { background: #ef4444; color: white; }
-        .btn-secondary { background: #e2e8f0; color: #475569; }
-        .btn-sm { padding: 6px 10px; font-size: 0.8rem; border-radius: 6px; }
-        .btn-block { width: 100%; padding: 16px; font-size: 1.1rem; border-radius: 12px; box-shadow: 0 4px 12px rgba(34,197,94,0.3); }
-
-        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 2000; justify-content: center; align-items: center; padding: 16px; }
-        .modal-content { background: white; padding: 20px; border-radius: 16px; width: 100%; max-width: 440px; display: flex; flex-direction: column; gap: 14px; }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pidenow - Panel de Administración</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; font-family: system-ui, -apple-system, sans-serif; }
+body { background-color: #f1f3f5; color: #212529; padding: 16px; display: flex; flex-direction: column; align-items: center; }
+.admin-container { width: 100%; max-width: 600px; display: flex; flex-direction: column; gap: 20px; padding-bottom: 60px; }
+.admin-header { background: #1a1a1a; color: white; padding: 20px; border-radius: 16px; text-align: center; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
+.admin-header h1 { font-size: 1.5rem; font-weight: 800; margin-bottom: 4px; }
+.admin-header p { font-size: 0.9rem; color: #adb5bd; }
+.admin-card { background: white; padding: 20px; border-radius: 16px; box-shadow: 0 4px 6px rgba(0,0,0,0.02); display: flex; flex-direction: column; gap: 14px; }
+.card-title { font-size: 1.15rem; font-weight: 800; color: #1a1a1a; border-bottom: 2px solid #f1f3f5; padding-bottom: 8px; display: flex; justify-content: space-between; align-items: center; }
+.form-group { display: flex; flex-direction: column; gap: 6px; }
+.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+label { font-size: 0.85rem; font-weight: 700; color: #495057; }
+.form-control { width: 100%; padding: 12px; border: 1px solid #ced4da; border-radius: 10px; font-size: 1rem; background: #f8f9fa; }
+.form-control:focus { outline: none; border-color: #22c55e; background: white; }
+.switch-container { display: flex; align-items: center; justify-content: space-between; background: #f8f9fa; padding: 12px; border-radius: 10px; border: 1px solid #e9ecef; }
+.switch-label { display: flex; flex-direction: column; gap: 2px; }
+.switch-title { font-weight: 700; font-size: 0.95rem; }
+.switch-desc { font-size: 0.8rem; color: #6c757d; }
+.switch { position: relative; display: inline-block; width: 50px; height: 26px; }
+.switch input { opacity: 0; width: 0; height: 0; }
+.slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #ced4da; transition: .3s; border-radius: 34px; }
+.slider:before { position: absolute; content: ""; height: 20px; width: 20px; left: 3px; bottom: 3px; background-color: white; transition: .3s; border-radius: 50%; }
+input:checked + .slider { background-color: #22c55e; }
+input:checked + .slider:before { transform: translateX(24px); }
+.item-list { display: flex; flex-direction: column; gap: 10px; margin-top: 6px; }
+.list-row { background: #f8f9fa; padding: 12px; border-radius: 12px; border: 1px solid #e9ecef; display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+.list-info { flex: 1; }
+.list-name { font-weight: 700; font-size: 0.95rem; }
+.list-sub { font-size: 0.8rem; color: #6c757d; margin-top: 2px; }
+.btn { padding: 10px 14px; border-radius: 10px; font-weight: 700; font-size: 0.9rem; cursor: pointer; border: none; text-align: center; display: flex; align-items: center; justify-content: center; gap: 6px; }
+.btn-primary { background: #22c55e; color: white; }
+.btn-danger { background: #ef4444; color: white; }
+.btn-secondary { background: #e2e8f0; color: #475569; }
+.btn-sm { padding: 6px 10px; font-size: 0.8rem; border-radius: 6px; }
+.btn-block { width: 100%; padding: 16px; font-size: 1.1rem; border-radius: 12px; box-shadow: 0 4px 12px rgba(34,197,94,0.3); }
+.modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 2000; justify-content: center; align-items: center; padding: 16px; }
+.modal-content { background: white; padding: 20px; border-radius: 16px; width: 100%; max-width: 440px; display: flex; flex-direction: column; gap: 14px; }
+/* Zonas de delivery */
+.zona-row { background: #f8f9fa; padding: 10px 14px; border-radius: 12px; border: 1px solid #e9ecef; display: flex; align-items: center; gap: 10px; }
+.zona-row.zona-fija { border-color: #d1fae5; background: #f0fdf4; }
+.zona-row input { border: 1px solid #ced4da; border-radius: 8px; padding: 7px 10px; font-size: 0.9rem; background: white; }
+.zona-row input:focus { outline: none; border-color: #22c55e; }
+.zona-nombre-input { flex: 1; }
+.zona-costo-input { width: 80px; text-align: right; }
+.zona-hint { font-size: 0.75rem; color: #6c757d; margin-top: -6px; }
+/* Métodos de pago */
+.pago-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.pago-toggle-row { background: #f8f9fa; border: 1px solid #e9ecef; border-radius: 12px; padding: 14px; display: flex; align-items: center; justify-content: space-between; gap: 10px; transition: border-color 0.2s; }
+.pago-toggle-row.activo { border-color: #22c55e; background: #f0fdf4; }
+.pago-nombre { font-weight: 700; font-size: 0.95rem; }
+.pago-estado { font-size: 0.75rem; color: #6c757d; margin-top: 2px; }
+</style>
 </head>
 <body>
+<div class="admin-container">
 
-    <div class="admin-container">
-        <header class="admin-header">
-            <h1>Panel de Control Pidenow</h1>
-            <p>Configura la identidad, anuncios y el menú en tiempo real</p>
-        </header>
+<header class="admin-header">
+  <h1>Panel de Control Pidenow</h1>
+  <p>Configura la identidad, anuncios y el menú en tiempo real</p>
+</header>
 
-        <section class="admin-card">
-            <div class="card-title">🏢 Identidad del Restaurante</div>
-            <div class="form-group">
-                <label>Nombre del Local</label>
-                <input type="text" id="cfg-nombre" class="form-control">
-            </div>
-            <div class="form-group">
-                <label>URL Logo (.png / .jpg)</label>
-                <input type="text" id="cfg-logo" class="form-control" placeholder="https://...">
-            </div>
-            
-            <div class="switch-container">
-                <div class="switch-label">
-                    <span class="switch-title">Activar Banner Anuncio</span>
-                    <span class="switch-desc">Habilita el comunicado, banner promocional o bloqueo</span>
-                </div>
-                <label class="switch">
-                    <input type="checkbox" id="cfg-banner-activo">
-                    <span class="slider"></span>
-                </label>
-            </div>
-            <div class="form-group">
-                <label>Contenido del Banner (Texto, HTML o Enlace a Imagen de Promoción)</label>
-                <textarea id="cfg-banner-texto" class="form-control" rows="3" placeholder="Escribe texto o pega el link de una imagen. Si pones 'mantenimiento' o 'cerrado', se bloqueará la web."></textarea>
-            </div>
-        </section>
-
-        <section class="admin-card">
-            <div class="card-title">💳 Canales de Cobro y Contacto</div>
-            <div class="form-row">
-                <div class="form-group">
-                    <label>Número Yape / Plin</label>
-                    <input type="text" id="cfg-numero-pago" class="form-control">
-                </div>
-                <div class="form-group">
-                    <label>WhatsApp Receptor Pedidos</label>
-                    <input type="text" id="cfg-whatsapp" class="form-control" placeholder="Ej: 51999888777">
-                </div>
-            </div>
-            <div class="form-group">
-                <label>URL Imagen QR de Pago</label>
-                <input type="text" id="cfg-qr-pago" class="form-control">
-            </div>
-        </section>
-
-        <section class="admin-card">
-            <div class="card-title">
-                <span>📁 Categorías del Menú</span>
-                <button class="btn btn-secondary btn-sm" onclick="abrirModalCategoria()">+ Nueva Categoría</button>
-            </div>
-            <div id="lista-categorias" class="item-list"></div>
-        </section>
-
-        <section class="admin-card">
-            <div class="card-title">
-                <span>🍔 Productos / Platos</span>
-                <button class="btn btn-secondary btn-sm" onclick="abrirModalProducto()">+ Nuevo Producto</button>
-            </div>
-            <div id="lista-productos" class="item-list"></div>
-        </section>
-
-        <button class="btn btn-primary btn-block" onclick="procesarGuardadoGlobal()">
-            💾 Guardar y Sincronizar Cambios
-        </button>
+<!-- IDENTIDAD -->
+<section class="admin-card">
+  <div class="card-title">🏢 Identidad del Restaurante</div>
+  <div class="form-group">
+    <label>Nombre del Local</label>
+    <input type="text" id="cfg-nombre" class="form-control">
+  </div>
+  <div class="form-group">
+    <label>URL Logo (.png / .jpg)</label>
+    <input type="text" id="cfg-logo" class="form-control" placeholder="https://...">
+  </div>
+  <div class="switch-container">
+    <div class="switch-label">
+      <span class="switch-title">Activar Banner Anuncio</span>
+      <span class="switch-desc">Habilita el comunicado, banner promocional o bloqueo</span>
     </div>
+    <label class="switch">
+      <input type="checkbox" id="cfg-banner-activo">
+      <span class="slider"></span>
+    </label>
+  </div>
+  <div class="form-group">
+    <label>Contenido del Banner (Texto, HTML o Enlace a Imagen de Promoción)</label>
+    <textarea id="cfg-banner-texto" class="form-control" rows="3" placeholder="Escribe texto o pega el link de una imagen. Si pones 'mantenimiento' o 'cerrado', se bloqueará la web."></textarea>
+  </div>
+</section>
 
-    <div id="modal-categoria" class="modal">
-        <div class="modal-content">
-            <h3 id="modal-cat-titulo">Agregar Categoría</h3>
-            <input type="hidden" id="form-cat-index">
-            <div class="form-group">
-                <label>Nombre de la Categoría</label>
-                <input type="text" id="form-cat-nombre" class="form-control" placeholder="Ej: Hamburguesas, Bebidas">
-            </div>
-            <div class="form-row" style="margin-top: 10px;">
-                <button class="btn btn-secondary" onclick="cerrarModal('modal-categoria')">Cancelar</button>
-                <button class="btn btn-primary" onclick="guardarCategoria()">Guardar</button>
-            </div>
-        </div>
+<!-- COBRO Y CONTACTO -->
+<section class="admin-card">
+  <div class="card-title">💳 Canales de Cobro y Contacto</div>
+  <div class="form-row">
+    <div class="form-group">
+      <label>Número Yape / Plin</label>
+      <input type="text" id="cfg-numero-pago" class="form-control">
     </div>
-
-    <div id="modal-producto" class="modal">
-        <div class="modal-content">
-            <h3 id="modal-prod-titulo">Agregar Producto</h3>
-            <input type="hidden" id="form-prod-id">
-            <div class="form-group">
-                <label>Nombre del Plato</label>
-                <input type="text" id="form-prod-nombre" class="form-control">
-            </div>
-            <div class="form-group">
-                <label>Descripción corta</label>
-                <input type="text" id="form-prod-desc" class="form-control">
-            </div>
-            <div class="form-row">
-                <div class="form-group">
-                    <label>Precio (S/)</label>
-                    <input type="number" id="form-prod-precio" class="form-control" step="0.10">
-                </div>
-                <div class="form-group">
-                    <label>Categoría</label>
-                    <select id="form-prod-categoria" class="form-control"></select>
-                </div>
-            </div>
-            <div class="form-row" style="margin-top: 10px;">
-                <button class="btn btn-secondary" onclick="cerrarModal('modal-producto')">Cancelar</button>
-                <button class="btn btn-primary" onclick="guardarProducto()">Guardar</button>
-            </div>
-        </div>
+    <div class="form-group">
+      <label>WhatsApp Receptor Pedidos</label>
+      <input type="text" id="cfg-whatsapp" class="form-control" placeholder="Ej: 51999888777">
     </div>
+  </div>
+  <div class="form-group">
+    <label>URL Imagen QR de Pago</label>
+    <input type="text" id="cfg-qr-pago" class="form-control">
+  </div>
+</section>
 
-    <script>
-        let CONFIG_LOCAL = {};
-        let PRODUCTOS_LOCAL = [];
-        let CATEGORIAS_LOCAL = [];
+<!-- ZONAS DE DELIVERY -->
+<section class="admin-card">
+  <div class="card-title">
+    <span>🛵 Zonas de Delivery</span>
+    <button class="btn btn-secondary btn-sm" onclick="agregarZona()">+ Agregar Zona</button>
+  </div>
+  <p class="zona-hint">Edita el nombre y el costo de cada zona. "Recojo en Local" siempre estará disponible.</p>
+  <div id="lista-zonas" class="item-list"></div>
+</section>
 
-        async function cargarDatos() {
-            try {
-                const timestamp = Date.now();
-                const [resConfig, resProductos] = await Promise.all([
-                    fetch(`https://raw.githubusercontent.com/imagin8peru/pidenow/main/config.json?v=${timestamp}`),
-                    fetch(`https://raw.githubusercontent.com/imagin8peru/pidenow/main/productos.json?v=${timestamp}`)
-                ]);
-                CONFIG_LOCAL = await resConfig.json();
-                PRODUCTOS_LOCAL = await resProductos.json();
+<!-- MÉTODOS DE PAGO -->
+<section class="admin-card">
+  <div class="card-title">💵 Métodos de Pago</div>
+  <p class="zona-hint">Activa o desactiva los métodos de pago que acepta el negocio.</p>
+  <div class="pago-grid" id="grid-metodos-pago">
+    <div class="pago-toggle-row" id="pago-row-yape">
+      <div>
+        <div class="pago-nombre">Yape</div>
+        <div class="pago-estado" id="pago-estado-yape">Activo</div>
+      </div>
+      <label class="switch">
+        <input type="checkbox" id="pago-yape" onchange="actualizarEstadoPago('yape')">
+        <span class="slider"></span>
+      </label>
+    </div>
+    <div class="pago-toggle-row" id="pago-row-plin">
+      <div>
+        <div class="pago-nombre">Plin</div>
+        <div class="pago-estado" id="pago-estado-plin">Activo</div>
+      </div>
+      <label class="switch">
+        <input type="checkbox" id="pago-plin" onchange="actualizarEstadoPago('plin')">
+        <span class="slider"></span>
+      </label>
+    </div>
+    <div class="pago-toggle-row" id="pago-row-tarjeta">
+      <div>
+        <div class="pago-nombre">Tarjeta</div>
+        <div class="pago-estado" id="pago-estado-tarjeta">Activo</div>
+      </div>
+      <label class="switch">
+        <input type="checkbox" id="pago-tarjeta" onchange="actualizarEstadoPago('tarjeta')">
+        <span class="slider"></span>
+      </label>
+    </div>
+    <div class="pago-toggle-row" id="pago-row-efectivo">
+      <div>
+        <div class="pago-nombre">Efectivo</div>
+        <div class="pago-estado" id="pago-estado-efectivo">Activo</div>
+      </div>
+      <label class="switch">
+        <input type="checkbox" id="pago-efectivo" onchange="actualizarEstadoPago('efectivo')">
+        <span class="slider"></span>
+      </label>
+    </div>
+  </div>
+</section>
 
-                const deProductos = [...new Set(PRODUCTOS_LOCAL.map(p => p.categoria))];
-                CATEGORIAS_LOCAL = deProductos.map(cat => ({ nombre: cat, activa: true }));
+<!-- CATEGORÍAS -->
+<section class="admin-card">
+  <div class="card-title">
+    <span>📁 Categorías del Menú</span>
+    <button class="btn btn-secondary btn-sm" onclick="abrirModalCategoria()">+ Nueva Categoría</button>
+  </div>
+  <div id="lista-categorias" class="item-list"></div>
+</section>
 
-                inyectarConfiguracion();
-                renderizarListasAdmin();
-            } catch (e) {
-                alert("Error al cargar los archivos de configuración para el panel.");
-            }
-        }
+<!-- PRODUCTOS -->
+<section class="admin-card">
+  <div class="card-title">
+    <span>🍔 Productos / Platos</span>
+    <button class="btn btn-secondary btn-sm" onclick="abrirModalProducto()">+ Nuevo Producto</button>
+  </div>
+  <div id="lista-productos" class="item-list"></div>
+</section>
 
-        function inyectarConfiguracion() {
-            document.getElementById('cfg-nombre').value = CONFIG_LOCAL.nombre_restaurante || '';
-            document.getElementById('cfg-logo').value = CONFIG_LOCAL.url_logo || '';
-            document.getElementById('cfg-banner-activo').checked = CONFIG_LOCAL.banner_activo || false;
-            document.getElementById('cfg-banner-texto').value = CONFIG_LOCAL.banner_texto || '';
-            document.getElementById('cfg-numero-pago').value = CONFIG_LOCAL.numero_pago_yape_plin || '';
-            document.getElementById('cfg-whatsapp').value = CONFIG_LOCAL.whatsapp_receptor || '';
-            document.getElementById('cfg-qr-pago').value = CONFIG_LOCAL.url_qr_pago || '';
-        }
+<button class="btn btn-primary btn-block" onclick="procesarGuardadoGlobal()">
+  💾 Guardar y Sincronizar Cambios
+</button>
 
-        function renderizarListasAdmin() {
-            const contenedorCat = document.getElementById('lista-categorias');
-            contenedorCat.innerHTML = '';
-            
-            const selectCatModal = document.getElementById('form-prod-categoria');
-            selectCatModal.innerHTML = '';
+</div>
 
-            CATEGORIAS_LOCAL.forEach((cat, index) => {
-                const row = document.createElement('div');
-                row.className = 'list-row';
-                row.style.opacity = cat.activa ? '1' : '0.5';
-                row.innerHTML = `
-                    <div class="list-info">
-                        <div class="list-name">${cat.nombre}</div>
-                        <div class="list-sub">${cat.activa ? '🟢 Visible en la carta' : '🔴 Desactivada (Oculta todo)'}</div>
-                    </div>
-                    <div style="display:flex; gap:6px;">
-                        <button class="btn btn-secondary btn-sm" onclick="conmutarCategoria(${index})">${cat.activa ? 'Desactivar' : 'Activar'}</button>
-                        <button class="btn btn-danger btn-sm" onclick="eliminarCategoria(${index})">🗑️</button>
-                    </div>
-                `;
-                contenedorCat.appendChild(row);
+<!-- MODAL CATEGORÍA -->
+<div id="modal-categoria" class="modal">
+  <div class="modal-content">
+    <h3 id="modal-cat-titulo">Agregar Categoría</h3>
+    <input type="hidden" id="form-cat-index">
+    <div class="form-group">
+      <label>Nombre de la Categoría</label>
+      <input type="text" id="form-cat-nombre" class="form-control" placeholder="Ej: Hamburguesas, Bebidas">
+    </div>
+    <div class="form-row" style="margin-top: 10px;">
+      <button class="btn btn-secondary" onclick="cerrarModal('modal-categoria')">Cancelar</button>
+      <button class="btn btn-primary" onclick="guardarCategoria()">Guardar</button>
+    </div>
+  </div>
+</div>
 
-                if (cat.activa) {
-                    const opt = document.createElement('option');
-                    opt.value = cat.nombre;
-                    opt.innerText = cat.nombre;
-                    selectCatModal.appendChild(opt);
-                }
-            });
+<!-- MODAL PRODUCTO -->
+<div id="modal-producto" class="modal">
+  <div class="modal-content">
+    <h3 id="modal-prod-titulo">Agregar Producto</h3>
+    <input type="hidden" id="form-prod-id">
+    <div class="form-group">
+      <label>Nombre del Plato</label>
+      <input type="text" id="form-prod-nombre" class="form-control">
+    </div>
+    <div class="form-group">
+      <label>Descripción corta</label>
+      <input type="text" id="form-prod-desc" class="form-control">
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label>Precio (S/)</label>
+        <input type="number" id="form-prod-precio" class="form-control" step="0.10">
+      </div>
+      <div class="form-group">
+        <label>Categoría</label>
+        <select id="form-prod-categoria" class="form-control"></select>
+      </div>
+    </div>
+    <div class="form-row" style="margin-top: 10px;">
+      <button class="btn btn-secondary" onclick="cerrarModal('modal-producto')">Cancelar</button>
+      <button class="btn btn-primary" onclick="guardarProducto()">Guardar</button>
+    </div>
+  </div>
+</div>
 
-            const contenedorProd = document.getElementById('lista-productos');
-            contenedorProd.innerHTML = '';
+<script>
+let CONFIG_LOCAL = {};
+let PRODUCTOS_LOCAL = [];
+let CATEGORIAS_LOCAL = [];
+let ZONAS_LOCAL = [];
+let METODOS_PAGO_LOCAL = { yape: true, plin: true, tarjeta: true, efectivo: true };
 
-            PRODUCTOS_LOCAL.forEach(p => {
-                const row = document.createElement('div');
-                row.className = 'list-row';
-                row.style.opacity = p.activo !== false ? '1' : '0.5';
-                row.innerHTML = `
-                    <div class="list-info">
-                        <div class="list-name">${p.nombre} <span style="color:#22c55e; margin-left:4px;">S/ ${p.precio.toFixed(2)}</span></div>
-                        <div class="list-sub">Categoría: ${p.categoria} | ${p.activo !== false ? '🟢 Activo' : '🔴 Sin Stock / Oculto'}</div>
-                    </div>
-                    <div style="display:flex; gap:6px;">
-                        <button class="btn btn-secondary btn-sm" onclick="conmutarProducto('${p.id}')">${p.activo !== false ? 'Ocultar' : 'Mostrar'}</button>
-                        <button class="btn btn-secondary btn-sm" onclick="editarProductoVisual('${p.id}')">✏️</button>
-                        <button class="btn btn-danger btn-sm" onclick="eliminarProducto('${p.id}')">🗑️</button>
-                    </div>
-                `;
-                contenedorProd.appendChild(row);
-            });
-        }
+async function cargarDatos() {
+  try {
+    const timestamp = Date.now();
+    const [resConfig, resProductos] = await Promise.all([
+      fetch(`https://raw.githubusercontent.com/imagin8peru/pidenow/main/config.json?v=${timestamp}`),
+      fetch(`https://raw.githubusercontent.com/imagin8peru/pidenow/main/productos.json?v=${timestamp}`)
+    ]);
+    CONFIG_LOCAL = await resConfig.json();
+    PRODUCTOS_LOCAL = await resProductos.json();
 
-        function abrirModalCategoria() {
-            document.getElementById('form-cat-index').value = '';
-            document.getElementById('form-cat-nombre').value = '';
-            document.getElementById('modal-cat-titulo').innerText = "Agregar Categoría";
-            document.getElementById('modal-categoria').style.display = 'flex';
-        }
+    const deProductos = [...new Set(PRODUCTOS_LOCAL.map(p => p.categoria))];
+    CATEGORIAS_LOCAL = deProductos.map(cat => ({ nombre: cat, activa: true }));
 
-        function abrirModalProducto() {
-            document.getElementById('form-prod-id').value = '';
-            document.getElementById('form-prod-nombre').value = '';
-            document.getElementById('form-prod-desc').value = '';
-            document.getElementById('form-prod-precio').value = '';
-            document.getElementById('modal-prod-titulo').innerText = "Agregar Producto";
-            document.getElementById('modal-producto').style.display = 'flex';
-        }
+    // Cargar zonas existentes del config
+    ZONAS_LOCAL = (CONFIG_LOCAL.zonas_delivery || []).map(z => ({ ...z }));
 
-        function cerrarModal(id) { document.getElementById(id).style.display = 'none'; }
+    // Cargar métodos de pago del config (con fallback a todos activos)
+    METODOS_PAGO_LOCAL = CONFIG_LOCAL.metodos_pago || { yape: true, plin: true, tarjeta: true, efectivo: true };
 
-        function guardarCategoria() {
-            const nombre = document.getElementById('form-cat-nombre').value.trim();
-            if(!nombre) return alert("Escribe el nombre de la categoría.");
-            CATEGORIAS_LOCAL.push({ nombre: nombre, activa: true });
-            cerrarModal('modal-categoria');
-            renderizarListasAdmin();
-        }
+    inyectarConfiguracion();
+    renderizarZonas();
+    renderizarMetodosPago();
+    renderizarListasAdmin();
+  } catch (e) {
+    alert("Error al cargar los archivos de configuración para el panel.");
+  }
+}
 
-        function conmutarCategoria(index) {
-            CATEGORIAS_LOCAL[index].activa = !CATEGORIAS_LOCAL[index].activa;
-            const catNombre = CATEGORIAS_LOCAL[index].nombre;
-            PRODUCTOS_LOCAL.forEach(p => {
-                if(p.categoria === catNombre) p.activo = CATEGORIAS_LOCAL[index].activa;
-            });
-            renderizarListasAdmin();
-        }
+function inyectarConfiguracion() {
+  document.getElementById('cfg-nombre').value = CONFIG_LOCAL.nombre_restaurante || '';
+  document.getElementById('cfg-logo').value = CONFIG_LOCAL.url_logo || '';
+  document.getElementById('cfg-banner-activo').checked = CONFIG_LOCAL.banner_activo || false;
+  document.getElementById('cfg-banner-texto').value = CONFIG_LOCAL.banner_texto || '';
+  document.getElementById('cfg-numero-pago').value = CONFIG_LOCAL.numero_pago_yape_plin || '';
+  document.getElementById('cfg-whatsapp').value = CONFIG_LOCAL.whatsapp_receptor || '';
+  document.getElementById('cfg-qr-pago').value = CONFIG_LOCAL.url_qr_pago || '';
+}
 
-        function eliminarCategoria(index) {
-            if(confirm("¿Seguro que deseas eliminar esta categoría? Los productos asociados se mantendrán pero deberás reasignarlos.")) {
-                CATEGORIAS_LOCAL.splice(index, 1);
-                renderizarListasAdmin();
-            }
-        }
+// ── ZONAS DE DELIVERY ──────────────────────────────────────────
 
-        function guardarProducto() {
-            const idExistente = document.getElementById('form-prod-id').value;
-            const nombre = document.getElementById('form-prod-nombre').value.trim();
-            const desc = document.getElementById('form-prod-desc').value.trim();
-            const precio = parseFloat(document.getElementById('form-prod-precio').value);
-            const categoria = document.getElementById('form-prod-categoria').value;
+function renderizarZonas() {
+  const contenedor = document.getElementById('lista-zonas');
+  contenedor.innerHTML = '';
 
-            if(!nombre || isNaN(precio) || !categoria) return alert("Completa los campos obligatorios.");
+  // Zonas editables (todas excepto "Recojo en Local")
+  const zonasFiltradas = ZONAS_LOCAL.filter(z => z.nombre !== 'Recojo en Local');
 
-            if(idExistente) {
-                const p = PRODUCTOS_LOCAL.find(prod => prod.id == idExistente);
-                if(p) { p.nombre = nombre; p.desc = desc; p.precio = precio; p.categoria = categoria; }
-            } else {
-                const nuevoId = PRODUCTOS_LOCAL.length ? Math.max(...PRODUCTOS_LOCAL.map(p => parseInt(p.id) || 0)) + 1 : 1;
-                PRODUCTOS_LOCAL.push({ id: String(nuevoId), nombre: nombre, desc: desc, precio: precio, categoria: categoria, activo: true });
-            }
-            cerrarModal('modal-producto');
-            renderizarListasAdmin();
-        }
+  zonasFiltradas.forEach((zona, index) => {
+    const row = document.createElement('div');
+    row.className = 'zona-row';
+    row.innerHTML = `
+      <input type="text" class="zona-nombre-input form-control" value="${zona.nombre}" placeholder="Nombre de zona" onchange="actualizarZona(${index}, 'nombre', this.value)">
+      <input type="number" class="zona-costo-input form-control" value="${zona.costo}" min="0" step="0.50" placeholder="S/" onchange="actualizarZona(${index}, 'costo', this.value)">
+      <button class="btn btn-danger btn-sm" onclick="eliminarZona(${index})">🗑️</button>
+    `;
+    contenedor.appendChild(row);
+  });
 
-        function editarProductoVisual(id) {
-            const p = PRODUCTOS_LOCAL.find(prod => prod.id == id);
-            if(!p) return;
-            document.getElementById('form-prod-id').value = p.id;
-            document.getElementById('form-prod-nombre').value = p.nombre;
-            document.getElementById('form-prod-desc').value = p.desc;
-            document.getElementById('form-prod-precio').value = p.precio;
-            document.getElementById('form-prod-categoria').value = p.categoria;
-            document.getElementById('modal-prod-titulo').innerText = "Editar Producto";
-            document.getElementById('modal-producto').style.display = 'flex';
-        }
+  // Recojo en Local siempre fijo al final
+  const rowFija = document.createElement('div');
+  rowFija.className = 'zona-row zona-fija';
+  rowFija.innerHTML = `
+    <input type="text" class="zona-nombre-input form-control" value="Recojo en Local" disabled style="color:#137333; font-weight:700;">
+    <input type="number" class="zona-costo-input form-control" value="0" disabled style="color:#137333; font-weight:700;">
+    <span style="font-size:0.75rem; color:#137333; font-weight:700; white-space:nowrap;">Fijo</span>
+  `;
+  contenedor.appendChild(rowFija);
+}
 
-        function conmutarProducto(id) {
-            const p = PRODUCTOS_LOCAL.find(prod => prod.id == id);
-            if(p) { p.activo = p.activo !== false ? false : true; }
-            renderizarListasAdmin();
-        }
+function actualizarZona(index, campo, valor) {
+  // Mapeamos al índice real en ZONAS_LOCAL (saltando "Recojo en Local")
+  const zonasFiltradas = ZONAS_LOCAL.filter(z => z.nombre !== 'Recojo en Local');
+  const zonaReal = zonasFiltradas[index];
+  const indexReal = ZONAS_LOCAL.indexOf(zonaReal);
+  if (indexReal === -1) return;
 
-        function eliminarProducto(id) {
-            if(confirm("¿Deseas eliminar este plato por completo de la base de datos?")) {
-                PRODUCTOS_LOCAL = PRODUCTOS_LOCAL.filter(p => p.id != id);
-                renderizarListasAdmin();
-            }
-        }
+  if (campo === 'nombre') {
+    ZONAS_LOCAL[indexReal].nombre = valor.trim();
+  } else if (campo === 'costo') {
+    ZONAS_LOCAL[indexReal].costo = parseFloat(valor) || 0;
+  }
+}
 
-        function procesarGuardadoGlobal() {
-            CONFIG_LOCAL.nombre_restaurante = document.getElementById('cfg-nombre').value.trim();
-            CONFIG_LOCAL.url_logo = document.getElementById('cfg-logo').value.trim();
-            CONFIG_LOCAL.banner_activo = document.getElementById('cfg-banner-activo').checked;
-            CONFIG_LOCAL.banner_texto = document.getElementById('cfg-banner-texto').value.trim();
-            CONFIG_LOCAL.numero_pago_yape_plin = document.getElementById('cfg-numero-pago').value.trim();
-            CONFIG_LOCAL.whatsapp_receptor = document.getElementById('cfg-whatsapp').value.trim();
-            CONFIG_LOCAL.url_qr_pago = document.getElementById('cfg-qr-pago').value.trim();
+function agregarZona() {
+  // Insertar antes de "Recojo en Local"
+  const indexRecojo = ZONAS_LOCAL.findIndex(z => z.nombre === 'Recojo en Local');
+  const nuevaZona = { nombre: 'Nueva Zona', costo: 0 };
+  if (indexRecojo >= 0) {
+    ZONAS_LOCAL.splice(indexRecojo, 0, nuevaZona);
+  } else {
+    ZONAS_LOCAL.push(nuevaZona);
+  }
+  renderizarZonas();
+}
 
-            const nombresCatValidas = CATEGORIAS_LOCAL.map(c => c.nombre);
-            const productosFinales = PRODUCTOS_LOCAL.filter(p => nombresCatValidas.includes(p.categoria));
+function eliminarZona(index) {
+  const zonasFiltradas = ZONAS_LOCAL.filter(z => z.nombre !== 'Recojo en Local');
+  const zonaReal = zonasFiltradas[index];
+  const indexReal = ZONAS_LOCAL.indexOf(zonaReal);
+  if (indexReal === -1) return;
 
-            const paqueteSincronizacion = {
-                tipo_accion: "ACTUALIZAR_CONFIGURACION",
-                config: CONFIG_LOCAL,
-                productos: productosFinales
-            };
+  if (confirm(`¿Eliminar la zona "${ZONAS_LOCAL[indexReal].nombre}"?`)) {
+    ZONAS_LOCAL.splice(indexReal, 1);
+    renderizarZonas();
+  }
+}
 
-            const botonSubmit = document.querySelector('.btn-block');
-            const textoOriginal = botonSubmit.innerText;
-            botonSubmit.innerText = "⏳ Sincronizando con el servidor...";
-            botonSubmit.disabled = true;
+// ── MÉTODOS DE PAGO ──────────────────────────────────────────
 
-            const urlAdminN8N = "https://n8n.imagin8.net.pe/webhook/admin-pidenow-update";
+function renderizarMetodosPago() {
+  ['yape', 'plin', 'tarjeta', 'efectivo'].forEach(metodo => {
+    const activo = METODOS_PAGO_LOCAL[metodo] !== false;
+    document.getElementById(`pago-${metodo}`).checked = activo;
+    actualizarEstadoPago(metodo);
+  });
+}
 
-            fetch(urlAdminN8N, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(paqueteSincronizacion)
-            })
-            .then(response => {
-                if(response.ok) {
-                    alert("¡Éxito! Los cambios fueron enviados. El servidor se está actualizando.");
-                    setTimeout(() => cargarDatos(), 8000);
-                } else {
-                    alert("El panel procesó la data pero n8n devolvió un error. Revisa el flujo.");
-                }
-            })
-            .catch(error => {
-                console.error("Error en la petición de guardado:", error);
-                alert("Error de conexión. No se pudo conectar con el webhook de n8n.");
-            })
-            .finally(() => {
-                botonSubmit.innerText = textoOriginal;
-                botonSubmit.disabled = false;
-            });
-        }
+function actualizarEstadoPago(metodo) {
+  const checkbox = document.getElementById(`pago-${metodo}`);
+  const row = document.getElementById(`pago-row-${metodo}`);
+  const estado = document.getElementById(`pago-estado-${metodo}`);
+  const activo = checkbox.checked;
 
-        cargarDatos();
-    </script>
+  METODOS_PAGO_LOCAL[metodo] = activo;
+
+  if (activo) {
+    row.classList.add('activo');
+    estado.innerText = '✅ Activo';
+    estado.style.color = '#137333';
+  } else {
+    row.classList.remove('activo');
+    estado.innerText = '🔴 Desactivado';
+    estado.style.color = '#dc2626';
+  }
+}
+
+// ── CATEGORÍAS Y PRODUCTOS (sin cambios) ──────────────────────
+
+function renderizarListasAdmin() {
+  const contenedorCat = document.getElementById('lista-categorias');
+  contenedorCat.innerHTML = '';
+  const selectCatModal = document.getElementById('form-prod-categoria');
+  selectCatModal.innerHTML = '';
+
+  CATEGORIAS_LOCAL.forEach((cat, index) => {
+    const row = document.createElement('div');
+    row.className = 'list-row';
+    row.style.opacity = cat.activa ? '1' : '0.5';
+    row.innerHTML = `
+      <div class="list-info">
+        <div class="list-name">${cat.nombre}</div>
+        <div class="list-sub">${cat.activa ? '🟢 Visible en la carta' : '🔴 Desactivada (Oculta todo)'}</div>
+      </div>
+      <div style="display:flex; gap:6px;">
+        <button class="btn btn-secondary btn-sm" onclick="conmutarCategoria(${index})">${cat.activa ? 'Desactivar' : 'Activar'}</button>
+        <button class="btn btn-danger btn-sm" onclick="eliminarCategoria(${index})">🗑️</button>
+      </div>
+    `;
+    contenedorCat.appendChild(row);
+
+    if (cat.activa) {
+      const opt = document.createElement('option');
+      opt.value = cat.nombre;
+      opt.innerText = cat.nombre;
+      selectCatModal.appendChild(opt);
+    }
+  });
+
+  const contenedorProd = document.getElementById('lista-productos');
+  contenedorProd.innerHTML = '';
+  PRODUCTOS_LOCAL.forEach(p => {
+    const row = document.createElement('div');
+    row.className = 'list-row';
+    row.style.opacity = p.activo !== false ? '1' : '0.5';
+    row.innerHTML = `
+      <div class="list-info">
+        <div class="list-name">${p.nombre} <span style="color:#22c55e; margin-left:4px;">S/ ${p.precio.toFixed(2)}</span></div>
+        <div class="list-sub">Categoría: ${p.categoria} | ${p.activo !== false ? '🟢 Activo' : '🔴 Sin Stock / Oculto'}</div>
+      </div>
+      <div style="display:flex; gap:6px;">
+        <button class="btn btn-secondary btn-sm" onclick="conmutarProducto('${p.id}')">${p.activo !== false ? 'Ocultar' : 'Mostrar'}</button>
+        <button class="btn btn-secondary btn-sm" onclick="editarProductoVisual('${p.id}')">✏️</button>
+        <button class="btn btn-danger btn-sm" onclick="eliminarProducto('${p.id}')">🗑️</button>
+      </div>
+    `;
+    contenedorProd.appendChild(row);
+  });
+}
+
+function abrirModalCategoria() {
+  document.getElementById('form-cat-index').value = '';
+  document.getElementById('form-cat-nombre').value = '';
+  document.getElementById('modal-cat-titulo').innerText = "Agregar Categoría";
+  document.getElementById('modal-categoria').style.display = 'flex';
+}
+
+function abrirModalProducto() {
+  document.getElementById('form-prod-id').value = '';
+  document.getElementById('form-prod-nombre').value = '';
+  document.getElementById('form-prod-desc').value = '';
+  document.getElementById('form-prod-precio').value = '';
+  document.getElementById('modal-prod-titulo').innerText = "Agregar Producto";
+  document.getElementById('modal-producto').style.display = 'flex';
+}
+
+function cerrarModal(id) { document.getElementById(id).style.display = 'none'; }
+
+function guardarCategoria() {
+  const nombre = document.getElementById('form-cat-nombre').value.trim();
+  if (!nombre) return alert("Escribe el nombre de la categoría.");
+  CATEGORIAS_LOCAL.push({ nombre: nombre, activa: true });
+  cerrarModal('modal-categoria');
+  renderizarListasAdmin();
+}
+
+function conmutarCategoria(index) {
+  CATEGORIAS_LOCAL[index].activa = !CATEGORIAS_LOCAL[index].activa;
+  const catNombre = CATEGORIAS_LOCAL[index].nombre;
+  PRODUCTOS_LOCAL.forEach(p => {
+    if (p.categoria === catNombre) p.activo = CATEGORIAS_LOCAL[index].activa;
+  });
+  renderizarListasAdmin();
+}
+
+function eliminarCategoria(index) {
+  if (confirm("¿Seguro que deseas eliminar esta categoría? Los productos asociados se mantendrán pero deberás reasignarlos.")) {
+    CATEGORIAS_LOCAL.splice(index, 1);
+    renderizarListasAdmin();
+  }
+}
+
+function guardarProducto() {
+  const idExistente = document.getElementById('form-prod-id').value;
+  const nombre = document.getElementById('form-prod-nombre').value.trim();
+  const desc = document.getElementById('form-prod-desc').value.trim();
+  const precio = parseFloat(document.getElementById('form-prod-precio').value);
+  const categoria = document.getElementById('form-prod-categoria').value;
+  if (!nombre || isNaN(precio) || !categoria) return alert("Completa los campos obligatorios.");
+  if (idExistente) {
+    const p = PRODUCTOS_LOCAL.find(prod => prod.id == idExistente);
+    if (p) { p.nombre = nombre; p.desc = desc; p.precio = precio; p.categoria = categoria; }
+  } else {
+    const nuevoId = PRODUCTOS_LOCAL.length ? Math.max(...PRODUCTOS_LOCAL.map(p => parseInt(p.id) || 0)) + 1 : 1;
+    PRODUCTOS_LOCAL.push({ id: String(nuevoId), nombre, desc, precio, categoria, activo: true });
+  }
+  cerrarModal('modal-producto');
+  renderizarListasAdmin();
+}
+
+function editarProductoVisual(id) {
+  const p = PRODUCTOS_LOCAL.find(prod => prod.id == id);
+  if (!p) return;
+  document.getElementById('form-prod-id').value = p.id;
+  document.getElementById('form-prod-nombre').value = p.nombre;
+  document.getElementById('form-prod-desc').value = p.desc;
+  document.getElementById('form-prod-precio').value = p.precio;
+  document.getElementById('form-prod-categoria').value = p.categoria;
+  document.getElementById('modal-prod-titulo').innerText = "Editar Producto";
+  document.getElementById('modal-producto').style.display = 'flex';
+}
+
+function conmutarProducto(id) {
+  const p = PRODUCTOS_LOCAL.find(prod => prod.id == id);
+  if (p) { p.activo = p.activo !== false ? false : true; }
+  renderizarListasAdmin();
+}
+
+function eliminarProducto(id) {
+  if (confirm("¿Deseas eliminar este plato por completo de la base de datos?")) {
+    PRODUCTOS_LOCAL = PRODUCTOS_LOCAL.filter(p => p.id != id);
+    renderizarListasAdmin();
+  }
+}
+
+// ── GUARDADO GLOBAL ──────────────────────────────────────────
+
+function procesarGuardadoGlobal() {
+  CONFIG_LOCAL.nombre_restaurante = document.getElementById('cfg-nombre').value.trim();
+  CONFIG_LOCAL.url_logo = document.getElementById('cfg-logo').value.trim();
+  CONFIG_LOCAL.banner_activo = document.getElementById('cfg-banner-activo').checked;
+  CONFIG_LOCAL.banner_texto = document.getElementById('cfg-banner-texto').value.trim();
+  CONFIG_LOCAL.numero_pago_yape_plin = document.getElementById('cfg-numero-pago').value.trim();
+  CONFIG_LOCAL.whatsapp_receptor = document.getElementById('cfg-whatsapp').value.trim();
+  CONFIG_LOCAL.url_qr_pago = document.getElementById('cfg-qr-pago').value.trim();
+
+  // Leer zonas actualizadas directamente de los inputs del DOM antes de guardar
+  const zonasInputs = document.querySelectorAll('#lista-zonas .zona-row:not(.zona-fija)');
+  const zonasEditadas = [];
+  zonasInputs.forEach(row => {
+    const nombre = row.querySelector('.zona-nombre-input').value.trim();
+    const costo = parseFloat(row.querySelector('.zona-costo-input').value) || 0;
+    if (nombre) zonasEditadas.push({ nombre, costo });
+  });
+  // Siempre agregar "Recojo en Local" al final
+  zonasEditadas.push({ nombre: 'Recojo en Local', costo: 0 });
+  CONFIG_LOCAL.zonas_delivery = zonasEditadas;
+
+  // Guardar métodos de pago
+  CONFIG_LOCAL.metodos_pago = { ...METODOS_PAGO_LOCAL };
+
+  const nombresCatValidas = CATEGORIAS_LOCAL.map(c => c.nombre);
+  const productosFinales = PRODUCTOS_LOCAL.filter(p => nombresCatValidas.includes(p.categoria));
+
+  const paqueteSincronizacion = {
+    tipo_accion: "ACTUALIZAR_CONFIGURACION",
+    config: CONFIG_LOCAL,
+    productos: productosFinales
+  };
+
+  const botonSubmit = document.querySelector('.btn-block');
+  const textoOriginal = botonSubmit.innerText;
+  botonSubmit.innerText = "⏳ Sincronizando con el servidor...";
+  botonSubmit.disabled = true;
+
+  fetch("https://n8n.imagin8.net.pe/webhook/admin-pidenow-update", {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(paqueteSincronizacion)
+  })
+  .then(response => {
+    if (response.ok) {
+      alert("¡Éxito! Los cambios fueron enviados. El servidor se está actualizando.");
+      setTimeout(() => cargarDatos(), 8000);
+    } else {
+      alert("El panel procesó la data pero n8n devolvió un error. Revisa el flujo.");
+    }
+  })
+  .catch(error => {
+    console.error("Error en la petición de guardado:", error);
+    alert("Error de conexión. No se pudo conectar con el webhook de n8n.");
+  })
+  .finally(() => {
+    botonSubmit.innerText = textoOriginal;
+    botonSubmit.disabled = false;
+  });
+}
+
+cargarDatos();
+</script>
 </body>
 </html>
