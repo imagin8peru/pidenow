@@ -7,7 +7,7 @@
   "url_qr_pago": "https://imagin8peru.github.io/pulcinella-app/imagenes/qr-izipay.jpg",
   "zonas_delivery": [
     {
-      "nombre": "San Miguel (Estudio)",
+      "nombre": "San Miguel",
       "costo": 3
     },
     {
