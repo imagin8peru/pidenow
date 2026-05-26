@@ -28,5 +28,21 @@
     "desc": "Heladita, como debe ser.",
     "precio": 8,
     "activo": true
+  },
+  {
+    "id": "5",
+    "nombre": "Taco Chacarero",
+    "desc": "4 carnes y de todo",
+    "precio": 37.5,
+    "categoria": "Tacos 🌮",
+    "activo": true
+  },
+  {
+    "id": "6",
+    "nombre": "Pepsi 600 ml",
+    "desc": "",
+    "precio": 12,
+    "categoria": "Bebidas 🥤",
+    "activo": true
   }
 ]
