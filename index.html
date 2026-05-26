@@ -416,9 +416,10 @@ function prepararEnvio() {
   enlaceWhatsAppGlobal = `https://api.whatsapp.com/send?phone=${CONFIG.whatsapp_receptor}&text=${encodeURIComponent(textoWA)}`;
 
   if (metodoPagoSeleccionado === 'yape' || metodoPagoSeleccionado === 'plin') {
+    const tieneNumero = CONFIG.numero_pago_yape_plin && CONFIG.numero_pago_yape_plin.trim() !== '';
     document.getElementById('modal-titulo').innerText = "¡Casi listo! 🍕";
     document.getElementById('modal-descripcion').innerText = "Realiza una de las siguientes opciones para proceder con tu orden en WhatsApp:";
-    document.getElementById('modal-copy-box').style.display = 'flex';
+    document.getElementById('modal-copy-box').style.display = tieneNumero ? 'flex' : 'none';
     document.getElementById('modal-qr-box').style.display = 'flex';
     document.getElementById('btn-entendido').innerText = "Entendido";
   } else {
