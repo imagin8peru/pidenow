@@ -179,7 +179,7 @@
     <script>
         let CONFIG_LOCAL = {};
         let PRODUCTOS_LOCAL = [];
-        let CATEGORIAS_LOCAL = []; // Derivado dinámico con estados de activación
+        let CATEGORIAS_LOCAL = [];
 
         async function cargarDatos() {
             try {
@@ -190,7 +190,6 @@
                 CONFIG_LOCAL = await resConfig.json();
                 PRODUCTOS_LOCAL = await resProductos.json();
 
-                // Extraer categorías únicas e inicializarlas como activas si no existen
                 const deProductos = [...new Set(PRODUCTOS_LOCAL.map(p => p.categoria))];
                 CATEGORIAS_LOCAL = deProductos.map(cat => ({ nombre: cat, activa: true }));
 
@@ -212,11 +211,9 @@
         }
 
         function renderizarListasAdmin() {
-            // Renderizar Categorías
             const contenedorCat = document.getElementById('lista-categorias');
             contenedorCat.innerHTML = '';
             
-            // Actualizar select de categorías en el modal de productos simultáneamente
             const selectCatModal = document.getElementById('form-prod-categoria');
             selectCatModal.innerHTML = '';
 
@@ -244,7 +241,6 @@
                 }
             });
 
-            // Renderizar Productos
             const contenedorProd = document.getElementById('lista-productos');
             contenedorProd.innerHTML = '';
 
@@ -267,7 +263,6 @@
             });
         }
 
-        // CONTROL DE MODALES
         function abrirModalCategoria() {
             document.getElementById('form-cat-index').value = '';
             document.getElementById('form-cat-nombre').value = '';
@@ -286,7 +281,6 @@
 
         function cerrarModal(id) { document.getElementById(id).style.display = 'none'; }
 
-        // LÓGICA DE CATEGORÍAS
         function guardarCategoria() {
             const nombre = document.getElementById('form-cat-nombre').value.trim();
             if(!nombre) return alert("Escribe el nombre de la categoría.");
@@ -298,13 +292,10 @@
 
         function conmutarCategoria(index) {
             CATEGORIAS_LOCAL[index].activa = !CATEGORIAS_LOCAL[index].activa;
-            
-            // Si se desactiva una categoría, ocultamos de stock todos sus productos correspondientes
             const catNombre = CATEGORIAS_LOCAL[index].nombre;
             PRODUCTOS_LOCAL.forEach(p => {
                 if(p.categoria === catNombre) p.activo = CATEGORIAS_LOCAL[index].activa;
             });
-            
             renderizarListasAdmin();
         }
 
@@ -315,7 +306,6 @@
             }
         }
 
-        // LÓGICA DE PRODUCTOS
         function guardarProducto() {
             const idExistente = document.getElementById('form-prod-id').value;
             const nombre = document.getElementById('form-prod-nombre').value.trim();
@@ -326,11 +316,9 @@
             if(!nombre || isNaN(precio) || !categoria) return alert("Completa los campos obligatorios.");
 
             if(idExistente) {
-                // Modificar existente
                 const p = PRODUCTOS_LOCAL.find(prod => prod.id == idExistente);
                 if(p) { p.nombre = nombre; p.desc = desc; p.precio = precio; p.categoria = categoria; }
             } else {
-                // Crear nuevo ID único secuencial
                 const nuevoId = PRODUCTOS_LOCAL.length ? Math.max(...PRODUCTOS_LOCAL.map(p => parseInt(p.id) || 0)) + 1 : 1;
                 PRODUCTOS_LOCAL.push({ id: String(nuevoId), nombre: nombre, desc: desc, precio: precio, categoria: categoria, activo: true });
             }
@@ -363,9 +351,7 @@
             }
         }
 
-        // SALIDA GLOBAL COMPILADA
         function procesarGuardadoGlobal() {
-            // 1. Sincronizar los datos del formulario al objeto CONFIG_LOCAL
             CONFIG_LOCAL.nombre_restaurante = document.getElementById('cfg-nombre').value.trim();
             CONFIG_LOCAL.url_logo = document.getElementById('cfg-logo').value.trim();
             CONFIG_LOCAL.banner_activo = document.getElementById('cfg-banner-activo').checked;
@@ -374,25 +360,20 @@
             CONFIG_LOCAL.whatsapp_receptor = document.getElementById('cfg-whatsapp').value.trim();
             CONFIG_LOCAL.url_qr_pago = document.getElementById('cfg-qr-pago').value.trim();
 
-            // 2. Filtrar productos de categorías eliminadas
             const nombresCatValidas = CATEGORIAS_LOCAL.map(c => c.nombre);
             const productosFinales = PRODUCTOS_LOCAL.filter(p => nombresCatValidas.includes(p.categoria));
 
-            // 3. Preparar el paquete único de actualización para el backend
             const paqueteSincronizacion = {
                 tipo_accion: "ACTUALIZAR_CONFIGURACION",
                 config: CONFIG_LOCAL,
                 productos: productosFinales
             };
 
-            // Cambiar el estado del botón visualmente para avisar al usuario
             const botonSubmit = document.querySelector('.btn-block');
             const textoOriginal = botonSubmit.innerText;
             botonSubmit.innerText = "⏳ Sincronizando con el servidor...";
             botonSubmit.disabled = true;
 
-            // 4. Disparar la data al webhook de administración en n8n
-            // (Usamos un endpoint dedicado en tu n8n para procesar archivos del sistema)
             const urlAdminN8N = "https://n8n.imagin8.net.pe/webhook/admin-pidenow-update"; 
 
             fetch(urlAdminN8N, {
@@ -416,3 +397,9 @@
                 botonSubmit.disabled = false;
             });
         }
+
+        // Ejecutar carga inicial al abrir el panel
+        cargarDatos();
+    </script>
+</body>
+</html>
