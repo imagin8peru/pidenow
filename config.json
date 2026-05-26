@@ -1,1 +1,10 @@
-{{ $json.config_string }}
+{
+  "nombre_restaurante": "Pidenow Burger",
+  "url_logo": "https://pidenow.imagin8.net.pe/logo.png",
+  "banner_activo": false,
+  "banner_texto": "¡Bienvenidos a Pidenow!",
+  "numero_pago_yape_plin": "999888777",
+  "whatsapp_receptor": "51999888777",
+  "url_qr_pago": "",
+  "version": 1779778445918
+}
