@@ -4,7 +4,7 @@
     "categoria": "Pizzas 🍕",
     "nombre": "Pizza Americana",
     "desc": "Salsa de tomate, muzzarella y jamón inglés.",
-    "precio": 89.5
+    "precio": 1000
   },
   {
     "id": 2,
@@ -25,6 +25,7 @@
     "categoria": "Bebidas 🥤",
     "nombre": "Inca Kola 1 Litro",
     "desc": "Heladita, como debe ser.",
-    "precio": 8
+    "precio": 8,
+    "activo": false
   }
 ]
