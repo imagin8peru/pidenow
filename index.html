@@ -221,11 +221,9 @@
         }
 
         function aplicarConfiguracion() {
-            // 1. Nombre del local
             document.getElementById('app-nombre-restaurante').innerText = CONFIG.nombre_restaurante;
             document.title = `${CONFIG.nombre_restaurante} - Pidenow`;
             
-            // 2. Lógica Inteligente de Control de Banners y Estados
             const appContainer = document.querySelector('.app-container');
             const maintenanceContainer = document.getElementById('maintenance-container');
             const banner = document.getElementById('app-banner');
@@ -234,7 +232,6 @@
             if (CONFIG.banner_activo && CONFIG.banner_texto) {
                 const textoLimpio = CONFIG.banner_texto.toLowerCase();
                 
-                // MODO MANTENIMIENTO / CERRADO (Bloqueo total)
                 if (textoLimpio.includes("mantenimiento") || textoLimpio.includes("cerrado")) {
                     appContainer.style.display = 'none';
                     maintenanceContainer.style.display = 'block';
@@ -242,7 +239,6 @@
                     return; 
                 }
                 
-                // MODO PROMOCIÓN (Si contiene link de imagen renderiza el banner visual)
                 if (textoLimpio.includes(".jpg") || textoLimpio.includes(".png") || textoLimpio.includes(".webp") || textoLimpio.includes("http")) {
                     maintenanceContainer.style.display = 'none';
                     appContainer.style.display = 'flex';
@@ -252,7 +248,6 @@
                     banner.style.padding = '0';
                     banner.style.border = 'none';
                 } else {
-                    // MODO COMUNICADO (Texto tradicional)
                     maintenanceContainer.style.display = 'none';
                     appContainer.style.display = 'flex';
                     banner.innerHTML = CONFIG.banner_texto;
@@ -261,16 +256,13 @@
                     banner.style.borderLeft = '5px solid #ffc107';
                 }
             } else {
-                // Sin anuncios operativos
                 maintenanceContainer.style.display = 'none';
                 appContainer.style.display = 'flex';
                 banner.style.display = 'none';
             }
             
-            // 3. Número de cobro en el modal
             document.getElementById('number-to-copy').innerText = CONFIG.numero_pago_yape_plin;
             
-            // 4. Inyectar zonas de delivery dinámicas
             const selectZona = document.getElementById('form-zona');
             selectZona.innerHTML = ''; 
             CONFIG.zonas_delivery.forEach(z => {
@@ -413,7 +405,7 @@
                 textoWA += `🏠 *Dirección:* ${direccion}\n`;
                 if(referencia) textoWA += `🔍 *Ref:* ${referencia}\n`;
             }
-            if(notes) textoWA += `📝 *Notas:* ${notas}\n`;
+            if(notas) textoWA += `📝 *Notas:* ${notas}\n`;
             textoWA += `\n🧾 *DETALLE DEL PEDIDO:*\n`;
 
             for (const id in memoriaCarrito) {
