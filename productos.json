@@ -2,14 +2,14 @@
   {
     "id": 1,
     "categoria": "Pizzas 🍕",
-    "nombre": "Pizza Americana NY",
+    "nombre": "Pizza Americana NYORKER",
     "desc": "Salsa de tomate, muzzarella y jamón inglés.",
     "precio": 75
   },
   {
     "id": 2,
     "categoria": "Pizzas 🍕",
-    "nombre": "Pizza Pepperoni NY",
+    "nombre": "Pizza Pepperoni NYORKER",
     "desc": "Salsa de tomate, muzzarella y harto pepperoni americano.",
     "precio": 85,
     "activo": true
