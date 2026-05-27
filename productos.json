@@ -27,7 +27,7 @@
     "nombre": "Inca Kola 1 Litro",
     "desc": "Heladita, como debe ser.",
     "precio": 8,
-    "activo": false
+    "activo": true
   },
   {
     "id": "5",
