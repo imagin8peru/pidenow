@@ -70,7 +70,6 @@ input:checked + .slider:before { transform: translateX(22px); }
 .category-content { display: none; background: #ffffff; }
 .category-accordion.is-open .category-content { display: block; }
 
-/* REAJUSTE DE TABLA DE PRODUCTOS CON IMÁGENES INTEGRADAS */
 .product-row { display: flex; align-items: center; justify-content: space-between; padding: 14px 16px; border-bottom: 1px solid #e2e8f0; transition: all 0.2s; gap: 12px; }
 .product-row:last-child { border-bottom: none; }
 .product-row.is-hidden { opacity: 0.4; background-color: #f8fafc; }
@@ -93,7 +92,6 @@ input:checked + .slider:before { transform: translateX(22px); }
 .badge-matriz { background-color: #dcfce7; color: #15803d; }
 .badge-constructor { background-color: #dbeafe; color: #1d4ed8; }
 
-/* COMPONENTES PARA INTERFAZ DE CONFIRMACIÓN AUXILIAR CLOUDINARY */
 .cloudinary-approval-box { display: none; background: #f0fdf4; border: 1px dashed #22c55e; padding: 12px; border-radius: 10px; align-items: center; justify-content: space-between; gap: 10px; margin-top: 8px; }
 .approval-preview-thumb { width: 45px; height: 45px; border-radius: 6px; object-fit: cover; border: 1px solid #bbf7d0; }
 </style>
@@ -124,7 +122,6 @@ input:checked + .slider:before { transform: translateX(22px); }
       <input type="text" id="cfg-logo" class="form-control" placeholder="https://...">
       <button type="button" class="btn btn-secondary" style="white-space: nowrap;" onclick="abrirSubidaCloudinary('cfg-logo')">📷 Subir</button>
     </div>
-    <!-- Cajas espejo de aprobación intermedia -->
     <div id="approval-box-cfg-logo" class="cloudinary-approval-box">
       <div style="display: flex; align-items: center; gap: 8px; min-width: 0; flex: 1;">
         <img id="approval-img-cfg-logo" class="approval-preview-thumb" src="">
@@ -168,7 +165,7 @@ input:checked + .slider:before { transform: translateX(22px); }
   
   <div class="form-group">
     <label>Contenido del Banner (Texto, HTML o Enlace a Imagen de Promoción)</label>
-    <textarea id="cfg-banner-texto" class="form-control" rows="3" placeholder="Escribe texto o pega el link de una imagen. Si pones 'mantenimiento' o 'cerrado', se bloqueará la web."></textarea>
+    <textarea id="cfg-banner-texto" class="form-control" rows="3" placeholder="Escribe texto o pega el link de una imagen. Si pones 'mantenimiento' o 'cerrado', se bloqueo la web."></textarea>
   </div>
 </section>
 
@@ -280,7 +277,8 @@ input:checked + .slider:before { transform: translateX(22px); }
 
 <div id="modal-categoria" class="modal">
   <div class="modal-content">
-    <h3>Agregar Categoría</h3>
+    <h3 id="modal-cat-titulo">Agregar Categoría</h3>
+    <input type="hidden" id="form-cat-index">
     <div class="form-group">
       <label>Nombre de la Categoría</label>
       <input type="text" id="form-cat-nombre" class="form-control" placeholder="Ej: Hamburguesas, Bebidas">
@@ -396,9 +394,7 @@ let CATEGORIAS_LOCAL = [];
 let ZONAS_LOCAL = [];
 let METODOS_PAGO_LOCAL = { yape: true, plin: true, tarjeta: true, efectivo: true };
 
-// Memoria global temporal para guardar las URLs de imágenes en espera de aprobación
 let urlTemporalCloudinary = {};
-
 let acordeonesAbiertos = {};
 
 const MAPA_MODULOS = {
@@ -448,7 +444,6 @@ function inyectarConfiguracion() {
   document.getElementById('cfg-qr-pago').value = CONFIG_LOCAL.url_qr_pago || '';
 }
 
-// Fase 1: Abre el widget pero guarda el resultado de manera aislada en memoria sin pisar el input
 function abrirSubidaCloudinary(idInputObjetivo) {
   cloudinary.openUploadWidget({
     cloudName: 'dtwjcqjkg', 
@@ -458,10 +453,8 @@ function abrirSubidaCloudinary(idInputObjetivo) {
     clientAllowedFormats: ['png', 'jpg', 'jpeg', 'webp']
   }, (error, result) => {
     if (!error && result && result.event === "success") {
-      // Almacenamos la URL temporalmente en nuestro mapeo global
       urlTemporalCloudinary[idInputObjetivo] = result.info.secure_url;
       
-      // Renderizamos la previsualización e interfaz interactiva intermedia de aprobación
       const approvalBox = document.getElementById("approval-box-" + idInputObjetivo);
       const approvalImg = document.getElementById("approval-img-" + idInputObjetivo);
       
@@ -475,7 +468,6 @@ function abrirSubidaCloudinary(idInputObjetivo) {
   });
 }
 
-// Fase 2A: Si el usuario aprueba, se escribe la propiedad en el input original y se cierra el banner
 function aceptarSubidaCloudinary(idInputObjetivo) {
   if (urlTemporalCloudinary[idInputObjetivo]) {
     document.getElementById(idInputObjetivo).value = urlTemporalCloudinary[idInputObjetivo];
@@ -486,7 +478,6 @@ function aceptarSubidaCloudinary(idInputObjetivo) {
   alert("Imagen aceptada en el formulario.");
 }
 
-// Fase 2B: Si el usuario aborta o cancela, se limpia la cola temporal sin alterar la data vieja
 function cancelarSubidaCloudinary(idInputObjetivo) {
   delete urlTemporalCloudinary[idInputObjetivo];
   const approvalBox = document.getElementById("approval-box-" + idInputObjetivo);
@@ -625,6 +616,7 @@ function renderizarListasAdmin() {
   const selectCatModal = document.getElementById('form-prod-categoria');
   selectCatModal.innerHTML = '';
 
+  // INTERFAZ DE CATEGORÍAS CON EL BOTÓN DE EDITAR INTEGRADOR
   CATEGORIAS_LOCAL.forEach((cat, index) => {
     const row = document.createElement('div');
     row.className = 'list-row';
@@ -636,6 +628,7 @@ function renderizarListasAdmin() {
       </div>
       <div style="display:flex; gap:6px;">
         <button class="btn btn-secondary btn-sm" onclick="conmutarCategoria(${index})">${cat.activa ? 'Desactivar' : 'Activar'}</button>
+        <button class="btn btn-secondary btn-sm" onclick="editarCategoriaVisual(${index})">✏️</button>
         <button class="btn btn-danger btn-sm" onclick="eliminarCategoria(${index})">🗑️</button>
       </div>
     `;
@@ -702,7 +695,6 @@ function renderizarListasAdmin() {
         infoPrecioStr = "Desde S/ " + minP.toFixed(2);
       }
 
-      // INTEGRACIÓN DE LA FOTO REAL DE CADA PLATO EN LA LISTA DEL PANEL
       let renderMiniaturaHTML = `<div class="admin-thumb-container"><span style="font-size:11px; color:#94a3b8;">🖼️</span></div>`;
       if (p.img && p.img.trim() !== '') {
         renderMiniaturaHTML = `
@@ -758,7 +750,19 @@ function alternarAcordeon(nombreCategoria) {
 }
 
 function abrirModalCategoria() {
+  document.getElementById('form-cat-index').value = '';
   document.getElementById('form-cat-nombre').value = '';
+  document.getElementById('modal-cat-titulo').innerText = "Agregar Categoría";
+  document.getElementById('modal-categoria').style.display = 'flex';
+}
+
+// NUEVA FUNCIÓN DE MEMORIA UX PARA MONTAR LA EDICIÓN DE LA CARPETA CATEGORÍA
+function editarCategoriaVisual(index) {
+  const cat = CATEGORIAS_LOCAL[index];
+  if (!cat) return;
+  document.getElementById('form-cat-index').value = index;
+  document.getElementById('form-cat-nombre').value = cat.nombre;
+  document.getElementById('modal-cat-titulo').innerText = "Editar Categoría";
   document.getElementById('modal-categoria').style.display = 'flex';
 }
 
@@ -773,7 +777,6 @@ function abrirModalProducto() {
   document.getElementById('form-var2-precio').value = '';
   document.getElementById('form-prod-ingredientes').value = 'Jamón, Pepperoni, Champiñones, Piña, Tocino, Aceitunas, Cebolla, Pimiento';
   
-  // Ocultamos los banners espejo de Cloudinary que hayan quedado activos de sesiones previas
   document.querySelectorAll('.cloudinary-approval-box').forEach(el => el.style.display = 'none');
   
   document.getElementById('modal-prod-titulo').innerText = "Agregar Producto";
@@ -783,10 +786,29 @@ function abrirModalProducto() {
 
 function cerrarModal(id) { document.getElementById(id).style.display = 'none'; }
 
+// RE-DIRECCIONAMIENTO EN CASCADA HORIZONTAL DE LA PROPIEDAD CATEGORIA
 function guardarCategoria() {
-  const nombre = document.getElementById('form-cat-nombre').value.trim();
-  if (!nombre) return alert("Escribe el nombre de la categoría.");
-  CATEGORIAS_LOCAL.push({ nombre: nombre, activa: true });
+  const indexExistente = document.getElementById('form-cat-index').value;
+  const nombreNuevo = document.getElementById('form-cat-nombre').value.trim();
+  if (!nombreNuevo) return alert("Escribe el nombre de la categoría.");
+  
+  if (indexExistente !== '') {
+    const idx = parseInt(indexExistente);
+    const nombreViejo = CATEGORIAS_LOCAL[idx].nombre;
+    
+    // Regla de Protección Interna: Cambia en masa la propiedad de los productos amarrados
+    PRODUCTOS_LOCAL.forEach(p => {
+      if (p.categoria === nombreViejo) {
+        p.categoria = nombreNuevo;
+      }
+    });
+    
+    CATEGORIAS_LOCAL[idx].nombre = nombreNuevo;
+    alert("Categoría actualizada. Los productos se mantuvieron vinculados.");
+  } else {
+    CATEGORIAS_LOCAL.push({ nombre: nombreNuevo, activa: true });
+  }
+  
   cerrarModal('modal-categoria');
   renderizarListasAdmin();
 }
@@ -801,7 +823,7 @@ function conmutarCategoria(index) {
 }
 
 function eliminarCategoria(index) {
-  if (confirm("¿Seguro que deseas eliminar esta categoría?")) {
+  if (confirm("🚨 CUIDADO: Si eliminas esta categoría, todos sus productos se perderán al guardar los cambios en el servidor. ¿Deseas continuar?")) {
     CATEGORIAS_LOCAL.splice(index, 1);
     renderizarListasAdmin();
   }
