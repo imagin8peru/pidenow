@@ -94,6 +94,13 @@ body { background-color: #f8f9fa; color: #212529; padding: 16px; padding-bottom:
   height: 100%; 
   object-fit: cover; 
 }
+.product-details-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex: 1;
+  min-width: 0;
+}
 .product-info { 
   flex: 1; 
   min-width: 0; 
@@ -487,11 +494,13 @@ function renderizarMenu() {
 
       htmlProductos += `
         <div class="product-card">
-          ${htmlFoto}
-          <div class="product-info">
-            <div class="product-name">${p.nombre}</div>
-            <div class="product-desc">${p.desc || ''}</div>
-            <div class="product-price">${textoPrecio}</div>
+          <div class="product-details-wrapper" style="display: flex; align-items: center; gap: 14px; flex: 1; min-width: 0;">
+            ${htmlFoto}
+            <div class="product-info">
+              <div class="product-name">${p.nombre}</div>
+              <div class="product-desc">${p.desc || ''}</div>
+              <div class="product-price">${textoPrecio}</div>
+            </div>
           </div>
           <div class="product-controls" id="controles-wrapper-${p.id}">
             ${htmlControlesBotones}
