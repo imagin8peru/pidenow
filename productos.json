@@ -64,8 +64,14 @@
     "desc": "Selecciona el tamaño ideal. Todos los sabores de esta categoría cuestan igual.",
     "tipo_modulo": "matriz_precios",
     "variaciones": [
-      { "nombre": "Grande", "precio": 27.00 },
-      { "nombre": "Familiar", "precio": 37.00 }
+      {
+        "nombre": "Grande",
+        "precio": 27
+      },
+      {
+        "nombre": "Familiar",
+        "precio": 37
+      }
     ],
     "activo": true,
     "img": ""
@@ -77,11 +83,26 @@
     "desc": "Elige el tamaño y combina tus ingredientes favoritos.",
     "tipo_modulo": "constructor_libre",
     "variaciones": [
-      { "nombre": "Grande", "precio": 25.00, "limite_ingredientes": 4 },
-      { "nombre": "Familiar", "precio": 35.00, "limite_ingredientes": 5 }
+      {
+        "nombre": "Grande",
+        "precio": 25,
+        "limite_ingredientes": 4
+      },
+      {
+        "nombre": "Familiar",
+        "precio": 35,
+        "limite_ingredientes": 5
+      }
     ],
     "ingredientes_disponibles": [
-      "Jamón", "Pepperoni", "Champiñones", "Piña", "Tocino", "Aceitunas", "Cebolla", "Pimiento"
+      "Jamón",
+      "Pepperoni",
+      "Champiñones",
+      "Piña",
+      "Tocino",
+      "Aceitunas",
+      "Cebolla",
+      "Pimiento"
     ],
     "activo": true,
     "img": ""
