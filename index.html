@@ -82,6 +82,11 @@ body { background-color: #f8f9fa; color: #212529; padding: 16px; padding-bottom:
 .qr-placeholder { background: #f1f3f5; width: 160px; height: 160px; display: flex; justify-content: center; align-items: center; font-weight: 700; border: 2px dashed #ced4da; border-radius: 12px; color: #6c757d; font-size: 0.9rem; }
 .btn-download-qr { background: #007bff; color: white; border: none; padding: 8px 14px; border-radius: 8px; font-size: 0.85rem; font-weight: 700; cursor: pointer; width: 160px; }
 .btn-action-direct { background: #6c757d; color: white; border: none; padding: 14px; border-radius: 12px; font-weight: 700; font-size: 1rem; cursor: pointer; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
+
+/* AUXILIARES PARA EL SISTEMA MODAL MULTI-MÓDULO */
+.modal-radio-row, .modal-check-row { display: flex; align-items: center; gap: 12px; padding: 12px; background: #f8f9fa; border: 1px solid #e9ecef; border-radius: 10px; cursor: pointer; user-select: none; text-align: left; }
+.modal-radio-row input, .modal-check-row input { width: 20px; height: 20px; accent-color: #22c55e; margin: 0; }
+.modal-row-title { font-weight: 700; font-size: 0.95rem; color: #212529; }
 </style>
 </head>
 <body>
@@ -179,6 +184,24 @@ body { background-color: #f8f9fa; color: #212529; padding: 16px; padding-bottom:
   </div>
 </div>
 
+<div id="saas-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 50000; justify-content: center; align-items: flex-end;">
+  <div style="background: white; width: 100%; max-width: 480px; border-radius: 20px 20px 0 0; padding: 20px; display: flex; flex-direction: column; max-height: 85vh; box-shadow: 0 -4px 20px rgba(0,0,0,0.15);">
+    <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #e9ecef; padding-bottom: 12px; margin-bottom: 16px;">
+      <div>
+        <h3 id="saas-modal-titulo" style="font-size: 1.25rem; font-weight: 800; color: #1a1a1a;"></h3>
+        <p id="saas-modal-subtitulo" style="font-size: 0.85rem; color: #6c757d; margin-top: 2px;"></p>
+      </div>
+      <button onclick="cerrarSaasModal()" style="background: none; border: none; font-size: 2rem; color: #adb5bd; cursor: pointer; padding: 0 5px; line-height: 1;">&times;</button>
+    </div>
+    <div id="saas-modal-cuerpo" style="flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 14px; padding-right: 4px; margin-bottom: 16px;"></div>
+    <div>
+      <button id="saas-modal-btn-accion" onclick="procesarSeleccionSaasModal()" style="background-color: #22c55e; color: white; border: none; width: 100%; padding: 15px; border-radius: 12px; font-size: 1rem; font-weight: 700; cursor: pointer; box-shadow: 0 4px 12px rgba(34,197,94,0.2);">
+        Agregar al Carrito
+      </button>
+    </div>
+  </div>
+</div>
+
 <script>
 let CONFIG = {};
 let PRODUCTOS = [];
@@ -186,6 +209,7 @@ let memoriaCarrito = {};
 let metodoPagoSeleccionado = "";
 let montoTotalGlobal = 0;
 let enlaceWhatsAppGlobal = "";
+let saasItemTemporal = null; // Almacenamiento temporal para selecciones en modal
 
 async function inicializarAplicacion() {
   try {
@@ -291,27 +315,58 @@ function renderizarMenu() {
     const item = document.createElement('div');
     item.className = 'accordion-item';
     let htmlProductos = '';
+    
     productosActivos.filter(p => p.categoria === cat).forEach(p => {
+      let textoPrecio = '';
+      let htmlControlesBotones = '';
+
+      // Discriminador inteligente según el tipo_modulo de la arquitectura del SaaS
+      if (!p.tipo_modulo || p.tipo_modulo === 'simple') {
+        textoPrecio = `S/ ${p.precio.toFixed(2)}`;
+        htmlControlesBotones = `
+          <button class="control-btn btn-menos" data-id="${p.id}">−</button>
+          <span id="qty-${p.id}" class="qty-num">0</span>
+          <button class="control-btn btn-mas" data-id="${p.id}">+</button>
+        `;
+      } else {
+        const precios = p.variaciones.map(v => v.precio);
+        const minPrecio = Math.min(...precios);
+        textoPrecio = `Desde S/ ${minPrecio.toFixed(2)}`;
+        
+        if (p.tipo_modulo === 'matriz_precios') {
+          htmlControlesBotones = `<button class="cart-btn" onclick="abrirMatrizPrecios('${p.id}')" style="font-size:0.85rem; padding:8px 12px;">Elegir 🍕</button>`;
+        } else if (p.tipo_modulo === 'constructor_libre') {
+          htmlControlesBotones = `<button class="cart-btn" onclick="abrirConstructorLibre('${p.id}')" style="font-size:0.85rem; padding:8px 12px; background-color:#007bff;">Armar 🛠️</button>`;
+        }
+      }
+
       htmlProductos += `
         <div class="product-card">
           <div class="product-info">
             <div class="product-name">${p.nombre}</div>
-            <div class="product-desc">${p.desc}</div>
-            <div class="product-price">S/ ${p.precio.toFixed(2)}</div>
+            <div class="product-desc">${p.desc || ''}</div>
+            <div class="product-price">${textoPrecio}</div>
           </div>
-          <div class="product-controls">
-            <button class="control-btn btn-menos" data-id="${p.id}">−</button>
-            <span id="qty-${p.id}" class="qty-num">0</span>
-            <button class="control-btn btn-mas" data-id="${p.id}">+</button>
+          <div class="product-controls" id="controles-wrapper-${p.id}">
+            ${htmlControlesBotones}
           </div>
         </div>
       `;
     });
+    
     item.innerHTML = `<div class="accordion-header"><span>${cat}</span><span class="accordion-icon">▼</span></div><div class="accordion-content">${htmlProductos}</div>`;
     container.appendChild(item);
   });
 
   configurarEventos();
+  
+  // Sincronizar cantidades de ítems simples en el renderizado
+  for (const id in memoriaCarrito) {
+    const elQty = document.getElementById(`qty-${id}`);
+    if (elQty && typeof memoriaCarrito[id] === 'number') {
+      elQty.innerText = memoriaCarrito[id];
+    }
+  }
 }
 
 function configurarEventos() {
@@ -330,12 +385,173 @@ function configurarEventos() {
 }
 
 function modificarCarrito(productoId, cambio) {
-  if (CONFIG.local_abierto === false) return; // bloqueado si está cerrado
+  if (CONFIG.local_abierto === false) return;
   let cantActual = memoriaCarrito[productoId] || 0;
   let nuevaCant = cantActual + cambio;
   if (nuevaCant < 0) nuevaCant = 0;
   if (nuevaCant === 0) { delete memoriaCarrito[productoId]; } else { memoriaCarrito[productoId] = nuevaCant; }
-  document.getElementById(`qty-${productoId}`).innerText = nuevaCant;
+  
+  const elQty = document.getElementById(`qty-${productoId}`);
+  if (elQty) elQty.innerText = nuevaCant;
+  
+  calcularPrecios();
+}
+
+/* LÓGICA DE CONTROL DEL INTERFAZ MODAL INTERACTIVA (SPA) */
+function abrirMatrizPrecios(productoId) {
+  const producto = PRODUCTOS.find(p => p.id == productoId);
+  if (!producto) return;
+
+  saasItemTemporal = {
+    id: producto.id,
+    nombreBase: producto.nombre,
+    tipo_modulo: 'matriz_precios',
+    seleccionado: null
+  };
+
+  document.getElementById('saas-modal-titulo').innerText = producto.nombre;
+  document.getElementById('saas-modal-subtitulo').innerText = "Selecciona el tamaño ideal para tu orden:";
+  
+  let html = '';
+  producto.variaciones.forEach((v, index) => {
+    html += `
+      <label class="modal-radio-row">
+        <input type="radio" name="saas-matriz-radio" value="${index}" onchange="saasItemTemporal.seleccionado = { nombre: '${v.nombre}', precio: ${v.precio} }">
+        <div class="modal-row-title">${v.nombre} — S/ ${v.precio.toFixed(2)}</div>
+      </label>
+    `;
+  });
+
+  document.getElementById('saas-modal-cuerpo').innerHTML = html;
+  document.getElementById('saas-modal').style.display = 'flex';
+}
+
+function abrirConstructorLibre(productoId) {
+  const producto = PRODUCTOS.find(p => p.id == productoId);
+  if (!producto) return;
+
+  const varInicial = producto.variaciones[0];
+
+  saasItemTemporal = {
+    id: producto.id,
+    nombreBase: producto.nombre,
+    tipo_modulo: 'constructor_libre',
+    variacionNombre: varInicial.nombre,
+    precio: varInicial.precio,
+    limite: varInicial.limite_ingredientes,
+    ingredientesDisponibles: producto.ingredientes_disponibles,
+    seleccionados: []
+  };
+
+  renderizarCuerpoConstructor();
+  document.getElementById('saas-modal').style.display = 'flex';
+}
+
+function renderizarCuerpoConstructor() {
+  const producto = PRODUCTOS.find(p => p.id == saasItemTemporal.id);
+  
+  document.getElementById('saas-modal-titulo').innerText = saasItemTemporal.nombreBase;
+  document.getElementById('saas-modal-subtitulo').innerText = `Formato: ${saasItemTemporal.variacionNombre} (Hasta ${saasItemTemporal.limite} ingredientes)`;
+
+  let html = '';
+
+  // Selector dinámico de tamaño superior
+  html += `<div style="background:#f1f3f5; padding:10px; border-radius:12px; display:flex; gap:10px; margin-bottom:10px;">`;
+  producto.variaciones.forEach(v => {
+    const activo = saasItemTemporal.variacionNombre === v.nombre ? 'checked' : '';
+    html += `
+      <label style="flex:1; text-align:center; font-weight:700; font-size:0.9rem; cursor:pointer;">
+        <input type="radio" name="saas-size-toggle" value="${v.nombre}" ${activo} onchange="cambiarTamañoConstructor('${v.nombre}', ${v.precio}, ${v.limite_ingredientes})">
+        ${v.nombre}
+      </label>
+    `;
+  });
+  html += `</div>`;
+
+  // Listado checkboxes de los ingredientes
+  producto.ingredientes_disponibles.forEach(ing => {
+    const marcado = saasItemTemporal.seleccionados.includes(ing) ? 'checked' : '';
+    html += `
+      <label class="modal-check-row">
+        <input type="checkbox" class="chk-saas-ingrediente" value="${ing}" ${marcado} onchange="validarLimiteCheckboxes(this)">
+        <div class="modal-row-title">${ing}</div>
+      </label>
+    `;
+  });
+
+  document.getElementById('saas-modal-cuerpo').innerHTML = html;
+  validarLimiteCheckboxes();
+}
+
+function cambiarTamañoConstructor(nombre, precio, limite) {
+  saasItemTemporal.variacionNombre = nombre;
+  saasItemTemporal.precio = precio;
+  saasItemTemporal.limite = limite;
+  
+  if (saasItemTemporal.seleccionados.length > limite) {
+    saasItemTemporal.seleccionados = [];
+  }
+  renderizarCuerpoConstructor();
+}
+
+function validarLimiteCheckboxes() {
+  const checks = document.querySelectorAll('.chk-saas-ingrediente');
+  const marcados = document.querySelectorAll('.chk-saas-ingrediente:checked');
+  
+  saasItemTemporal.seleccionados = Array.from(marcados).map(c => c.value);
+
+  if (marcados.length >= saasItemTemporal.limite) {
+    checks.forEach(c => { if (!c.checked) c.disabled = true; });
+  } else {
+    checks.forEach(c => { c.disabled = false; });
+  }
+}
+
+function cerrarSaasModal() {
+  document.getElementById('saas-modal').style.display = 'none';
+  saasItemTemporal = null;
+}
+
+function procesarSeleccionSaasModal() {
+  if (!saasItemTemporal) return;
+
+  let carritoId = "";
+  let itemCarrito = {};
+
+  if (saasItemTemporal.tipo_modulo === 'matriz_precios') {
+    if (!saasItemTemporal.seleccionado) { alert("Por favor, selecciona una opción."); return; }
+    
+    carritoId = `${saasItemTemporal.id}-${saasItemTemporal.seleccionado.nombre}`;
+    itemCarrito = {
+      id: saasItemTemporal.id,
+      nombre: `${saasItemTemporal.nombreBase} (${saasItemTemporal.seleccionado.nombre})`,
+      precio: saasItemTemporal.seleccionado.precio,
+      esComplejo: true
+    };
+  } 
+  else if (saasItemTemporal.tipo_modulo === 'constructor_libre') {
+    if (saasItemTemporal.seleccionados.length === 0) { alert("Elige al menos 1 ingrediente."); return; }
+    
+    const ingredientesKey = saasItemTemporal.seleccionados.sort().join("-");
+    carritoId = `${saasItemTemporal.id}-${saasItemTemporal.variacionNombre}-${ingredientesKey}`;
+    
+    itemCarrito = {
+      id: saasItemTemporal.id,
+      nombre: `${saasItemTemporal.nombreBase} (${saasItemTemporal.variacionNombre})`,
+      precio: saasItemTemporal.precio,
+      detalles: saasItemTemporal.seleccionados.join(", "),
+      esComplejo: true,
+      esConstructor: true
+    };
+  }
+
+  if (memoriaCarrito[carritoId]) {
+    memoriaCarrito[carritoId].cantidad += 1;
+  } else {
+    memoriaCarrito[carritoId] = { ...itemCarrito, cantidad: 1 };
+  }
+
+  cerrarSaasModal();
   calcularPrecios();
 }
 
@@ -350,14 +566,45 @@ function manejarCambioZona() {
 
 function calcularPrecios() {
   let totalProductos = 0, montoSubtotal = 0, htmlDesglose = '';
+  let contadorPizzasConstructor = 0; // Acumulador para la promoción de gaseosa gratis
+
   for (const id in memoriaCarrito) {
-    const cantidad = memoriaCarrito[id], producto = PRODUCTOS.find(p => p.id == id);
-    if (producto) {
-      totalProductos += cantidad;
-      const subtotalItem = producto.precio * cantidad;
-      montoSubtotal += subtotalItem;
-      htmlDesglose += `<div class="item-row"><span><span class="item-qty">${cantidad}x</span><span class="item-name"> ${producto.nombre}</span></span><span>S/ ${subtotalItem.toFixed(2)}</span></div>`;
+    const item = memoriaCarrito[id];
+    let cantidad = 0, precioUnitario = 0, nombreMostrar = "";
+
+    if (item && item.esComplejo) {
+      cantidad = item.cantidad;
+      precioUnitario = item.precio;
+      nombreMostrar = item.nombre + (item.detalles ? `<br><small style="color:#6c757d; font-weight:500;">➔ ${item.detalles}</small>` : '');
+      if (item.esConstructor) contadorPizzasConstructor += cantidad;
+    } else {
+      cantidad = item;
+      const producto = PRODUCTOS.find(p => p.id == id);
+      if (producto) {
+        precioUnitario = producto.precio;
+        nombreMostrar = producto.nombre;
+      } else { continue; }
     }
+
+    if (cantidad > 0) {
+      totalProductos += cantidad;
+      const subtotalItem = precioUnitario * cantidad;
+      montoSubtotal += subtotalItem;
+      htmlDesglose += `<div class="item-row" style="align-items: flex-start; margin-bottom: 6px;">
+        <span><span class="item-qty">${cantidad}x</span><span class="item-name"> ${nombreMostrar}</span></span>
+        <span>S/ ${subtotalItem.toFixed(2)}</span>
+      </div>`;
+    }
+  }
+
+  // --- REGLA DE NEGOCIO: CÁLCULO DE LA PROMOCIÓN AUTOMÁTICA DE GASEOSA ---
+  let regaloHtml = "";
+  if (contadorPizzasConstructor >= 2) {
+    const gaseosasGratis = Math.floor(contadorPizzasConstructor / 2);
+    regaloHtml = `<div class="item-row" style="color: #137333; font-weight: 700; margin-top: 4px; padding-top: 4px; border-top: 1px dashed #e9ecef;">
+      <span>🎁 ¡PROMO ACTIVADA! ${gaseosasGratis}x Gaseosa Gratis</span>
+      <span>S/ 0.00</span>
+    </div>`;
   }
 
   const bar = document.getElementById('cart-bar');
@@ -367,7 +614,7 @@ function calcularPrecios() {
     if (checkoutContainer.style.display !== 'flex') bar.style.display = 'flex';
     document.getElementById('cart-qty-text').innerText = `${totalProductos} productos`;
     document.getElementById('cart-total-text').innerText = `S/ ${montoSubtotal.toFixed(2)}`;
-    document.getElementById('checkout-items-list').innerHTML = htmlDesglose;
+    document.getElementById('checkout-items-list').innerHTML = htmlDesglose + regaloHtml;
 
     const selectZona = document.getElementById('form-zona');
     const costoDelivery = selectZona.options.length ? parseFloat(selectZona.options[selectZona.selectedIndex].getAttribute('data-costo')) : 0;
@@ -424,10 +671,27 @@ function prepararEnvio() {
   }
   if (notas) textoWA += `📝 *Notas:* ${notas}\n`;
   textoWA += `\n🧾 *DETALLE DEL PEDIDO:*\n`;
+
+  let contadorPizzasConstructor = 0;
   for (const id in memoriaCarrito) {
-    const producto = PRODUCTOS.find(p => p.id == id);
-    textoWA += `• ${memoriaCarrito[id]}x ${producto.nombre} (S/ ${(producto.precio * memoriaCarrito[id]).toFixed(2)})\n`;
+    const item = memoriaCarrito[id];
+    if (item && item.esComplejo) {
+      textoWA += `• ${item.cantidad}x ${item.nombre} (S/ ${(item.precio * item.cantidad).toFixed(2)})\n`;
+      if (item.detalles) textoWA += `  └ _Ingredientes: ${item.detalles}_\n`;
+      if (item.esConstructor) contadorPizzasConstructor += item.cantidad;
+    } else {
+      const producto = PRODUCTOS.find(p => p.id == id);
+      if (producto) {
+        textoWA += `• ${memoriaCarrito[id]}x ${producto.nombre} (S/ ${(producto.precio * memoriaCarrito[id]).toFixed(2)})\n`;
+      }
+    }
   }
+
+  if (contadorPizzasConstructor >= 2) {
+    const gaseosasGratis = Math.floor(contadorPizzasConstructor / 2);
+    textoWA += `\n🎁 *REGALO PROMO:* ${gaseosasGratis}x Gaseosa Gratis (Por la compra de 2 pizzas)\n`;
+  }
+
   textoWA += `\n💵 *Pago:* ${etiquetasPago[metodoPagoSeleccionado] || metodoPagoSeleccionado}\n`;
   if (metodoPagoSeleccionado === 'efectivo') {
     const cuanto = document.getElementById('form-efectivo-monto').value;
@@ -467,8 +731,17 @@ async function ejecutadoExitoso() {
     metodo_pago: metodoPagoSeleccionado,
     total_pago: montoTotalGlobal,
     articulos: Object.keys(memoriaCarrito).map(id => {
-      const p = PRODUCTOS.find(prod => prod.id == id);
-      return { nombre: p.nombre, cantidad: memoriaCarrito[id], subtotal: p.precio * memoriaCarrito[id] };
+      const item = memoriaCarrito[id];
+      if (item && item.esComplejo) {
+        return { 
+          nombre: item.nombre + (item.detalles ? ` (${item.detalles})` : ''), 
+          cantidad: item.cantidad, 
+          subtotal: item.precio * item.cantidad 
+        };
+      } else {
+        const p = PRODUCTOS.find(prod => prod.id == id);
+        return { nombre: p.nombre, cantidad: memoriaCarrito[id], subtotal: p.precio * memoriaCarrito[id] };
+      }
     })
   };
 
