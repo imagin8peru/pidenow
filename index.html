@@ -39,14 +39,16 @@ body { background-color: #f8f9fa; color: #212529; padding: 16px; padding-bottom:
   display: flex; 
   flex-direction: column; 
   align-items: center; 
-  gap: 8px; 
+  justify-content: space-between; /* Empuja la cápsula de estado hacia abajo */
+  height: 100%; /* Toma todo el alto disponible para separarlos */
   width: 100%; 
-  padding: 0 16px; 
+  padding: 20px 16px 14px 16px; /* Le da aire arriba y abajo */
 }
 .header-logo { 
-  height: 65px; 
-  max-width: 180px; 
+  height: 90px; /* Lo subimos a 90px para que tenga presencia */
+  max-width: 220px; 
   object-fit: contain; 
+  margin-top: 10px; /* Le da un ligero empuje inicial */
 }
 .status-badge { 
   display: inline-block; 
