@@ -40,7 +40,7 @@ input:checked + .slider:before { transform: translateX(22px); }
 .btn-sm { padding: 6px 10px; font-size: 0.8rem; border-radius: 6px; }
 .btn-block { width: 100%; padding: 16px; font-size: 1.1rem; border-radius: 12px; box-shadow: 0 4px 12px rgba(34,197,94,0.3); }
 .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 2000; justify-content: center; align-items: center; padding: 16px; }
-.modal-content { background: white; padding: 20px; border-radius: 16px; width: 100%; max-width: 440px; display: flex; flex-direction: column; gap: 14px; }
+.modal-content { background: white; padding: 20px; border-radius: 16px; width: 100%; max-width: 440px; display: flex; flex-direction: column; gap: 14px; max-height: 90vh; overflow-y: auto; }
 /* Zonas de delivery */
 .zona-row { background: #f8f9fa; padding: 10px 14px; border-radius: 12px; border: 1px solid #e9ecef; display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
 .zona-row.zona-fija { border-color: #d1fae5; background: #f0fdf4; }
@@ -91,12 +91,10 @@ input:checked + .slider:before { transform: translateX(22px); }
   <p>Configura la identidad, anuncios y el menú en tiempo real</p>
 </header>
 
-<!-- BOTÓN ABIERTO / CERRADO -->
 <button id="btn-estado-local" class="btn-estado-local abierto" onclick="toggleEstadoLocal()">
   🟢 LOCAL ABIERTO
 </button>
 
-<!-- IDENTIDAD -->
 <section class="admin-card">
   <div class="card-title">🏢 Identidad del Restaurante</div>
   <div class="form-group">
@@ -123,7 +121,6 @@ input:checked + .slider:before { transform: translateX(22px); }
   </div>
 </section>
 
-<!-- COBRO Y CONTACTO -->
 <section class="admin-card">
   <div class="card-title">💳 Canales de Cobro y Contacto</div>
   <div class="form-row">
@@ -142,7 +139,6 @@ input:checked + .slider:before { transform: translateX(22px); }
   </div>
 </section>
 
-<!-- ZONAS DE DELIVERY -->
 <section class="admin-card">
   <div class="card-title">
     <span>🛵 Zonas de Delivery</span>
@@ -162,7 +158,6 @@ input:checked + .slider:before { transform: translateX(22px); }
   </div>
 </section>
 
-<!-- MÉTODOS DE PAGO -->
 <section class="admin-card">
   <div class="card-title">💵 Métodos de Pago</div>
   <p class="zona-hint">Activa o desactiva los métodos de pago que acepta el negocio.</p>
@@ -210,7 +205,6 @@ input:checked + .slider:before { transform: translateX(22px); }
   </div>
 </section>
 
-<!-- CATEGORÍAS -->
 <section class="admin-card">
   <div class="card-title">
     <span>📁 Categorías del Menú</span>
@@ -219,7 +213,6 @@ input:checked + .slider:before { transform: translateX(22px); }
   <div id="lista-categorias" class="item-list"></div>
 </section>
 
-<!-- PRODUCTOS -->
 <section class="admin-card">
   <div class="card-title">
     <span>🍔 Productos / Platos</span>
@@ -234,7 +227,6 @@ input:checked + .slider:before { transform: translateX(22px); }
 
 </div>
 
-<!-- MODAL CATEGORÍA -->
 <div id="modal-categoria" class="modal">
   <div class="modal-content">
     <h3 id="modal-cat-titulo">Agregar Categoría</h3>
@@ -250,29 +242,80 @@ input:checked + .slider:before { transform: translateX(22px); }
   </div>
 </div>
 
-<!-- MODAL PRODUCTO -->
 <div id="modal-producto" class="modal">
   <div class="modal-content">
     <h3 id="modal-prod-titulo">Agregar Producto</h3>
     <input type="hidden" id="form-prod-id">
+    
     <div class="form-group">
       <label>Nombre del Plato</label>
       <input type="text" id="form-prod-nombre" class="form-control">
     </div>
+    
     <div class="form-group">
       <label>Descripción corta</label>
       <input type="text" id="form-prod-desc" class="form-control">
     </div>
+    
     <div class="form-row">
-      <div class="form-group">
-        <label>Precio (S/)</label>
-        <input type="number" id="form-prod-precio" class="form-control" step="0.10">
-      </div>
       <div class="form-group">
         <label>Categoría</label>
         <select id="form-prod-categoria" class="form-control"></select>
       </div>
+      <div class="form-group">
+        <label>Tipo de Módulo / Comportamiento</label>
+        <select id="form-prod-tipo-modulo" class="form-control" onchange="conmutarCamposFormularioProducto()">
+          <option value="simple">Clásico (Precio Fijo Único)</option>
+          <option value="matriz_precios">Matriz (Precio por Tamaño)</option>
+          <option value="constructor_libre">Constructor (Arma tu Plato)</option>
+        </select>
+      </div>
     </div>
+
+    <div id="wrapper-precio-simple" class="form-group">
+      <label>Precio Unitario (S/)</label>
+      <input type="number" id="form-prod-precio" class="form-control" step="0.10">
+    </div>
+
+    <div id="wrapper-variaciones-complejas" style="display: none; background: #f8f9fa; padding: 12px; border-radius: 10px; border: 1px dashed #ced4da; flex-direction: column; gap: 10px;">
+      <label style="color:#1a1a1a;">📐 Configuración de Tamaños y Reglas:</label>
+      
+      <div class="form-row" style="align-items: center;">
+        <div class="form-group">
+          <label>Variación 1</label>
+          <input type="text" id="form-var1-nombre" class="form-control" value="Grande" readonly>
+        </div>
+        <div class="form-group">
+          <label>Precio S/</label>
+          <input type="number" id="form-var1-precio" class="form-control" step="0.50" placeholder="0.00">
+        </div>
+        <div class="form-group id-limite-ing-wrapper">
+          <label>Tope Ingred.</label>
+          <input type="number" id="form-var1-limite" class="form-control" value="4">
+        </div>
+      </div>
+
+      <div class="form-row" style="align-items: center;">
+        <div class="form-group">
+          <label>Variación 2</label>
+          <input type="text" id="form-var2-nombre" class="form-control" value="Familiar" readonly>
+        </div>
+        <div class="form-group">
+          <label>Precio S/</label>
+          <input type="number" id="form-var2-precio" class="form-control" step="0.50" placeholder="0.00">
+        </div>
+        <div class="form-group id-limite-ing-wrapper">
+          <label>Tope Ingred.</label>
+          <input type="number" id="form-var2-limite" class="form-control" value="5">
+        </div>
+      </div>
+    </div>
+
+    <div id="wrapper-ingredientes-constructor" class="form-group" style="display: none;">
+      <label>Catálogo de Ingredientes Seleccionables (Separados por comas)</label>
+      <textarea id="form-prod-ingredientes" class="form-control" rows="2" placeholder="Ej: Jamón, Pepperoni, Champiñones, Piña, Tocino, Aceitunas, Cebolla, Pimiento"></textarea>
+    </div>
+
     <div class="form-row" style="margin-top: 10px;">
       <button class="btn btn-secondary" onclick="cerrarModal('modal-producto')">Cancelar</button>
       <button class="btn btn-primary" onclick="guardarProducto()">Guardar</button>
@@ -300,18 +343,12 @@ async function cargarDatos() {
     const deProductos = [...new Set(PRODUCTOS_LOCAL.map(p => p.categoria))];
     CATEGORIAS_LOCAL = deProductos.map(cat => ({ nombre: cat, activa: true }));
 
-    // Cargar zonas existentes del config (sin "Recojo en Local", se maneja por separado)
     ZONAS_LOCAL = (CONFIG_LOCAL.zonas_delivery || [])
       .filter(z => z.nombre !== 'Recojo en Local')
       .map(z => ({ ...z }));
 
-    // Toggle de recojo en local
     document.getElementById('cfg-recojo-local').checked = CONFIG_LOCAL.recojo_local !== false;
-
-    // Estado abierto/cerrado
     actualizarBotonEstadoLocal(CONFIG_LOCAL.local_abierto !== false);
-
-    // Cargar métodos de pago del config (con fallback a todos activos)
     METODOS_PAGO_LOCAL = CONFIG_LOCAL.metodos_pago || { yape: true, plin: true, tarjeta: true, efectivo: true };
 
     inyectarConfiguracion();
@@ -333,7 +370,31 @@ function inyectarConfiguracion() {
   document.getElementById('cfg-qr-pago').value = CONFIG_LOCAL.url_qr_pago || '';
 }
 
-// ── ESTADO ABIERTO / CERRADO ──────────────────────────────────
+function conmutarCamposFormularioProducto() {
+  const tipo = document.getElementById('form-prod-tipo-modulo').value;
+  const wPrecioSimple = document.getElementById('wrapper-precio-simple');
+  const wVariaciones = document.getElementById('wrapper-variaciones-complejas');
+  const wIngredientes = document.getElementById('wrapper-ingredientes-constructor');
+  const wrappersLimites = document.querySelectorAll('.id-limite-ing-wrapper');
+
+  if (tipo === 'simple') {
+    wPrecioSimple.style.display = 'flex';
+    wVariaciones.style.display = 'none';
+    wIngredientes.style.display = 'none';
+  } 
+  else if (tipo === 'matriz_precios') {
+    wPrecioSimple.style.display = 'none';
+    wVariaciones.style.display = 'flex';
+    wIngredientes.style.display = 'none';
+    wrappersLimites.forEach(el => el.style.display = 'none');
+  } 
+  else if (tipo === 'constructor_libre') {
+    wPrecioSimple.style.display = 'none';
+    wVariaciones.style.display = 'flex';
+    wIngredientes.style.display = 'flex';
+    wrappersLimites.forEach(el => el.style.display = 'block');
+  }
+}
 
 function actualizarBotonEstadoLocal(abierto) {
   const btn = document.getElementById('btn-estado-local');
@@ -351,7 +412,6 @@ async function toggleEstadoLocal() {
   const nuevoEstado = !CONFIG_LOCAL.local_abierto;
   actualizarBotonEstadoLocal(nuevoEstado);
 
-  // Guardar solo este campo inmediatamente sin esperar al botón global
   const paquete = {
     tipo_accion: "ACTUALIZAR_CONFIGURACION",
     config: { ...CONFIG_LOCAL, local_abierto: nuevoEstado },
@@ -371,14 +431,12 @@ async function toggleEstadoLocal() {
     if (!res.ok) throw new Error();
   } catch (e) {
     alert("Error al guardar el estado. Intenta de nuevo.");
-    actualizarBotonEstadoLocal(!nuevoEstado); // revertir
+    actualizarBotonEstadoLocal(!nuevoEstado);
   } finally {
     btn.disabled = false;
     actualizarBotonEstadoLocal(CONFIG_LOCAL.local_abierto);
   }
 }
-
-// ── ZONAS DE DELIVERY ──────────────────────────────────────────
 
 function renderizarZonas() {
   const contenedor = document.getElementById('lista-zonas');
@@ -416,8 +474,6 @@ function eliminarZona(index) {
   }
 }
 
-// ── MÉTODOS DE PAGO ──────────────────────────────────────────
-
 function renderizarMetodosPago() {
   ['yape', 'plin', 'tarjeta', 'efectivo'].forEach(metodo => {
     const activo = METODOS_PAGO_LOCAL[metodo] !== false;
@@ -444,8 +500,6 @@ function actualizarEstadoPago(metodo) {
     estado.style.color = '#dc2626';
   }
 }
-
-// ── CATEGORÍAS Y PRODUCTOS (sin cambios) ──────────────────────
 
 function renderizarListasAdmin() {
   const contenedorCat = document.getElementById('lista-categorias');
@@ -483,10 +537,20 @@ function renderizarListasAdmin() {
     const row = document.createElement('div');
     row.className = 'list-row';
     row.style.opacity = p.activo !== false ? '1' : '0.5';
+    
+    // Formatear visualización del precio de forma condicional en el panel admin
+    let renderPrecioInfo = "";
+    if (!p.tipo_modulo || p.tipo_modulo === 'simple') {
+      renderPrecioInfo = `S/ ${parseFloat(p.precio || 0).toFixed(2)}`;
+    } else {
+      const minP = Math.min(...p.variaciones.map(v => v.precio));
+      renderPrecioInfo = `Multi-precio (Desde S/ ${minP.toFixed(2)})`;
+    }
+
     row.innerHTML = `
       <div class="list-info">
-        <div class="list-name">${p.nombre} <span style="color:#22c55e; margin-left:4px;">S/ ${p.precio.toFixed(2)}</span></div>
-        <div class="list-sub">Categoría: ${p.categoria} | ${p.activo !== false ? '🟢 Activo' : '🔴 Sin Stock / Oculto'}</div>
+        <div class="list-name">${p.nombre} <span style="color:#22c55e; margin-left:4px;">${renderPrecioInfo}</span></div>
+        <div class="list-sub">Categoría: ${p.categoria} | Modulo: ${p.tipo_modulo || 'simple'} | ${p.activo !== false ? '🟢 Activo' : '🔴 Sin Stock / Oculto'}</div>
       </div>
       <div style="display:flex; gap:6px;">
         <button class="btn btn-secondary btn-sm" onclick="conmutarProducto('${p.id}')">${p.activo !== false ? 'Ocultar' : 'Mostrar'}</button>
@@ -510,7 +574,13 @@ function abrirModalProducto() {
   document.getElementById('form-prod-nombre').value = '';
   document.getElementById('form-prod-desc').value = '';
   document.getElementById('form-prod-precio').value = '';
+  document.getElementById('form-prod-tipo-modulo').value = 'simple';
+  document.getElementById('form-var1-precio').value = '';
+  document.getElementById('form-var2-precio').value = '';
+  document.getElementById('form-prod-ingredientes').value = 'Jamón, Pepperoni, Champiñones, Piña, Tocino, Aceitunas, Cebolla, Pimiento';
+  
   document.getElementById('modal-prod-titulo').innerText = "Agregar Producto";
+  conmutarCamposFormularioProducto();
   document.getElementById('modal-producto').style.display = 'flex';
 }
 
@@ -544,16 +614,56 @@ function guardarProducto() {
   const idExistente = document.getElementById('form-prod-id').value;
   const nombre = document.getElementById('form-prod-nombre').value.trim();
   const desc = document.getElementById('form-prod-desc').value.trim();
-  const precio = parseFloat(document.getElementById('form-prod-precio').value);
   const categoria = document.getElementById('form-prod-categoria').value;
-  if (!nombre || isNaN(precio) || !categoria) return alert("Completa los campos obligatorios.");
+  const tipoModulo = document.getElementById('form-prod-tipo-modulo').value;
+  
+  if (!nombre || !categoria) return alert("Completa los campos obligatorios.");
+
+  let itemEstructurado = {
+    nombre,
+    desc,
+    categoria,
+    tipo_modulo: tipoModulo,
+    activo: true
+  };
+
+  // Validación y empaquetado de datos según el tipo_modulo seleccionado
+  if (tipoModulo === 'simple') {
+    const precio = parseFloat(document.getElementById('form-prod-precio').value);
+    if (isNaN(precio)) return alert("Por favor ingresa un precio válido.");
+    itemEstructurado.precio = precio;
+  } 
+  else {
+    const p1 = parseFloat(document.getElementById('form-var1-precio').value);
+    const p2 = parseFloat(document.getElementById('form-var2-precio').value);
+    if (isNaN(p1) || isNaN(p2)) return alert("Por favor asigna precios a ambos tamaños.");
+    
+    const lim1 = parseInt(document.getElementById('form-var1-limite').value) || 4;
+    const lim2 = parseInt(document.getElementById('form-var2-limite').value) || 5;
+
+    itemEstructurado.variaciones = [
+      { nombre: "Grande", precio: p1, limite_ingredientes: lim1 },
+      { nombre: "Familiar", precio: p2, limite_ingredientes: lim2 }
+    ];
+
+    if (tipoModulo === 'constructor_libre') {
+      const rawIng = document.getElementById('form-prod-ingredientes').value;
+      if (!rawIng.trim()) return alert("Ingresa la lista de ingredientes para el constructor.");
+      itemEstructurado.ingredientes_disponibles = rawIng.split(',').map(i => i.trim()).filter(i => i !== "");
+    }
+  }
+
   if (idExistente) {
-    const p = PRODUCTOS_LOCAL.find(prod => prod.id == idExistente);
-    if (p) { p.nombre = nombre; p.desc = desc; p.precio = precio; p.categoria = categoria; }
+    const idx = PRODUCTOS_LOCAL.findIndex(prod => prod.id == idExistente);
+    if (idx !== -1) {
+      // Preservamos el ID original
+      PRODUCTOS_LOCAL[idx] = { id: idExistente, ...itemEstructurado };
+    }
   } else {
     const nuevoId = PRODUCTOS_LOCAL.length ? Math.max(...PRODUCTOS_LOCAL.map(p => parseInt(p.id) || 0)) + 1 : 1;
-    PRODUCTOS_LOCAL.push({ id: String(nuevoId), nombre, desc, precio, categoria, activo: true });
+    PRODUCTOS_LOCAL.push({ id: String(nuevoId), ...itemEstructurado });
   }
+  
   cerrarModal('modal-producto');
   renderizarListasAdmin();
 }
@@ -561,12 +671,34 @@ function guardarProducto() {
 function editarProductoVisual(id) {
   const p = PRODUCTOS_LOCAL.find(prod => prod.id == id);
   if (!p) return;
+  
   document.getElementById('form-prod-id').value = p.id;
   document.getElementById('form-prod-nombre').value = p.nombre;
-  document.getElementById('form-prod-desc').value = p.desc;
-  document.getElementById('form-prod-precio').value = p.precio;
+  document.getElementById('form-prod-desc').value = p.desc || '';
   document.getElementById('form-prod-categoria').value = p.categoria;
+  
+  const tipo = p.tipo_modulo || 'simple';
+  document.getElementById('form-prod-tipo-modulo').value = tipo;
+
+  if (tipo === 'simple') {
+    document.getElementById('form-prod-precio').value = p.precio || '';
+  } else {
+    const v1 = p.variaciones.find(v => v.nombre === 'Grande');
+    const v2 = p.variaciones.find(v => v.nombre === 'Familiar');
+    
+    document.getElementById('form-var1-precio').value = v1 ? v1.precio : '';
+    document.getElementById('form-var2-precio').value = v2 ? v2.precio : '';
+    
+    document.getElementById('form-var1-limite').value = v1 ? (v1.limite_ingredientes || 4) : 4;
+    document.getElementById('form-var2-limite').value = v2 ? (v2.limite_ingredientes || 5) : 5;
+    
+    if (tipo === 'constructor_libre' && p.ingredientes_disponibles) {
+      document.getElementById('form-prod-ingredientes').value = p.ingredientes_disponibles.join(', ');
+    }
+  }
+
   document.getElementById('modal-prod-titulo').innerText = "Editar Producto";
+  conmutarCamposFormularioProducto();
   document.getElementById('modal-producto').style.display = 'flex';
 }
 
@@ -583,8 +715,6 @@ function eliminarProducto(id) {
   }
 }
 
-// ── GUARDADO GLOBAL ──────────────────────────────────────────
-
 function procesarGuardadoGlobal() {
   CONFIG_LOCAL.nombre_restaurante = document.getElementById('cfg-nombre').value.trim();
   CONFIG_LOCAL.url_logo = document.getElementById('cfg-logo').value.trim();
@@ -594,7 +724,6 @@ function procesarGuardadoGlobal() {
   CONFIG_LOCAL.whatsapp_receptor = document.getElementById('cfg-whatsapp').value.trim();
   CONFIG_LOCAL.url_qr_pago = document.getElementById('cfg-qr-pago').value.trim();
 
-  // Leer zonas actualizadas directamente de los inputs del DOM antes de guardar
   const zonasInputs = document.querySelectorAll('#lista-zonas .zona-row');
   const zonasEditadas = [];
   zonasInputs.forEach(row => {
@@ -602,14 +731,12 @@ function procesarGuardadoGlobal() {
     const costo = parseFloat(row.querySelector('.zona-costo-input').value) || 0;
     if (nombre) zonasEditadas.push({ nombre, costo });
   });
-  // Agregar "Recojo en Local" al final solo si está activado
+  
   if (document.getElementById('cfg-recojo-local').checked) {
     zonasEditadas.push({ nombre: 'Recojo en Local', costo: 0 });
   }
   CONFIG_LOCAL.zonas_delivery = zonasEditadas;
   CONFIG_LOCAL.recojo_local = document.getElementById('cfg-recojo-local').checked;
-
-  // Guardar métodos de pago
   CONFIG_LOCAL.metodos_pago = { ...METODOS_PAGO_LOCAL };
 
   const nombresCatValidas = CATEGORIAS_LOCAL.map(c => c.nombre);
@@ -634,7 +761,7 @@ function procesarGuardadoGlobal() {
   .then(response => {
     if (response.ok) {
       alert("¡Éxito! Los cambios fueron enviados. El servidor se está actualizando.");
-      setTimeout(() => cargarDatos(), 8000);
+      setTimeout(() => cargarDatos(), 5000);
     } else {
       alert("El panel procesó la data pero n8n devolvió un error. Revisa el flujo.");
     }
