@@ -84,9 +84,13 @@ body { background-color: #f8f9fa; color: #212529; padding: 16px; padding-bottom:
 .btn-action-direct { background: #6c757d; color: white; border: none; padding: 14px; border-radius: 12px; font-weight: 700; font-size: 1rem; cursor: pointer; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
 
 /* AUXILIARES PARA EL SISTEMA MODAL MULTI-MÓDULO */
-.modal-radio-row, .modal-check-row { display: flex; align-items: center; gap: 12px; padding: 12px; background: #f8f9fa; border: 1px solid #e9ecef; border-radius: 10px; cursor: pointer; user-select: none; text-align: left; }
-.modal-radio-row input, .modal-check-row input { width: 20px; height: 20px; accent-color: #22c55e; margin: 0; }
+.modal-radio-row, .modal-ingrediente-row { display: flex; align-items: center; justify-content: space-between; padding: 12px; background: #f8f9fa; border: 1px solid #e9ecef; border-radius: 10px; user-select: none; text-align: left; }
+.modal-radio-row { cursor: pointer; }
+.modal-radio-row input { width: 20px; height: 20px; accent-color: #22c55e; margin: 0; }
 .modal-row-title { font-weight: 700; font-size: 0.95rem; color: #212529; }
+.modal-counter-wrapper { display: flex; align-items: center; gap: 12px; background: #e9ecef; padding: 4px 10px; border-radius: 20px; }
+.modal-counter-btn { border: none; background: transparent; font-size: 1.2rem; font-weight: 700; color: #495057; cursor: pointer; width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; }
+.modal-counter-num { font-weight: 700; font-size: 1rem; color: #212529; min-width: 14px; text-align: center; }
 </style>
 </head>
 <body>
@@ -195,6 +199,9 @@ body { background-color: #f8f9fa; color: #212529; padding: 16px; padding-bottom:
     </div>
     <div id="saas-modal-cuerpo" style="flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 14px; padding-right: 4px; margin-bottom: 16px;"></div>
     <div>
+      <div id="saas-modal-contador-global" style="text-align: center; font-weight: bold; font-size: 0.95rem; margin-bottom: 10px; color: #495057; display: none;">
+        Ingredientes seleccionados: <span id="saas-modal-total-ingredientes">0</span> / <span id="saas-modal-max-ingredientes">0</span>
+      </div>
       <button id="saas-modal-btn-accion" onclick="procesarSeleccionSaasModal()" style="background-color: #22c55e; color: white; border: none; width: 100%; padding: 15px; border-radius: 12px; font-size: 1rem; font-weight: 700; cursor: pointer; box-shadow: 0 4px 12px rgba(34,197,94,0.2);">
         Agregar al Carrito
       </button>
@@ -209,7 +216,7 @@ let memoriaCarrito = {};
 let metodoPagoSeleccionado = "";
 let montoTotalGlobal = 0;
 let enlaceWhatsAppGlobal = "";
-let saasItemTemporal = null; // Almacenamiento temporal para selecciones en modal
+let saasItemTemporal = null;
 
 async function inicializarAplicacion() {
   try {
@@ -268,14 +275,12 @@ function aplicarConfiguracion() {
 
   document.getElementById('number-to-copy').innerText = CONFIG.numero_pago_yape_plin;
 
-  // Estado abierto/cerrado
   const localAbierto = CONFIG.local_abierto !== false;
   document.getElementById('banner-cerrado').style.display = localAbierto ? 'none' : 'block';
   document.getElementById('app-status-badge').innerText = localAbierto ? '● Abierto ahora' : '● Cerrado';
   document.getElementById('app-status-badge').style.backgroundColor = localAbierto ? '#e6f4ea' : '#fef2f2';
   document.getElementById('app-status-badge').style.color = localAbierto ? '#137333' : '#b91c1c';
 
-  // Zonas de delivery
   const selectZona = document.getElementById('form-zona');
   selectZona.innerHTML = '';
   CONFIG.zonas_delivery.forEach(z => {
@@ -287,7 +292,6 @@ function aplicarConfiguracion() {
   });
   manejarCambioZona();
 
-  // Métodos de pago dinámicos
   const metodos = CONFIG.metodos_pago || { yape: true, plin: true, tarjeta: true, efectivo: true };
   const grid = document.getElementById('payment-grid');
   grid.innerHTML = '';
@@ -320,7 +324,6 @@ function renderizarMenu() {
       let textoPrecio = '';
       let htmlControlesBotones = '';
 
-      // Discriminador inteligente según el tipo_modulo de la arquitectura del SaaS
       if (!p.tipo_modulo || p.tipo_modulo === 'simple') {
         textoPrecio = `S/ ${p.precio.toFixed(2)}`;
         htmlControlesBotones = `
@@ -360,7 +363,6 @@ function renderizarMenu() {
 
   configurarEventos();
   
-  // Sincronizar cantidades de ítems simples en el renderizado
   for (const id in memoriaCarrito) {
     const elQty = document.getElementById(`qty-${id}`);
     if (elQty && typeof memoriaCarrito[id] === 'number') {
@@ -409,6 +411,7 @@ function abrirMatrizPrecios(productoId) {
     seleccionado: null
   };
 
+  document.getElementById('saas-modal-contador-global').style.display = 'none';
   document.getElementById('saas-modal-titulo').innerText = producto.nombre;
   document.getElementById('saas-modal-subtitulo').innerText = "Selecciona el tamaño ideal para tu orden:";
   
@@ -440,9 +443,15 @@ function abrirConstructorLibre(productoId) {
     precio: varInicial.precio,
     limite: varInicial.limite_ingredientes,
     ingredientesDisponibles: producto.ingredientes_disponibles,
-    seleccionados: []
+    seleccionados: {} // Cambiado a objeto clave-valor para rastrear la cantidad (ej. {"Jamón": 2})
   };
 
+  // Inicializar cantidades de ingredientes en cero
+  producto.ingredientes_disponibles.forEach(ing => {
+    saasItemTemporal.seleccionados[ing] = 0;
+  });
+
+  document.getElementById('saas-modal-contador-global').style.display = 'block';
   renderizarCuerpoConstructor();
   document.getElementById('saas-modal').style.display = 'flex';
 }
@@ -451,7 +460,16 @@ function renderizarCuerpoConstructor() {
   const producto = PRODUCTOS.find(p => p.id == saasItemTemporal.id);
   
   document.getElementById('saas-modal-titulo').innerText = saasItemTemporal.nombreBase;
-  document.getElementById('saas-modal-subtitulo').innerText = `Formato: ${saasItemTemporal.variacionNombre} (Hasta ${saasItemTemporal.limite} ingredientes)`;
+  document.getElementById('saas-modal-subtitulo').innerText = `Formato: ${saasItemTemporal.variacionNombre}`;
+  
+  // Calcular el total acumulado de porciones seleccionadas actualmente
+  let totalPorciones = 0;
+  for (const ing in saasItemTemporal.seleccionados) {
+    totalPorciones += saasItemTemporal.seleccionados[ing];
+  }
+  
+  document.getElementById('saas-modal-total-ingredientes').innerText = totalPorciones;
+  document.getElementById('saas-modal-max-ingredientes').innerText = saasItemTemporal.limite;
 
   let html = '';
 
@@ -468,19 +486,46 @@ function renderizarCuerpoConstructor() {
   });
   html += `</div>`;
 
-  // Listado checkboxes de los ingredientes
+  // Listado de los ingredientes con controles de cantidad mas y menos
   producto.ingredientes_disponibles.forEach(ing => {
-    const marcado = saasItemTemporal.seleccionados.includes(ing) ? 'checked' : '';
+    const cantidadActual = saasItemTemporal.seleccionados[ing] || 0;
+    
+    // Si ya llegamos al tope general, deshabilitamos el botón más
+    const deshabilitarMas = totalPorciones >= saasItemTemporal.limite ? 'disabled style="opacity: 0.3; cursor: not-allowed;"' : '';
+    
     html += `
-      <label class="modal-check-row">
-        <input type="checkbox" class="chk-saas-ingrediente" value="${ing}" ${marcado} onchange="validarLimiteCheckboxes(this)">
+      <div class="modal-ingrediente-row">
         <div class="modal-row-title">${ing}</div>
-      </label>
+        <div class="modal-counter-wrapper">
+          <button class="modal-counter-btn" onclick="modificarCantidadIngrediente('${ing}', -1)">−</button>
+          <span class="modal-counter-num">${cantidadActual}</span>
+          <button class="modal-counter-btn" onclick="modificarCantidadIngrediente('${ing}', 1)" ${deshabilitarMas}>+</button>
+        </div>
+      </div>
     `;
   });
 
   document.getElementById('saas-modal-cuerpo').innerHTML = html;
-  validarLimiteCheckboxes();
+}
+
+function modificarCantidadIngrediente(ingrediente, cambio) {
+  let cantidadActual = saasItemTemporal.seleccionados[ingrediente] || 0;
+  let nuevaCantidad = cantidadActual + cambio;
+  
+  if (nuevaCantidad < 0) return;
+  
+  // Calcular porciones de otros ingredientes para validar tope global
+  let totalPorcionesRestantes = 0;
+  for (const ing in saasItemTemporal.seleccionados) {
+    if (ing !== ingrediente) totalPorcionesRestantes += saasItemTemporal.seleccionados[ing];
+  }
+  
+  if (totalPorcionesRestantes + nuevaCantidad > saasItemTemporal.limite) {
+    return; // Evita pasarse de los 4 o 5 ingredientes requeridos por el modelo
+  }
+  
+  saasItemTemporal.seleccionados[ingrediente] = nuevaCantidad;
+  renderizarCuerpoConstructor();
 }
 
 function cambiarTamañoConstructor(nombre, precio, limite) {
@@ -488,23 +533,19 @@ function cambiarTamañoConstructor(nombre, precio, limite) {
   saasItemTemporal.precio = precio;
   saasItemTemporal.limite = limite;
   
-  if (saasItemTemporal.seleccionados.length > limite) {
-    saasItemTemporal.seleccionados = [];
+  // Calcular total actual de ingredientes
+  let totalPorciones = 0;
+  for (const ing in saasItemTemporal.seleccionados) {
+    totalPorciones += saasItemTemporal.seleccionados[ing];
+  }
+  
+  // Si al cambiar a un formato más chico se excede el nuevo tope, reseteamos las porciones a cero
+  if (totalPorciones > limite) {
+    for (const ing in saasItemTemporal.seleccionados) {
+      saasItemTemporal.seleccionados[ing] = 0;
+    }
   }
   renderizarCuerpoConstructor();
-}
-
-function validarLimiteCheckboxes() {
-  const checks = document.querySelectorAll('.chk-saas-ingrediente');
-  const marcados = document.querySelectorAll('.chk-saas-ingrediente:checked');
-  
-  saasItemTemporal.seleccionados = Array.from(marcados).map(c => c.value);
-
-  if (marcados.length >= saasItemTemporal.limite) {
-    checks.forEach(c => { if (!c.checked) c.disabled = true; });
-  } else {
-    checks.forEach(c => { c.disabled = false; });
-  }
 }
 
 function cerrarSaasModal() {
@@ -530,16 +571,33 @@ function procesarSeleccionSaasModal() {
     };
   } 
   else if (saasItemTemporal.tipo_modulo === 'constructor_libre') {
-    if (saasItemTemporal.seleccionados.length === 0) { alert("Elige al menos 1 ingrediente."); return; }
+    // Agrupar y formatear solo los ingredientes elegidos con cantidad > 0
+    let arrayDetalleIngredientes = [];
+    let totalPorciones = 0;
     
-    const ingredientesKey = saasItemTemporal.seleccionados.sort().join("-");
-    carritoId = `${saasItemTemporal.id}-${saasItemTemporal.variacionNombre}-${ingredientesKey}`;
+    // Ordenar llaves alfabéticamente para mantener consistencia de IDs únicos en el carro
+    const ingredientesOrdenados = Object.keys(saasItemTemporal.seleccionados).sort();
+    
+    let stringKeyPartes = [];
+    ingredientesOrdenados.forEach(ing => {
+      const cant = saasItemTemporal.seleccionados[ing];
+      if (cant > 0) {
+        totalPorciones += cant;
+        stringKeyPartes.push(`${ing}x${cant}`);
+        // Formato visual amigable (ej: "Jamón (x2), Pepperoni")
+        arrayDetalleIngredientes.push(cant > 1 ? `${ing} (x${cant})` : ing);
+      }
+    });
+
+    if (totalPorciones === 0) { alert("Elige al menos 1 ingrediente para armar tu pedido."); return; }
+    
+    carritoId = `${saasItemTemporal.id}-${saasItemTemporal.variacionNombre}-${stringKeyPartes.join("-")}`;
     
     itemCarrito = {
       id: saasItemTemporal.id,
       nombre: `${saasItemTemporal.nombreBase} (${saasItemTemporal.variacionNombre})`,
       precio: saasItemTemporal.precio,
-      detalles: saasItemTemporal.seleccionados.join(", "),
+      detalles: arrayDetalleIngredientes.join(", "),
       esComplejo: true,
       esConstructor: true
     };
@@ -566,7 +624,7 @@ function manejarCambioZona() {
 
 function calcularPrecios() {
   let totalProductos = 0, montoSubtotal = 0, htmlDesglose = '';
-  let contadorPizzasConstructor = 0; // Acumulador para la promoción de gaseosa gratis
+  let contadorPizzasConstructor = 0;
 
   for (const id in memoriaCarrito) {
     const item = memoriaCarrito[id];
@@ -597,7 +655,6 @@ function calcularPrecios() {
     }
   }
 
-  // --- REGLA DE NEGOCIO: CÁLCULO DE LA PROMOCIÓN AUTOMÁTICA DE GASEOSA ---
   let regaloHtml = "";
   if (contadorPizzasConstructor >= 2) {
     const gaseosasGratis = Math.floor(contadorPizzasConstructor / 2);
@@ -740,7 +797,7 @@ async function ejecutadoExitoso() {
         };
       } else {
         const p = PRODUCTOS.find(prod => prod.id == id);
-        return { nombre: p.nombre, cantidad: memoriaCarrito[id], subtotal: p.precio * memoriaCarrito[id] };
+        return { nombre: p.nombre, Math_cantidad: memoriaCarrito[id], subtotal: p.precio * memoriaCarrito[id] };
       }
     })
   };
