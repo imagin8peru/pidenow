@@ -2,12 +2,12 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>Pidenow - Panel de Administración</title>
 <style>
-* { box-sizing: border-box; margin: 0; padding: 0; font-family: system-ui, -apple-system, sans-serif; }
+* { box-sizing: border-box; margin: 0; padding: 0; font-family: system-ui, -apple-system, sans-serif; -webkit-tap-highlight-color: transparent; }
 body { background-color: #f1f3f5; color: #212529; padding: 16px; display: flex; flex-direction: column; align-items: center; }
-.admin-container { width: 100%; max-width: 600px; display: flex; flex-direction: column; gap: 20px; padding-bottom: 60px; }
+.admin-container { width: 100%; max-width: 600px; display: flex; flex-direction: column; gap: 20px; padding-bottom: 80px; }
 .admin-header { background: #1a1a1a; color: white; padding: 20px; border-radius: 16px; text-align: center; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
 .admin-header h1 { font-size: 1.5rem; font-weight: 800; margin-bottom: 4px; }
 .admin-header p { font-size: 0.9rem; color: #adb5bd; }
@@ -18,6 +18,13 @@ body { background-color: #f1f3f5; color: #212529; padding: 16px; display: flex; 
 label { font-size: 0.85rem; font-weight: 700; color: #495057; }
 .form-control { width: 100%; padding: 12px; border: 1px solid #ced4da; border-radius: 10px; font-size: 1rem; background: #f8f9fa; }
 .form-control:focus { outline: none; border-color: #22c55e; background: white; }
+
+/* BOTÓN ESTADO LOCAL */
+.btn-estado-local { width: 100%; padding: 18px; border-radius: 14px; border: none; font-size: 1.2rem; font-weight: 800; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; transition: all 0.2s ease; letter-spacing: 0.5px; }
+.btn-estado-local.abierto { background-color: #22c55e; color: white; box-shadow: 0 4px 14px rgba(34,197,94,0.35); }
+.btn-estado-local.cerrado { background-color: #ef4444; color: white; box-shadow: 0 4px 14px rgba(239,68,68,0.35); }
+
+/* SWITCHES */
 .switch-container { display: flex; align-items: center; justify-content: space-between; background: #f8f9fa; padding: 12px; border-radius: 10px; border: 1px solid #e9ecef; }
 .switch-label { display: flex; flex-direction: column; gap: 2px; }
 .switch-title { font-weight: 700; font-size: 0.95rem; }
@@ -28,59 +35,69 @@ label { font-size: 0.85rem; font-weight: 700; color: #495057; }
 .slider:before { position: absolute; content: ""; height: 18px; width: 18px; left: 4px; bottom: 4px; background-color: white; transition: .3s; border-radius: 50%; }
 input:checked + .slider { background-color: #22c55e; }
 input:checked + .slider:before { transform: translateX(22px); }
+
+/* ZONAS Y LISTAS SIMPLES */
 .item-list { display: flex; flex-direction: column; gap: 10px; margin-top: 6px; }
 .list-row { background: #f8f9fa; padding: 12px; border-radius: 12px; border: 1px solid #e9ecef; display: flex; align-items: center; justify-content: space-between; gap: 10px; }
 .list-info { flex: 1; }
 .list-name { font-weight: 700; font-size: 0.95rem; }
 .list-sub { font-size: 0.8rem; color: #6c757d; margin-top: 2px; }
+.zona-row { background: #f8f9fa; padding: 10px 14px; border-radius: 12px; border: 1px solid #e9ecef; display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+.zona-nombre-input { flex: 1; min-width: 140px; }
+.zona-costo-input { width: 70px; text-align: right; flex-shrink: 0; }
+.zona-hint { font-size: 0.75rem; color: #6c757d; margin-top: -6px; }
+
+/* MÉTODOS DE PAGO */
+.pago-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.pago-toggle-row { background: #f8f9fa; border: 1px solid #e9ecef; border-radius: 12px; padding: 14px; display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+.pago-toggle-row.activo { border-color: #22c55e; background: #f0fdf4; }
+.pago-nombre { font-weight: 700; font-size: 0.95rem; }
+.pago-estado { font-size: 0.75rem; color: #6c757d; margin-top: 2px; }
+
+/* BOTONES DE ACCIÓN */
 .btn { padding: 10px 14px; border-radius: 10px; font-weight: 700; font-size: 0.9rem; cursor: pointer; border: none; text-align: center; display: flex; align-items: center; justify-content: center; gap: 6px; }
 .btn-primary { background: #22c55e; color: white; }
 .btn-danger { background: #ef4444; color: white; }
 .btn-secondary { background: #e2e8f0; color: #475569; }
 .btn-sm { padding: 6px 10px; font-size: 0.8rem; border-radius: 6px; }
 .btn-block { width: 100%; padding: 16px; font-size: 1.1rem; border-radius: 12px; box-shadow: 0 4px 12px rgba(34,197,94,0.3); }
+
+/* MODALES */
 .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 2000; justify-content: center; align-items: center; padding: 16px; }
 .modal-content { background: white; padding: 20px; border-radius: 16px; width: 100%; max-width: 440px; display: flex; flex-direction: column; gap: 14px; max-height: 90vh; overflow-y: auto; }
-/* Zonas de delivery */
-.zona-row { background: #f8f9fa; padding: 10px 14px; border-radius: 12px; border: 1px solid #e9ecef; display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
-.zona-row.zona-fija { border-color: #d1fae5; background: #f0fdf4; }
-.zona-row input { border: 1px solid #ced4da; border-radius: 8px; padding: 7px 10px; font-size: 0.9rem; background: white; }
-.zona-row input:focus { outline: none; border-color: #22c55e; }
-.zona-nombre-input { flex: 1; min-width: 140px; }
-.zona-costo-input { width: 70px; text-align: right; flex-shrink: 0; }
-.zona-hint { font-size: 0.75rem; color: #6c757d; margin-top: -6px; }
-/* Métodos de pago */
-.pago-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-.pago-toggle-row { background: #f8f9fa; border: 1px solid #e9ecef; border-radius: 12px; padding: 14px; display: flex; align-items: center; justify-content: space-between; gap: 10px; transition: border-color 0.2s; }
-.pago-toggle-row.activo { border-color: #22c55e; background: #f0fdf4; }
-.pago-nombre { font-weight: 700; font-size: 0.95rem; }
-.pago-estado { font-size: 0.75rem; color: #6c757d; margin-top: 2px; }
-/* Botón abierto/cerrado */
-.btn-estado-local {
-  width: 100%;
-  padding: 18px;
-  border-radius: 14px;
-  border: none;
-  font-size: 1.2rem;
-  font-weight: 800;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 10px;
-  transition: all 0.2s ease;
-  letter-spacing: 0.5px;
-}
-.btn-estado-local.abierto {
-  background-color: #22c55e;
-  color: white;
-  box-shadow: 0 4px 14px rgba(34,197,94,0.35);
-}
-.btn-estado-local.cerrado {
-  background-color: #ef4444;
-  color: white;
-  box-shadow: 0 4px 14px rgba(239,68,68,0.35);
-}
+
+/* --- NUEVO SISTEMA DE CARPETAS ACORDEÓN (UX PEDIDOS YA) --- */
+.category-accordion { background: #ffffff; border-radius: 12px; margin-bottom: 12px; border: 1px solid #e2e8f0; overflow: hidden; transition: all 0.25s ease; }
+.category-header { width: 100%; display: flex; justify-content: space-between; align-items: center; padding: 16px; background: none; border: none; text-align: left; font-size: 16px; font-weight: 700; color: #1e293b; cursor: pointer; outline: none; }
+.category-header-info { display: flex; align-items: center; gap: 8px; }
+.category-counter { font-size: 12px; background: #f1f5f9; color: #64748b; padding: 2px 8px; border-radius: 20px; font-weight: 600; }
+.category-icon { font-size: 13px; transition: transform 0.25s ease; color: #64748b; }
+.category-accordion.is-open .category-icon { transform: rotate(180deg); }
+.category-content { max-height: 0; overflow: hidden; transition: max-height 0.3s cubic-bezier(0, 1, 0, 1); background: #ffffff; }
+.category-accordion.is-open .category-content { max-height: 2500px; border-top: 1px solid #e2e8f0; transition: max-height 0.3s cubic-bezier(0.4, 0, 1, 1); }
+
+/* FILAS DE PRODUCTOS DENTRO DE CARPETAS */
+.product-row { display: flex; justify-content: space-between; align-items: center; padding: 14px 16px; border-bottom: 1px solid #e2e8f0; transition: all 0.2s; }
+.product-row:last-child { border-bottom: none; }
+.product-row.is-hidden { opacity: 0.4; background-color: #f8fafc; }
+.product-info-block { display: flex; flex-direction: column; gap: 4px; flex: 1; min-width: 0; padding-right: 12px; }
+.product-name-wrapper { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.product-title { font-size: 15px; font-weight: 600; color: #1e293b; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; }
+.product-meta-details { font-size: 13px; color: #64748b; font-weight: 500; }
+
+/* ACCIONES RAPIDAS */
+.product-actions { display: flex; align-items: center; gap: 6px; }
+.btn-action { width: 36px; height: 36px; border-radius: 8px; border: 1px solid #e2e8f0; background: #ffffff; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 15px; transition: all 0.2s; }
+.btn-action:active { transform: scale(0.92); }
+.btn-action.btn-toggle { color: #64748b; }
+.btn-action.btn-edit { color: #0284c7; background-color: #f0f9ff; border-color: #bae6fd; }
+.btn-action.btn-delete { color: #dc2626; background-color: #fef2f2; border-color: #fecaca; }
+
+/* BADGES DE PRODUCTO */
+.module-badge { font-size: 10px; font-weight: 700; text-transform: uppercase; padding: 2px 6px; border-radius: 4px; letter-spacing: 0.3px; display: inline-block; }
+.badge-simple { background-color: #f1f5f9; color: #475569; }
+.badge-matriz { background-color: #dcfce7; color: #15803d; }
+.badge-constructor { background-color: #dbeafe; color: #1d4ed8; }
 </style>
 </head>
 <body>
@@ -92,7 +109,7 @@ input:checked + .slider:before { transform: translateX(22px); }
 </header>
 
 <button id="btn-estado-local" class="btn-estado-local abierto" onclick="toggleEstadoLocal()">
-  🟢 LOCAL ABIERTO
+  ...
 </button>
 
 <section class="admin-card">
@@ -218,7 +235,7 @@ input:checked + .slider:before { transform: translateX(22px); }
     <span>🍔 Productos / Platos</span>
     <button class="btn btn-secondary btn-sm" onclick="abrirModalProducto()">+ Nuevo Producto</button>
   </div>
-  <div id="lista-productos" class="item-list"></div>
+  <div id="contenedor-categorias-productos" class="item-list"></div>
 </section>
 
 <button class="btn btn-primary btn-block" onclick="procesarGuardadoGlobal()">
@@ -263,7 +280,7 @@ input:checked + .slider:before { transform: translateX(22px); }
         <select id="form-prod-categoria" class="form-control"></select>
       </div>
       <div class="form-group">
-        <label>Tipo de Módulo / Comportamiento</label>
+        <label>Tipo de Módulo</label>
         <select id="form-prod-tipo-modulo" class="form-control" onchange="conmutarCamposFormularioProducto()">
           <option value="simple">Clásico (Precio Fijo Único)</option>
           <option value="matriz_precios">Matriz (Precio por Tamaño)</option>
@@ -278,8 +295,7 @@ input:checked + .slider:before { transform: translateX(22px); }
     </div>
 
     <div id="wrapper-variaciones-complejas" style="display: none; background: #f8f9fa; padding: 12px; border-radius: 10px; border: 1px dashed #ced4da; flex-direction: column; gap: 10px;">
-      <label style="color:#1a1a1a;">📐 Configuración de Tamaños y Reglas:</label>
-      
+      <label style="color:#1a1a1a;">📐 Configuración de Tamaños:</label>
       <div class="form-row" style="align-items: center;">
         <div class="form-group">
           <label>Variación 1</label>
@@ -287,14 +303,13 @@ input:checked + .slider:before { transform: translateX(22px); }
         </div>
         <div class="form-group">
           <label>Precio S/</label>
-          <input type="number" id="form-var1-precio" class="form-control" step="0.50" placeholder="0.00">
+          <input type="number" id="form-var1-precio" class="form-control" step="0.50">
         </div>
         <div class="form-group id-limite-ing-wrapper">
           <label>Tope Ingred.</label>
           <input type="number" id="form-var1-limite" class="form-control" value="4">
         </div>
       </div>
-
       <div class="form-row" style="align-items: center;">
         <div class="form-group">
           <label>Variación 2</label>
@@ -302,7 +317,7 @@ input:checked + .slider:before { transform: translateX(22px); }
         </div>
         <div class="form-group">
           <label>Precio S/</label>
-          <input type="number" id="form-var2-precio" class="form-control" step="0.50" placeholder="0.00">
+          <input type="number" id="form-var2-precio" class="form-control" step="0.50">
         </div>
         <div class="form-group id-limite-ing-wrapper">
           <label>Tope Ingred.</label>
@@ -313,7 +328,7 @@ input:checked + .slider:before { transform: translateX(22px); }
 
     <div id="wrapper-ingredientes-constructor" class="form-group" style="display: none;">
       <label>Catálogo de Ingredientes Seleccionables (Separados por comas)</label>
-      <textarea id="form-prod-ingredientes" class="form-control" rows="2" placeholder="Ej: Jamón, Pepperoni, Champiñones, Piña, Tocino, Aceitunas, Cebolla, Pimiento"></textarea>
+      <textarea id="form-prod-ingredientes" class="form-control" rows="2"></textarea>
     </div>
 
     <div class="form-row" style="margin-top: 10px;">
@@ -329,6 +344,15 @@ let PRODUCTOS_LOCAL = [];
 let CATEGORIAS_LOCAL = [];
 let ZONAS_LOCAL = [];
 let METODOS_PAGO_LOCAL = { yape: true, plin: true, tarjeta: true, efectivo: true };
+
+// Memoria persistente de la UI para saber qué acordeones/carpetas quedan abiertos al renderizar
+let acordeonesAbiertos = {};
+
+const MAPA_MODULOS = {
+  'simple': { texto: 'Clásico', clase: 'badge-simple' },
+  'matriz_precios': { texto: 'Tamaños', clase: 'badge-matriz' },
+  'constructor_libre': { texto: 'Constructor', clase: 'badge-constructor' }
+};
 
 async function cargarDatos() {
   try {
@@ -441,7 +465,6 @@ async function toggleEstadoLocal() {
 function renderizarZonas() {
   const contenedor = document.getElementById('lista-zonas');
   contenedor.innerHTML = '';
-
   ZONAS_LOCAL.forEach((zona, index) => {
     const row = document.createElement('div');
     row.className = 'zona-row';
@@ -455,11 +478,8 @@ function renderizarZonas() {
 }
 
 function actualizarZona(index, campo, valor) {
-  if (campo === 'nombre') {
-    ZONAS_LOCAL[index].nombre = valor.trim();
-  } else if (campo === 'costo') {
-    ZONAS_LOCAL[index].costo = parseFloat(valor) || 0;
-  }
+  if (campo === 'nombre') ZONAS_LOCAL[index].nombre = valor.trim();
+  else if (campo === 'costo') ZONAS_LOCAL[index].costo = parseFloat(valor) || 0;
 }
 
 function agregarZona() {
@@ -487,9 +507,7 @@ function actualizarEstadoPago(metodo) {
   const row = document.getElementById(`pago-row-${metodo}`);
   const estado = document.getElementById(`pago-estado-${metodo}`);
   const activo = checkbox.checked;
-
   METODOS_PAGO_LOCAL[metodo] = activo;
-
   if (activo) {
     row.classList.add('activo');
     estado.innerText = '✅ Activo';
@@ -501,7 +519,9 @@ function actualizarEstadoPago(metodo) {
   }
 }
 
+/* --- RESTRUCTURACIÓN TOTAL DE RENDER DE PRODUCTOS (UX CARPETAS PEDIDOS YA) --- */
 function renderizarListasAdmin() {
+  // A) Render de lista de Categorías simple (Mantenido para paridad)
   const contenedorCat = document.getElementById('lista-categorias');
   contenedorCat.innerHTML = '';
   const selectCatModal = document.getElementById('form-prod-categoria');
@@ -531,35 +551,106 @@ function renderizarListasAdmin() {
     }
   });
 
-  const contenedorProd = document.getElementById('lista-productos');
+  // B) Render Dinámico de Carpetas/Acordeones de Productos Agrupados
+  const contenedorProd = document.getElementById('contenedor-categorias-productos');
+  if (!contenedorProd) return;
   contenedorProd.innerHTML = '';
-  PRODUCTOS_LOCAL.forEach(p => {
-    const row = document.createElement('div');
-    row.className = 'list-row';
-    row.style.opacity = p.activo !== false ? '1' : '0.5';
-    
-    // Formatear visualización del precio de forma condicional en el panel admin
-    let renderPrecioInfo = "";
-    if (!p.tipo_modulo || p.tipo_modulo === 'simple') {
-      renderPrecioInfo = `S/ ${parseFloat(p.precio || 0).toFixed(2)}`;
-    } else {
-      const minP = Math.min(...p.variaciones.map(v => v.precio));
-      renderPrecioInfo = `Multi-precio (Desde S/ ${minP.toFixed(2)})`;
-    }
 
-    row.innerHTML = `
-      <div class="list-info">
-        <div class="list-name">${p.nombre} <span style="color:#22c55e; margin-left:4px;">${renderPrecioInfo}</span></div>
-        <div class="list-sub">Categoría: ${p.categoria} | Modulo: ${p.tipo_modulo || 'simple'} | ${p.activo !== false ? '🟢 Activo' : '🔴 Sin Stock / Oculto'}</div>
-      </div>
-      <div style="display:flex; gap:6px;">
-        <button class="btn btn-secondary btn-sm" onclick="conmutarProducto('${p.id}')">${p.activo !== false ? 'Ocultar' : 'Mostrar'}</button>
-        <button class="btn btn-secondary btn-sm" onclick="editarProductoVisual('${p.id}')">✏️</button>
-        <button class="btn btn-danger btn-sm" onclick="eliminarProducto('${p.id}')">🗑️</button>
-      </div>
+  if (PRODUCTOS_LOCAL.length === 0) {
+    contenedorProd.innerHTML = '<p style="text-align:center; color:#64748b; padding:20px;">No hay productos registrados.</p>';
+    return;
+  }
+
+  // 1. Agrupar los productos locales reales del array por su categoría
+  const productosPorCategoria = PRODUCTOS_LOCAL.reduce((acc, producto) => {
+    const cat = producto.categoria || 'Sin Categoría';
+    if (!acc[cat]) acc[cat] = [];
+    acc[cat].push(producto);
+    return acc;
+  }, {});
+
+  // 2. Pintar las carpetas ordenadas alfabéticamente
+  Object.keys(productosPorCategoria).sort().forEach(nombreCategoria => {
+    const listaPlatos = productosPorCategoria[nombreCategoria];
+    const totalPlatos = listaPlatos.length;
+    
+    if (acordeonesAbiertos[nombreCategoria] === undefined) {
+      acordeonesAbiertos[nombreCategoria] = true; // Abierto por defecto al cargar
+    }
+    const isOpen = acordeonesAbiertos[nombreCategoria];
+
+    const itemAcordeon = document.createElement('div');
+    itemAcordeon.className = `category-accordion ${isOpen ? 'is-open' : ''}`;
+    itemAcordeon.dataset.categoria = nombreCategoria;
+
+    // Encabezado de la Carpeta
+    const cabeceraHTML = `
+      <button type="button" class="category-header" onclick="alternarAcordeon('${nombreCategoria.replace(/'/g, "\\'")}')">
+        <div class="category-header-info">
+          <span>${nombreCategoria}</span>
+          <span class="category-counter">${totalPlatos} ${totalPlatos === 1 ? 'plato' : 'platos'}</span>
+        </div>
+        <span class="category-icon">▼</span>
+      </button>
     `;
-    contenedorProd.appendChild(row);
+
+    const contenidoAcordeon = document.createElement('div');
+    contenidoAcordeon.className = 'category-content';
+
+    // Filas de productos reales dentro de la carpeta
+    listaPlatos.forEach(p => {
+      const configBadge = MAPA_MODULOS[p.tipo_modulo] || { texto: 'Clásico', clase: 'badge-simple' };
+      
+      let infoPrecioStr = "";
+      if (!p.tipo_modulo || p.tipo_modulo === 'simple') {
+        infoPrecioStr = `S/ ${parseFloat(p.precio || 0).toFixed(2)}`;
+      } else {
+        const minP = Math.min(...p.variaciones.map(v => v.precio));
+        infoPrecioStr = `Desde S/ ${minP.toFixed(2)}`;
+      }
+
+      const fila = document.createElement('div');
+      fila.className = `product-row ${p.activo === false ? 'is-hidden' : ''}`;
+      fila.innerHTML = `
+        <div class="product-info-block">
+          <div class="product-name-wrapper">
+            <span class="product-title" title="${p.nombre}">${p.nombre}</span>
+            <span class="module-badge ${configBadge.clase}">${configBadge.texto}</span>
+          </div>
+          <span class="product-meta-details">${infoPrecioStr}</span>
+        </div>
+        <div class="product-actions">
+          <button type="button" class="btn-action btn-toggle" onclick="conmutarProducto('${p.id}')" title="Mostrar/Ocultar">
+            ${p.activo !== false ? '👁️' : '🙈'}
+          </button>
+          <button type="button" class="btn-action btn-edit" onclick="editarProductoVisual('${p.id}')" title="Editar">
+            ✏️
+          </button>
+          <button type="button" class="btn-action btn-delete" onclick="eliminarProducto('${p.id}')" title="Eliminar">
+            🗑️
+          </button>
+        </div>
+      `;
+      contenidoAcordeon.appendChild(fila);
+    });
+
+    itemAcordeon.innerHTML = cabeceraHTML;
+    itemAcordeon.appendChild(contenidoAcordeon);
+    contenedorProd.appendChild(itemAcordeon);
   });
+}
+
+function alternarAcordeon(nombreCategoria) {
+  const elemento = document.querySelector(`.category-accordion[data-categoria="${nombreCategoria}"]`);
+  if (!elemento) return;
+  const isOpen = elemento.classList.contains('is-open');
+  if (isOpen) {
+    elemento.classList.remove('is-open');
+    acordeonesAbiertos[nombreCategoria] = false;
+  } else {
+    elemento.classList.add('is-open');
+    acordeonesAbiertos[nombreCategoria] = true;
+  }
 }
 
 function abrirModalCategoria() {
@@ -619,21 +710,13 @@ function guardarProducto() {
   
   if (!nombre || !categoria) return alert("Completa los campos obligatorios.");
 
-  let itemEstructurado = {
-    nombre,
-    desc,
-    categoria,
-    tipo_modulo: tipoModulo,
-    activo: true
-  };
+  let itemEstructurado = { nombre, desc, categoria, tipo_modulo: tipoModulo, activo: true };
 
-  // Validación y empaquetado de datos según el tipo_modulo seleccionado
   if (tipoModulo === 'simple') {
     const precio = parseFloat(document.getElementById('form-prod-precio').value);
     if (isNaN(precio)) return alert("Por favor ingresa un precio válido.");
     itemEstructurado.precio = precio;
-  } 
-  else {
+  } else {
     const p1 = parseFloat(document.getElementById('form-var1-precio').value);
     const p2 = parseFloat(document.getElementById('form-var2-precio').value);
     if (isNaN(p1) || isNaN(p2)) return alert("Por favor asigna precios a ambos tamaños.");
@@ -655,10 +738,7 @@ function guardarProducto() {
 
   if (idExistente) {
     const idx = PRODUCTOS_LOCAL.findIndex(prod => prod.id == idExistente);
-    if (idx !== -1) {
-      // Preservamos el ID original
-      PRODUCTOS_LOCAL[idx] = { id: idExistente, ...itemEstructurado };
-    }
+    if (idx !== -1) PRODUCTOS_LOCAL[idx] = { id: idExistente, ...itemEstructurado };
   } else {
     const nuevoId = PRODUCTOS_LOCAL.length ? Math.max(...PRODUCTOS_LOCAL.map(p => parseInt(p.id) || 0)) + 1 : 1;
     PRODUCTOS_LOCAL.push({ id: String(nuevoId), ...itemEstructurado });
@@ -704,7 +784,7 @@ function editarProductoVisual(id) {
 
 function conmutarProducto(id) {
   const p = PRODUCTOS_LOCAL.find(prod => prod.id == id);
-  if (p) { p.activo = p.activo !== false ? false : true; }
+  if (p) p.activo = p.activo !== false ? false : true;
   renderizarListasAdmin();
 }
 
