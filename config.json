@@ -4,7 +4,7 @@
   "banner_activo": true,
   "banner_texto": "⚠️ <strong>Aviso importante:</strong> Queridos clientes, este sábado 24 de junio no atenderemos por modificaciones en el local. Agradecemos su comprensión y los esperamos como siempre desde el 25 de junio.",
   "numero_pago_yape_plin": "987654321",
-  "url_qr_pago": "https://github.com/imagin8peru/pidenow/blob/main/QR-YAPE-VICTOR.jpg?raw=true",
+  "url_qr_pago": "https://raw.githubusercontent.com/imagin8peru/pidenow/main/QR-YAPE-VICTOR.jpg",
   "zonas_delivery": [
     {
       "nombre": "San Miguel",
