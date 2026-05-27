@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>Pidenow - Panel de Administración</title>
+<script src="https://upload-widget.cloudinary.com/global/all.js" type="text/javascript"></script>
 <style>
 * { box-sizing: border-box; margin: 0; padding: 0; font-family: system-ui, -apple-system, sans-serif; -webkit-tap-highlight-color: transparent; }
 body { background-color: #f1f3f5; color: #212529; padding: 16px; display: flex; flex-direction: column; align-items: center; }
@@ -91,6 +92,7 @@ input:checked + .slider:before { transform: translateX(22px); }
 .badge-matriz { background-color: #dcfce7; color: #15803d; }
 .badge-constructor { background-color: #dbeafe; color: #1d4ed8; }
 </style>
+<script src="https://upload-widget.cloudinary.com/global/all.js" type="text/javascript"></script>
 </head>
 <body>
 <div class="admin-container">
@@ -106,14 +108,28 @@ input:checked + .slider:before { transform: translateX(22px); }
 
 <section class="admin-card">
   <div class="card-title">🏢 Identidad del Restaurante</div>
+  
   <div class="form-group">
     <label>Nombre del Local</label>
     <input type="text" id="cfg-nombre" class="form-control">
   </div>
+  
   <div class="form-group">
     <label>URL Logo (.png / .jpg)</label>
-    <input type="text" id="cfg-logo" class="form-control" placeholder="https://...">
+    <div style="display: flex; gap: 8px;">
+      <input type="text" id="cfg-logo" class="form-control" placeholder="https://...">
+      <button type="button" class="btn btn-secondary" style="white-space: nowrap;" onclick="abrirSubidaCloudinary('cfg-logo')">📷 Subir</button>
+    </div>
   </div>
+
+  <div class="form-group">
+    <label>URL Imagen de Portada / Header</label>
+    <div style="display: flex; gap: 8px;">
+      <input type="text" id="cfg-header" class="form-control" placeholder="https://...">
+      <button type="button" class="btn btn-secondary" style="white-space: nowrap;" onclick="abrirSubidaCloudinary('cfg-header')">📷 Subir</button>
+    </div>
+  </div>
+  
   <div class="switch-container">
     <div class="switch-label">
       <span class="switch-title">Activar Banner Anuncio</span>
@@ -124,6 +140,7 @@ input:checked + .slider:before { transform: translateX(22px); }
       <span class="slider"></span>
     </label>
   </div>
+  
   <div class="form-group">
     <label>Contenido del Banner (Texto, HTML o Enlace a Imagen de Promoción)</label>
     <textarea id="cfg-banner-texto" class="form-control" rows="3" placeholder="Escribe texto o pega el link de una imagen. Si pones 'mantenimiento' o 'cerrado', se bloqueará la web."></textarea>
@@ -265,6 +282,14 @@ input:checked + .slider:before { transform: translateX(22px); }
       <input type="text" id="form-prod-desc" class="form-control">
     </div>
     
+    <div class="form-group">
+      <label>Foto del Plato / Producto (.png / .jpg)</label>
+      <div style="display: flex; gap: 8px;">
+        <input type="text" id="form-prod-img" class="form-control" placeholder="https://...">
+        <button type="button" class="btn btn-secondary" style="white-space: nowrap;" onclick="abrirSubidaCloudinary('form-prod-img')">📷 Subir</button>
+      </div>
+    </div>
+    
     <div class="form-row">
       <div class="form-group">
         <label>Categoría</label>
@@ -378,11 +403,31 @@ async function cargarDatos() {
 function inyectarConfiguracion() {
   document.getElementById('cfg-nombre').value = CONFIG_LOCAL.nombre_restaurante || '';
   document.getElementById('cfg-logo').value = CONFIG_LOCAL.url_logo || '';
+  document.getElementById('cfg-header').value = CONFIG_LOCAL.url_header || ''; // Carga la portada corregida
   document.getElementById('cfg-banner-activo').checked = CONFIG_LOCAL.banner_activo || false;
   document.getElementById('cfg-banner-texto').value = CONFIG_LOCAL.banner_texto || '';
   document.getElementById('cfg-numero-pago').value = CONFIG_LOCAL.numero_pago_yape_plin || '';
   document.getElementById('cfg-whatsapp').value = CONFIG_LOCAL.whatsapp_receptor || '';
   document.getElementById('cfg-qr-pago').value = CONFIG_LOCAL.url_qr_pago || '';
+}
+
+// Función mágica para abrir el widget de Cloudinary e inyectar el enlace directo
+function abrirSubidaCloudinary(idInputObjetivo) {
+  cloudinary.openUploadWidget({
+    cloudName: 'dtwjcqjkg', 
+    uploadPreset: 'pidenow_uploads',
+    sources: ['local', 'camera'],
+    multiple: false,
+    clientAllowedFormats: ['png', 'jpg', 'jpeg', 'webp']
+  }, (error, result) => {
+    if (!error && result && result.event === "success") {
+      // Inyecta automáticamente la URL generada en el campo de texto correspondiente
+      document.getElementById(idInputObjetivo).value = result.info.secure_url;
+      alert("¡Imagen subida con éxito!");
+    } else if (error) {
+      console.error("Error en Cloudinary Widget:", error);
+    }
+  });
 }
 
 function conmutarCamposFormularioProducto() {
@@ -650,6 +695,7 @@ function abrirModalProducto() {
   document.getElementById('form-prod-id').value = '';
   document.getElementById('form-prod-nombre').value = '';
   document.getElementById('form-prod-desc').value = '';
+  document.getElementById('form-prod-img').value = ''; // Limpia el campo de la foto
   document.getElementById('form-prod-precio').value = '';
   document.getElementById('form-prod-tipo-modulo').value = 'simple';
   document.getElementById('form-var1-precio').value = '';
@@ -691,12 +737,14 @@ function guardarProducto() {
   const idExistente = document.getElementById('form-prod-id').value;
   const nombre = document.getElementById('form-prod-nombre').value.trim();
   const desc = document.getElementById('form-prod-desc').value.trim();
+  const img = document.getElementById('form-prod-img').value.trim(); // Captura la URL de la foto
   const categoria = document.getElementById('form-prod-categoria').value;
   const tipoModulo = document.getElementById('form-prod-tipo-modulo').value;
   
   if (!nombre || !categoria) return alert("Completa los campos obligatorios.");
 
-  let itemEstructurado = { nombre, desc, categoria, tipo_modulo: tipoModulo, activo: true };
+  // Incluye de forma obligatoria la propiedad img en el objeto guardado
+  let itemEstructurado = { nombre, desc, img, categoria, tipo_modulo: tipoModulo, activo: true };
 
   if (tipoModulo === 'simple') {
     const precio = parseFloat(document.getElementById('form-prod-precio').value);
@@ -741,6 +789,7 @@ function editarProductoVisual(id) {
   document.getElementById('form-prod-id').value = p.id;
   document.getElementById('form-prod-nombre').value = p.nombre;
   document.getElementById('form-prod-desc').value = p.desc || '';
+  document.getElementById('form-prod-img').value = p.img || ''; // Pone la foto actual del plato en el formulario
   document.getElementById('form-prod-categoria').value = p.categoria;
   
   const tipo = p.tipo_modulo || 'simple';
@@ -784,6 +833,7 @@ function eliminarProducto(id) {
 function procesarGuardadoGlobal() {
   CONFIG_LOCAL.nombre_restaurante = document.getElementById('cfg-nombre').value.trim();
   CONFIG_LOCAL.url_logo = document.getElementById('cfg-logo').value.trim();
+  CONFIG_LOCAL.url_header = document.getElementById('cfg-header').value.trim(); // Guarda la portada corregida
   CONFIG_LOCAL.banner_activo = document.getElementById('cfg-banner-activo').checked;
   CONFIG_LOCAL.banner_texto = document.getElementById('cfg-banner-texto').value.trim();
   CONFIG_LOCAL.numero_pago_yape_plin = document.getElementById('cfg-numero-pago').value.trim();
