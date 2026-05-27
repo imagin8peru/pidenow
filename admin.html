@@ -413,13 +413,12 @@ async function cargarDatos() {
     CONFIG_LOCAL = await resConfig.json();
     PRODUCTOS_LOCAL = await resProductos.json();
 
-    // Lee las categorías independientes desde config.json. Si no existen, migra las actuales de los productos.
-if (CONFIG_LOCAL.categorias && CONFIG_LOCAL.categorias.length > 0) {
-  CATEGORIAS_LOCAL = CONFIG_LOCAL.categorias.map(cat => typeof cat === 'string' ? { nombre: cat, activa: true } : { ...cat });
-} else {
-  const deProductos = [...new Set(PRODUCTOS_LOCAL.map(p => p.categoria))];
-  CATEGORIAS_LOCAL = deProductos.map(cat => ({ nombre: cat, activa: true }));
-}
+    if (CONFIG_LOCAL.categorias && CONFIG_LOCAL.categorias.length > 0) {
+      CATEGORIAS_LOCAL = CONFIG_LOCAL.categorias.map(cat => typeof cat === 'string' ? { nombre: cat, activa: true } : { ...cat });
+    } else {
+      const deProductos = [...new Set(PRODUCTOS_LOCAL.map(p => p.categoria))];
+      CATEGORIAS_LOCAL = deProductos.map(cat => ({ nombre: cat, activa: true }));
+    }
 
     ZONAS_LOCAL = (CONFIG_LOCAL.zonas_delivery || [])
       .filter(z => z.nombre !== 'Recojo en Local')
@@ -621,7 +620,6 @@ function renderizarListasAdmin() {
   const selectCatModal = document.getElementById('form-prod-categoria');
   selectCatModal.innerHTML = '';
 
-  // INTERFAZ DE CATEGORÍAS CON EL BOTÓN DE EDITAR INTEGRADOR
   CATEGORIAS_LOCAL.forEach((cat, index) => {
     const row = document.createElement('div');
     row.className = 'list-row';
@@ -631,8 +629,10 @@ function renderizarListasAdmin() {
         <div class="list-name">${cat.nombre}</div>
         <div class="list-sub">${cat.activa ? '🟢 Visible en la carta' : '🔴 Desactivada (Oculta todo)'}</div>
       </div>
-      <div style="display:flex; gap:6px;">
-        <button class="btn btn-secondary btn-sm" onclick="conmutarCategoria(${index})">${cat.activa ? 'Desactivar' : 'Activar'}</button>
+      <div style="display:flex; gap:6px; align-items:center;">
+        <button class="btn btn-secondary btn-sm" onclick="moverCategoria(${index}, -1)" ${index === 0 ? 'disabled style="opacity:0.3; cursor:not-allowed;"' : ''}>🔼</button>
+        <button class="btn btn-secondary btn-sm" onclick="moverCategoria(${index}, 1)" ${index === CATEGORIAS_LOCAL.length - 1 ? 'disabled style="opacity:0.3; cursor:not-allowed;"' : ''}>🔽</button>
+        <button class="btn btn-secondary btn-sm" style="margin-left:8px;" onclick="conmutarCategoria(${index})">${cat.activa ? 'Desactivar' : 'Activar'}</button>
         <button class="btn btn-secondary btn-sm" onclick="editarCategoriaVisual(${index})">✏️</button>
         <button class="btn btn-danger btn-sm" onclick="eliminarCategoria(${index})">🗑️</button>
       </div>
@@ -663,9 +663,12 @@ function renderizarListasAdmin() {
     return acc;
   }, {});
 
-  Object.keys(productosPorCategoria).sort().forEach(nombreCategoria => {
-    const listaPlatos = productosPorCategoria[nombreCategoria];
+  CATEGORIAS_LOCAL.forEach(cat => {
+    const nombreCategoria = cat.nombre;
+    const listaPlatos = productosPorCategoria[nombreCategoria] || [];
     const totalPlatos = listaPlatos.length;
+    
+    if (totalPlatos === 0) return;
     
     if (acordeonesAbiertos[nombreCategoria] === undefined) {
       acordeonesAbiertos[nombreCategoria] = false;
@@ -761,7 +764,6 @@ function abrirModalCategoria() {
   document.getElementById('modal-categoria').style.display = 'flex';
 }
 
-// NUEVA FUNCIÓN DE MEMORIA UX PARA MONTAR LA EDICIÓN DE LA CARPETA CATEGORÍA
 function editarCategoriaVisual(index) {
   const cat = CATEGORIAS_LOCAL[index];
   if (!cat) return;
@@ -791,7 +793,6 @@ function abrirModalProducto() {
 
 function cerrarModal(id) { document.getElementById(id).style.display = 'none'; }
 
-// RE-DIRECCIONAMIENTO EN CASCADA HORIZONTAL DE LA PROPIEDAD CATEGORIA
 function guardarCategoria() {
   const indexExistente = document.getElementById('form-cat-index').value;
   const nombreNuevo = document.getElementById('form-cat-nombre').value.trim();
@@ -801,7 +802,6 @@ function guardarCategoria() {
     const idx = parseInt(indexExistente);
     const nombreViejo = CATEGORIAS_LOCAL[idx].nombre;
     
-    // Regla de Protección Interna: Cambia en masa la propiedad de los productos amarrados
     PRODUCTOS_LOCAL.forEach(p => {
       if (p.categoria === nombreViejo) {
         p.categoria = nombreNuevo;
@@ -930,6 +930,17 @@ function eliminarProducto(id) {
     PRODUCTOS_LOCAL = PRODUCTOS_LOCAL.filter(p => p.id != id);
     renderizarListasAdmin();
   }
+}
+
+function moverCategoria(index, direccion) {
+  const nuevoIndex = index + direccion;
+  if (nuevoIndex < 0 || nuevoIndex >= CATEGORIAS_LOCAL.length) return;
+
+  const categoriaTemporal = CATEGORIAS_LOCAL[index];
+  CATEGORIAS_LOCAL[index] = CATEGORIAS_LOCAL[nuevoIndex];
+  CATEGORIAS_LOCAL[nuevoIndex] = categoriaTemporal;
+
+  renderizarListasAdmin();
 }
 
 function procesarGuardadoGlobal() {
