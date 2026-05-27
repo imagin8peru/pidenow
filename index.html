@@ -67,24 +67,17 @@ body { background-color: #f8f9fa; color: #212529; padding: 16px; padding-bottom:
 .accordion-item.active .accordion-content { display: flex; }
 .accordion-item.active .accordion-icon { transform: rotate(180deg); }
 
-/* TARJETAS DE PRODUCTO BLINDADAS (CSS CORREGIDO Y LIMPIO) */
+/* TARJETAS DE PRODUCTO GRID BLINDADAS */
 .product-card { 
-  display: flex; 
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
   background: white; 
-  padding: 14px; 
+  padding: 12px; 
   border-radius: 16px; 
   border: 1px solid #e9ecef; 
-  gap: 14px; 
+  gap: 12px; 
   align-items: center; 
-  justify-content: space-between;
-  min-height: 110px; 
-}
-.product-details-wrapper {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-  flex: 1;
-  min-width: 0;
+  min-height: 106px; 
 }
 .product-img-container { 
   width: 80px; 
@@ -103,11 +96,10 @@ body { background-color: #f8f9fa; color: #212529; padding: 16px; padding-bottom:
   object-fit: cover; 
 }
 .product-info { 
-  flex: 1; 
-  min-width: 0; 
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 3px;
+  justify-content: center;
 }
 .product-name { 
   font-size: 0.95rem; 
@@ -116,27 +108,28 @@ body { background-color: #f8f9fa; color: #212529; padding: 16px; padding-bottom:
   line-height: 1.2;
 }
 .product-desc { 
-  font-size: 0.82rem; 
+  font-size: 0.8rem; 
   color: #6c757d; 
-  line-height: 1.3; 
-  margin-bottom: 2px;
+  line-height: 1.3;
 }
 .product-price { 
-  font-size: 1rem; 
+  font-size: 0.95rem; 
   font-weight: 800; 
   color: #1a1a1a; 
+  margin-top: 2px;
 }
 .product-controls { 
   display: flex; 
   align-items: center; 
-  gap: 10px; 
+  gap: 8px; 
   background: #f1f3f5; 
-  padding: 6px 12px; 
+  padding: 6px 10px; 
   border-radius: 20px; 
   flex-shrink: 0;
+  justify-self: end;
 }
-.control-btn { border: none; background: transparent; font-size: 1.4rem; font-weight: 700; color: #495057; cursor: pointer; width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; user-select: none; }
-.qty-num { font-weight: 700; font-size: 1.1rem; min-width: 20px; text-align: center; color: #212529; }
+.control-btn { border: none; background: transparent; font-size: 1.3rem; font-weight: 700; color: #495057; cursor: pointer; width: 26px; height: 26px; display: flex; align-items: center; justify-content: center; user-select: none; }
+.qty-num { font-weight: 700; font-size: 1rem; min-width: 18px; text-align: center; color: #212529; }
 
 /* FORMULARIO DE CIERRE */
 .checkout-section { display: none; background: white; padding: 20px; border-radius: 16px; box-shadow: 0 4px 6px rgba(0,0,0,0.02); flex-direction: column; gap: 16px; margin-top: 8px; }
@@ -210,7 +203,7 @@ body { background-color: #f8f9fa; color: #212529; padding: 16px; padding-bottom:
 
 <div id="maintenance-container" style="display: none; max-width: 480px; width: 100%; background: white; padding: 40px 24px; border-radius: 16px; box-shadow: 0 4px 6px rgba(0,0,0,0.02); text-align: center; margin-top: 40px;">
   <h2 style="font-size: 1.8rem; font-weight: 800; color: #dc2626; margin-bottom: 12px;">⚠️ Local Cerrado Temporalmente</h2>
-  <p id="maintenance-text" style="font-size: 1.05rem; color: #495057; line-height: 1.5; font-weight: 500;">Estamos haciendo mejoras en el systema. Volveremos muy pronto para tomar tu pedido.</p>
+  <p id="maintenance-text" style="font-size: 1.05rem; color: #495057; line-height: 1.5; font-weight: 500;">Estamos haciendo mejoras en el sistema. Volveremos muy pronto para tomar tu pedido.</p>
 </div>
 
 <div class="app-container">
@@ -250,7 +243,7 @@ body { background-color: #f8f9fa; color: #212529; padding: 16px; padding-bottom:
       <input type="text" id="form-referencia" class="form-control" placeholder="Frente al parque, portón marrón...">
     </div>
     <div class="form-group">
-      <label>Notes adicionales</label>
+      <label>Notas adicionales</label>
       <input type="text" id="form-notas" class="form-control" placeholder="Ej. Sin cebolla, harto orégano...">
     </div>
 
@@ -493,13 +486,11 @@ function renderizarMenu() {
 
       htmlProductos += `
         <div class="product-card">
-          <div class="product-details-wrapper">
-            ${htmlFoto}
-            <div class="product-info">
-              <div class="product-name">${p.nombre}</div>
-              <div class="product-desc">${p.desc || ''}</div>
-              <div class="product-price">${textoPrecio}</div>
-            </div>
+          ${htmlFoto}
+          <div class="product-info">
+            <div class="product-name">${p.nombre}</div>
+            <div class="product-desc">${p.desc || ''}</div>
+            <div class="product-price">${textoPrecio}</div>
           </div>
           <div class="product-controls" id="controles-wrapper-${p.id}">
             ${htmlControlesBotones}
@@ -719,6 +710,7 @@ function procesarSeleccionSaasModal() {
     const ingredientesOrdenados = Object.keys(saasItemTemporal.seleccionados).sort();
     
     let stringKeyPartes = [];
+    ingredientsOrdenados = Object.keys(saasItemTemporal.seleccionados).sort();
     ingredientesOrdenados.forEach(ing => {
       const cant = saasItemTemporal.seleccionados[ing];
       if (cant > 0) {
