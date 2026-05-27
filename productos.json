@@ -39,29 +39,29 @@
   },
   {
     "id": "9",
-    "nombre": "Pollo deshilachado",
-    "desc": "Pollo deshilachado, huevo, queso, ensalada, papas al hilo y salsas",
-    "img": "https://res.cloudinary.com/dtwjcqjkg/image/upload/v1779925380/wwdwvmbnwcdjtu2ooe8r.jpg",
-    "categoria": "Sanguchones 🍔",
+    "nombre": "Enchilada Simple",
+    "desc": "1 proteína a elección, ensalada y papas al hilo",
+    "img": "https://res.cloudinary.com/dtwjcqjkg/image/upload/v1779925818/lwthmaj2v6wyodtynnwl.jpg",
+    "categoria": "Enchiladas ​🌯",
     "tipo_modulo": "simple",
     "activo": true,
-    "precio": 18
+    "precio": 15
   },
   {
     "id": "10",
-    "nombre": "Filete de pollo",
-    "desc": "Filete de pollo, huevo, queso, ensalada, papas al hilo y salsas",
-    "img": "https://res.cloudinary.com/dtwjcqjkg/image/upload/v1779925394/m3d5ne71rrpvo0xi3xod.jpg",
+    "nombre": "Royal King",
+    "desc": "Hamburguesa 100 g, chorizo, huevo, queso, ensalada, papas al hilo y salsas",
+    "img": "https://res.cloudinary.com/dtwjcqjkg/image/upload/v1779925853/vpxa0fuozzt6kqbp0y1i.jpg",
     "categoria": "Sanguchones 🍔",
     "tipo_modulo": "simple",
     "activo": true,
-    "precio": 18
+    "precio": 22
   },
   {
     "id": "11",
-    "nombre": "Chorizo",
-    "desc": "Chorizo, huevo, queso, ensalada, papas al hilo y salsas",
-    "img": "https://res.cloudinary.com/dtwjcqjkg/image/upload/v1779925407/a8jwlwlit1dxipsbovm1.jpg",
+    "nombre": "Pollo Deshilachado",
+    "desc": "Pollo deshilachado, huevo, queso, papas y ensalada",
+    "img": "https://res.cloudinary.com/dtwjcqjkg/image/upload/v1779925880/b53aomzredkydojhbx0a.jpg",
     "categoria": "Sanguchones 🍔",
     "tipo_modulo": "simple",
     "activo": true,
@@ -69,22 +69,42 @@
   },
   {
     "id": "12",
-    "nombre": "Royal King",
-    "desc": "Hamburguesa 100 g, chorizo, huevo, queso, ensalada, papas al hilo y salsas",
-    "img": "https://res.cloudinary.com/dtwjcqjkg/image/upload/v1779925422/vurknid4ob7hisj40b5e.jpg",
+    "nombre": "Filete de pollo",
+    "desc": "Filete de pollo, huevo, queso, ensalada, papas al hilo y salsas",
+    "img": "https://res.cloudinary.com/dtwjcqjkg/image/upload/v1779925928/zflz7gntt8bbpx3nbdpu.jpg",
     "categoria": "Sanguchones 🍔",
     "tipo_modulo": "simple",
     "activo": true,
-    "precio": 22
+    "precio": 18
   },
   {
     "id": "13",
-    "nombre": "Enchilada simple",
-    "desc": "1 proteína a elección, ensalada y papas al hilo",
-    "img": "https://res.cloudinary.com/dtwjcqjkg/image/upload/v1779925696/dcdwlp5kdur1u8dgrfrn.jpg",
+    "nombre": "Chorizo",
+    "desc": "Chorizo, huevo, queso, ensalada, papas al hilo y salsas",
+    "img": "https://res.cloudinary.com/dtwjcqjkg/image/upload/v1779925959/om0hgpmuisbartnc6uqj.jpg",
     "categoria": "Sanguchones 🍔",
     "tipo_modulo": "simple",
     "activo": true,
-    "precio": 15
+    "precio": 18
+  },
+  {
+    "id": "14",
+    "nombre": "Enchilada Mixta",
+    "desc": "2 proteínas a elección, ensalada y papas al hilo",
+    "img": "https://res.cloudinary.com/dtwjcqjkg/image/upload/v1779926002/ftncvci4lq7vbkqz5oud.jpg",
+    "categoria": "Enchiladas ​🌯",
+    "tipo_modulo": "simple",
+    "activo": true,
+    "precio": 19
+  },
+  {
+    "id": "15",
+    "nombre": "Enchilada Triple",
+    "desc": "3 proteínas a elección, ensalada y papas al hilo",
+    "img": "https://res.cloudinary.com/dtwjcqjkg/image/upload/v1779926037/rq3qo1xdlipd6axbomwh.jpg",
+    "categoria": "Enchiladas ​🌯",
+    "tipo_modulo": "simple",
+    "activo": true,
+    "precio": 23
   }
 ]
