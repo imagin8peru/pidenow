@@ -41,11 +41,11 @@
     "id": "5",
     "nombre": "Taco Chacarero",
     "desc": "4 carnes y de todo",
+    "img": "https://res.cloudinary.com/dtwjcqjkg/image/upload/v1779912556/dpdwmv0zuo4vxdhdq9wq.png",
     "categoria": "Tacos 🌮",
     "tipo_modulo": "simple",
-    "precio": 37.5,
     "activo": true,
-    "img": ""
+    "precio": 37.5
   },
   {
     "id": "6",
