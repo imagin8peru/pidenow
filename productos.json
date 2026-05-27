@@ -4,6 +4,7 @@
     "categoria": "Pizzas 🍕",
     "nombre": "Pizza Americana NYORKER",
     "desc": "Salsa de tomate, muzzarella y jamón inglés.",
+    "tipo_modulo": "simple",
     "precio": 95
   },
   {
@@ -11,6 +12,7 @@
     "categoria": "Pizzas 🍕",
     "nombre": "Pizza Pepperoni NYORKER",
     "desc": "Salsa de tomate, muzzarella y harto pepperoni americano.",
+    "tipo_modulo": "simple",
     "precio": 85,
     "activo": true
   },
@@ -19,6 +21,7 @@
     "categoria": "Combos 🎁",
     "nombre": "Combo Maradoniano",
     "desc": "1 Pizza Grande + 2 Calzones + 1 Gaseosa 1L.",
+    "tipo_modulo": "simple",
     "precio": 7.85
   },
   {
@@ -26,6 +29,7 @@
     "categoria": "Bebidas 🥤",
     "nombre": "Inca Kola 1 Litro",
     "desc": "Heladita, como debe ser.",
+    "tipo_modulo": "simple",
     "precio": 8,
     "activo": true
   },
@@ -33,16 +37,45 @@
     "id": "5",
     "nombre": "Taco Chacarero",
     "desc": "4 carnes y de todo",
-    "precio": 37.5,
     "categoria": "Tacos 🌮",
+    "tipo_modulo": "simple",
+    "precio": 37.5,
     "activo": true
   },
   {
     "id": "6",
     "nombre": "Pepsi 600 ml",
     "desc": "",
-    "precio": 12,
     "categoria": "Bebidas 🥤",
+    "tipo_modulo": "simple",
+    "precio": 12,
+    "activo": true
+  },
+  {
+    "id": "7",
+    "categoria": "Pizzas Matriz 🍕",
+    "nombre": "Pizza de la Casa (Precio Fijo)",
+    "desc": "Selecciona el tamaño ideal. Todos los sabores de esta categoría cuestan igual.",
+    "tipo_modulo": "matriz_precios",
+    "variaciones": [
+      { "nombre": "Grande", "precio": 27.00 },
+      { "nombre": "Familiar", "precio": 37.00 }
+    ],
+    "activo": true
+  },
+  {
+    "id": "8",
+    "categoria": "Pizzas Especiales 🍕",
+    "nombre": "Arma tu Pizza (Constructor)",
+    "desc": "Elige el tamaño y combina tus ingredientes favoritos.",
+    "tipo_modulo": "constructor_libre",
+    "variaciones": [
+      { "nombre": "Grande", "precio": 25.00, "limite_ingredientes": 4 },
+      { "nombre": "Familiar", "precio": 35.00, "limite_ingredientes": 5 }
+    ],
+    "ingredientes_disponibles": [
+      "Jamón", "Pepperoni", "Champiñones", "Piña", "Tocino", "Aceitunas", "Cebolla", "Pimiento"
+    ],
     "activo": true
   }
 ]
