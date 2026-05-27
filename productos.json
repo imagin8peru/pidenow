@@ -1,7 +1,7 @@
 [
   {
     "id": 1,
-    "categoria": "Pizzas 🍕",
+    "categoria": "Pizzas Ricas🍕",
     "nombre": "Pizza Americana NYORKER",
     "desc": "Salsa de tomate, muzzarella y jamón inglés.",
     "tipo_modulo": "simple",
@@ -10,7 +10,7 @@
   },
   {
     "id": 2,
-    "categoria": "Pizzas 🍕",
+    "categoria": "Pizzas Ricas🍕",
     "nombre": "Pizza Pepperoni NYORKER",
     "desc": "Salsa de tomate, muzzarella y harto pepperoni americano.",
     "tipo_modulo": "simple",
