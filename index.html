@@ -339,8 +339,8 @@ async function inicializarAplicacion() {
   try {
     const timestamp = Date.now();
     const [resConfig, resProductos] = await Promise.all([
-      fetch(`https://raw.githubusercontent.com/imagin8peru/pidenow/main/config.json?v=${timestamp}`),
-      fetch(`https://raw.githubusercontent.com/imagin8peru/pidenow/main/productos.json?v=${timestamp}`)
+      fetch("https://raw.githubusercontent.com/imagin8peru/pidenow/main/config.json?v=" + timestamp),
+      fetch("https://raw.githubusercontent.com/imagin8peru/pidenow/main/productos.json?v=" + timestamp)
     ]);
     CONFIG = await resConfig.json();
     PRODUCTOS = await resProductos.json();
@@ -353,21 +353,19 @@ async function inicializarAplicacion() {
 }
 
 function aplicarConfiguracion() {
-  document.title = `${CONFIG.nombre_restaurante} - Pidenow`;
+  document.title = CONFIG.nombre_restaurante + " - Pidenow";
 
   const appContainer = document.querySelector('.app-container');
   const maintenanceContainer = document.getElementById('maintenance-container');
   const banner = document.getElementById('app-banner');
 
-  // INYECCIÓN DINÁMICA DE CABECERA PREMIUM (Fondo de Portada)
   const headerBg = document.getElementById('app-header-bg');
   if (CONFIG.url_header && CONFIG.url_header.trim() !== '') {
-    headerBg.style.backgroundImage = `url('${CONFIG.url_header.trim()}')`;
+    headerBg.style.backgroundImage = "url('" + CONFIG.url_header.trim() + "')";
   } else {
     headerBg.style.backgroundColor = '#1a1a1a'; 
   }
 
-  // VALIDACIÓN Y RENDERIZADO DEL LOGO COMERCIAL VS TEXTO PLANO
   const logoImg = document.getElementById('app-logo');
   const nombreTxt = document.getElementById('app-nombre-restaurante');
   
@@ -395,7 +393,7 @@ function aplicarConfiguracion() {
     if (textoLimpio.includes(".jpg") || textoLimpio.includes(".png") || textoLimpio.includes(".webp") || textoLimpio.includes("http")) {
       maintenanceContainer.style.display = 'none';
       appContainer.style.display = 'flex';
-      banner.innerHTML = `<img src="${CONFIG.banner_texto.trim()}" alt="Promoción Especial">`;
+      banner.innerHTML = '<img src="' + CONFIG.banner_texto.trim() + '" alt="Promoción Especial">';
       banner.style.display = 'block';
       banner.style.background = 'transparent';
       banner.style.padding = '0';
@@ -428,7 +426,7 @@ function aplicarConfiguracion() {
     const opt = document.createElement('option');
     opt.value = z.nombre;
     opt.setAttribute('data-costo', z.costo.toFixed(2));
-    opt.innerText = `${z.nombre} - S/ ${z.costo.toFixed(2)}`;
+    opt.innerText = z.nombre + " - S/ " + z.costo.toFixed(2);
     selectZona.appendChild(opt);
   });
   manejarCambioZona();
@@ -466,7 +464,7 @@ function renderizarMenu() {
       let htmlControlesBotones = '';
 
       if (!p.tipo_modulo || p.tipo_modulo === 'simple') {
-        textoPrecio = `S/ ${p.precio.toFixed(2)}`;
+        textoPrecio = "S/ " + p.precio.toFixed(2);
         htmlControlesBotones = `
           <button class="control-btn btn-menos" data-id="${p.id}">−</button>
           <span id="qty-${p.id}" class="qty-num">0</span>
@@ -475,7 +473,7 @@ function renderizarMenu() {
       } else {
         const precios = p.variaciones.map(v => v.precio);
         const minPrecio = Math.min(...precios);
-        textoPrecio = `Desde S/ ${minPrecio.toFixed(2)}`;
+        textoPrecio = "Desde S/ " + minPrecio.toFixed(2);
         
         if (p.tipo_modulo === 'matriz_precios') {
           htmlControlesBotones = `<button class="cart-btn" onclick="abrirMatrizPrecios('${p.id}')" style="font-size:0.85rem; padding:8px 12px;">Elegir 🍕</button>`;
@@ -484,7 +482,6 @@ function renderizarMenu() {
         }
       }
 
-      // Validación dinámica: si existe imagen en Cloudinary, genera su contenedor HTML
       let htmlFoto = '';
       if (p.img && p.img.trim() !== '') {
         htmlFoto = `
@@ -511,14 +508,14 @@ function renderizarMenu() {
       `;
     });
     
-    item.innerHTML = `<div class="accordion-header"><span>${cat}</span><span class="accordion-icon">▼</span></div><div class="accordion-content">${htmlProductos}</div>`;
+    item.innerHTML = `<div class="accordion-header"><span>` + cat + `</span><span class="accordion-icon">▼</span></div><div class="accordion-content">` + htmlProductos + `</div>`;
     container.appendChild(item);
   });
 
   configurarEventos();
   
   for (const id in memoriaCarrito) {
-    const elQty = document.getElementById(`qty-${id}`);
+    const elQty = document.getElementById("qty-" + id);
     if (elQty && typeof memoriaCarrito[id] === 'number') {
       elQty.innerText = memoriaCarrito[id];
     }
@@ -547,7 +544,7 @@ function modificarCarrito(productoId, cambio) {
   if (nuevaCant < 0) nuevaCant = 0;
   if (nuevaCant === 0) { delete memoriaCarrito[productoId]; } else { memoriaCarrito[productoId] = nuevaCant; }
   
-  const elQty = document.getElementById(`qty-${productoId}`);
+  const elQty = document.getElementById("qty-" + productoId);
   if (elQty) elQty.innerText = nuevaCant;
   
   calcularPrecios();
@@ -573,8 +570,8 @@ function abrirMatrizPrecios(productoId) {
   producto.variaciones.forEach((v, index) => {
     html += `
       <label class="modal-radio-row">
-        <input type="radio" name="saas-matriz-radio" value="${index}" onchange="saasItemTemporal.seleccionado = { nombre: '${v.nombre}', precio: ${v.precio} }">
-        <div class="modal-row-title">${v.nombre} — S/ ${v.precio.toFixed(2)}</div>
+        <input type="radio" name="saas-matriz-radio" value="` + index + `" onchange="saasItemTemporal.seleccionado = { nombre: '${v.nombre}', precio: ${v.precio} }">
+        <div class="modal-row-title">${v.nombre} — S/ ` + v.precio.toFixed(2) + `</div>
       </label>
     `;
   });
@@ -613,7 +610,7 @@ function renderizarCuerpoConstructor() {
   const producto = PRODUCTOS.find(p => p.id == saasItemTemporal.id);
   
   document.getElementById('saas-modal-titulo').innerText = saasItemTemporal.nombreBase;
-  document.getElementById('saas-modal-subtitulo').innerText = `Formato: ${saasItemTemporal.variacionNombre}`;
+  document.getElementById('saas-modal-subtitulo').innerText = "Formato: " + saasItemTemporal.variacionNombre;
   
   let totalPorciones = 0;
   for (const ing in saasItemTemporal.seleccionados) {
@@ -630,8 +627,8 @@ function renderizarCuerpoConstructor() {
     const activo = saasItemTemporal.variacionNombre === v.nombre ? 'checked' : '';
     html += `
       <label style="flex:1; text-align:center; font-weight:700; font-size:0.9rem; cursor:pointer;">
-        <input type="radio" name="saas-size-toggle" value="${v.nombre}" ${activo} onchange="cambiarTamañoConstructor('${v.nombre}', ${v.precio}, ${v.limite_ingredientes})">
-        ${v.nombre}
+        <input type="radio" name="saas-size-toggle" value="` + v.nombre + `" ` + activo + ` onchange="cambiarTamañoConstructor('${v.nombre}', ${v.precio}, ${v.limite_ingredientes})">
+        ` + v.nombre + `
       </label>
     `;
   });
@@ -643,11 +640,11 @@ function renderizarCuerpoConstructor() {
     
     html += `
       <div class="modal-ingrediente-row">
-        <div class="modal-row-title">${ing}</div>
+        <div class="modal-row-title">` + ing + `</div>
         <div class="modal-counter-wrapper">
-          <button class="modal-counter-btn" onclick="modificarCantidadIngrediente('${ing}', -1)">−</button>
-          <span class="modal-counter-num">${cantidadActual}</span>
-          <button class="modal-counter-btn" onclick="modificarCantidadIngrediente('${ing}', 1)" ${deshabilitarMas}>+</button>
+          <button class="modal-counter-btn" onclick="modificarCantidadIngrediente('` + ing + `', -1)">−</button>
+          <span class="modal-counter-num">` + cantidadActual + `</span>
+          <button class="modal-counter-btn" onclick="modificarCantidadIngrediente('` + ing + `', 1)" ` + deshabilitarMas + `>+</button>
         </div>
       </div>
     `;
@@ -707,10 +704,10 @@ function procesarSeleccionSaasModal() {
   if (saasItemTemporal.tipo_modulo === 'matriz_precios') {
     if (!saasItemTemporal.seleccionado) { alert("Por favor, selecciona una opción."); return; }
     
-    carritoId = `${saasItemTemporal.id}-${saasItemTemporal.seleccionado.nombre}`;
+    carritoId = saasItemTemporal.id + "-" + saasItemTemporal.seleccionado.nombre;
     itemCarrito = {
       id: saasItemTemporal.id,
-      nombre: `${saasItemTemporal.nombreBase} (${saasItemTemporal.seleccionado.nombre})`,
+      nombre: saasItemTemporal.nombreBase + " (" + saasItemTemporal.seleccionado.nombre + ")",
       precio: saasItemTemporal.seleccionado.precio,
       esComplejo: true
     };
@@ -726,18 +723,18 @@ function procesarSeleccionSaasModal() {
       const cant = saasItemTemporal.seleccionados[ing];
       if (cant > 0) {
         totalPorciones += cant;
-        stringKeyPartes.push(`${ing}x${cant}`);
-        arrayDetalleIngredientes.push(cant > 1 ? `${ing} (x${cant})` : ing);
+        stringKeyPartes.push(ing + "x" + cant);
+        arrayDetalleIngredientes.push(cant > 1 ? ing + " (x" + cant + ")" : ing);
       }
     });
 
     if (totalPorciones === 0) { alert("Elige al menos 1 ingrediente para armar tu pedido."); return; }
     
-    carritoId = `${saasItemTemporal.id}-${saasItemTemporal.variacionNombre}-${stringKeyPartes.join("-")}`;
+    carritoId = saasItemTemporal.id + "-" + saasItemTemporal.variacionNombre + "-" + stringKeyPartes.join("-");
     
     itemCarrito = {
       id: saasItemTemporal.id,
-      nombre: `${saasItemTemporal.nombreBase} (${saasItemTemporal.variacionNombre})`,
+      nombre: saasItemTemporal.nombreBase + " (" + saasItemTemporal.variacionNombre + ")",
       precio: saasItemTemporal.precio,
       detalles: arrayDetalleIngredientes.join(", "),
       esComplejo: true,
@@ -773,10 +770,9 @@ function calcularPrecios() {
     let cantidad = 0, precioUnitario = 0, nombreMostrar = "";
 
     if (item && item.esComplejo) {
-      amount = item.cantidad;
       cantidad = item.cantidad;
       precioUnitario = item.precio;
-      nombreMostrar = item.nombre + (item.detalles ? `<br><small style="color:#6c757d; font-weight:500;">➔ ${item.detalles}</small>` : '');
+      nombreMostrar = item.nombre + (item.detalles ? `<br><small style="color:#6c757d; font-weight:500;">➔ ` + item.detalles + `</small>` : '');
       if (item.esConstructor) contadorPizzasConstructor += cantidad;
     } else {
       cantidad = item;
@@ -792,8 +788,8 @@ function calcularPrecios() {
       const subtotalItem = precioUnitario * cantidad;
       montoSubtotal += subtotalItem;
       htmlDesglose += `<div class="item-row" style="align-items: flex-start; margin-bottom: 6px;">
-        <span><span class="item-qty">${cantidad}x</span><span class="item-name"> ${nombreMostrar}</span></span>
-        <span>S/ ${subtotalItem.toFixed(2)}</span>
+        <span><span class="item-qty">` + cantidad + `x</span><span class="item-name"> ` + nombreMostrar + `</span></span>
+        <span>S/ ` + subtotalItem.toFixed(2) + `</span>
       </div>`;
     }
   }
@@ -802,7 +798,7 @@ function calcularPrecios() {
   if (contadorPizzasConstructor >= 2) {
     const gaseosasGratis = Math.floor(contadorPizzasConstructor / 2);
     regaloHtml = `<div class="item-row" style="color: #137333; font-weight: 700; margin-top: 4px; padding-top: 4px; border-top: 1px dashed #e9ecef;">
-      <span>🎁 ¡PROMO ACTIVADA! ${gaseosasGratis}x Gaseosa Gratis</span>
+      <span>🎁 ¡PROMO ACTIVADA! ` + gaseosasGratis + `x Gaseosa Gratis</span>
       <span>S/ 0.00</span>
     </div>`;
   }
@@ -812,16 +808,16 @@ function calcularPrecios() {
 
   if (totalProductos > 0) {
     if (checkoutContainer.style.display !== 'flex') bar.style.display = 'flex';
-    document.getElementById('cart-qty-text').innerText = `${totalProductos} productos`;
-    document.getElementById('cart-total-text').innerText = `S/ ${montoSubtotal.toFixed(2)}`;
+    document.getElementById('cart-qty-text').innerText = totalProductos + " productos";
+    document.getElementById('cart-total-text').innerText = "S/ " + montoSubtotal.toFixed(2);
     document.getElementById('checkout-items-list').innerHTML = htmlDesglose + regaloHtml;
 
     const selectZona = document.getElementById('form-zona');
     const costoDelivery = selectZona.options.length ? parseFloat(selectZona.options[selectZona.selectedIndex].getAttribute('data-costo')) : 0;
     montoTotalGlobal = montoSubtotal + costoDelivery;
-    document.getElementById('sum-subtotal').innerText = `S/ ${montoSubtotal.toFixed(2)}`;
-    document.getElementById('sum-delivery').innerText = `S/ ${costoDelivery.toFixed(2)}`;
-    document.getElementById('sum-total').innerText = `S/ ${montoTotalGlobal.toFixed(2)}`;
+    document.getElementById('sum-subtotal').innerText = "S/ " + montoSubtotal.toFixed(2);
+    document.getElementById('sum-delivery').innerText = "S/ " + costoDelivery.toFixed(2);
+    document.getElementById('sum-total').innerText = "S/ " + montoTotalGlobal.toFixed(2);
   } else {
     bar.style.display = 'none';
     checkoutContainer.style.display = 'none';
@@ -882,22 +878,22 @@ function prepararEnvio() {
     } else {
       const producto = PRODUCTOS.find(p => p.id == id);
       if (producto) {
-        textoWA += `• ${memoriaCarrito[id]}x ${producto.nombre} (S/ ${(producto.precio * memoriaCarrito[id]).toFixed(2)})\n`;
+        textoWA += `• ` + memoriaCarrito[id] + `x ` + producto.nombre + ` (S/ ` + (producto.precio * memoriaCarrito[id]).toFixed(2) + `)\n`;
       }
     }
   }
 
   if (contadorPizzasConstructor >= 2) {
     const gaseosasGratis = Math.floor(contadorPizzasConstructor / 2);
-    textoWA += `\n🎁 *REGALO PROMO:* ${gaseosasGratis}x Gaseosa Gratis (Por la compra de 2 pizzas)\n`;
+    textoWA += `\n🎁 *REGALO PROMO:* ` + gaseosasGratis + `x Gaseosa Gratis (Por la compra de 2 pizzas)\n`;
   }
 
-  textoWA += `\n💵 *Pago:* ${etiquetasPago[metodoPagoSeleccionado] || metodoPagoSeleccionado}\n`;
+  textoWA += `\n💵 *Pago:* ` + (etiquetasPago[metodoPagoSeleccionado] || metodoPagoSeleccionado) + `\n`;
   if (metodoPagoSeleccionado === 'efectivo') {
     const cuanto = document.getElementById('form-efectivo-monto').value;
-    textoWA += ` Paga con: S/ ${cuanto || montoTotalGlobal}\n`;
+    textoWA += ` Paga con: S/ ` + (cuanto || montoTotalGlobal) + `\n`;
   }
-  textoWA += `💰 *TOTAL A PAGAR: S/ ${montoTotalGlobal.toFixed(2)}*`;
+  textoWA += `💰 *TOTAL A PAGAR: S/ ` + montoTotalGlobal.toFixed(2) + `*`;
 
   enlaceWhatsAppGlobal = `https://api.whatsapp.com/send?phone=${CONFIG.whatsapp_receptor}&text=${encodeURIComponent(textoWA)}`;
 
