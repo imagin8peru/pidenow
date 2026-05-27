@@ -8,6 +8,7 @@
 * { box-sizing: border-box; margin: 0; padding: 0; font-family: system-ui, -apple-system, sans-serif; }
 body { background-color: #f8f9fa; color: #212529; padding: 16px; padding-bottom: 110px; display: flex; flex-direction: column; align-items: center; }
 .app-container { width: 100%; max-width: 480px; display: flex; flex-direction: column; gap: 16px; }
+
 /* CABECERA INMERSIVA PREMIUM DE 3 CAPAS */
 .header-inmersivo { 
   position: relative; 
@@ -23,7 +24,6 @@ body { background-color: #f8f9fa; color: #212529; padding: 16px; padding-bottom:
   align-items: center; 
   justify-content: center; 
 }
-/* Capa 2: Gradiente oscuro que se desvanece hacia abajo para dar contraste al texto y logo */
 .header-overlay { 
   position: absolute; 
   top: 0; 
@@ -33,7 +33,6 @@ body { background-color: #f8f9fa; color: #212529; padding: 16px; padding-bottom:
   background: linear-gradient(to bottom, rgba(0,0,0,0.6) 30%, rgba(0,0,0,0.2) 100%); 
   z-index: 1; 
 }
-/* Capa 3: Elementos flotantes frontales */
 .header-content { 
   position: relative; 
   z-index: 2; 
@@ -59,6 +58,7 @@ body { background-color: #f8f9fa; color: #212529; padding: 16px; padding-bottom:
 }
 .announcement-banner { background-color: #fff3cd; border-left: 5px solid #ffc107; color: #856404; padding: 16px; border-radius: 12px; font-size: 0.95rem; line-height: 1.4; font-weight: 500; display: none; }
 .announcement-banner img { width: 100%; height: auto; border-radius: 8px; display: block; }
+
 /* ACORDEONES VERTICALES */
 .accordion-item { background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 6px rgba(0,0,0,0.02); }
 .accordion-header { background: white; padding: 18px; font-size: 1.1rem; font-weight: 700; display: flex; justify-content: space-between; align-items: center; cursor: pointer; border-bottom: 1px solid #f1f3f5; user-select: none; }
@@ -66,7 +66,8 @@ body { background-color: #f8f9fa; color: #212529; padding: 16px; padding-bottom:
 .accordion-content { display: none; padding: 12px; flex-direction: column; gap: 12px; background: #fafafa; }
 .accordion-item.active .accordion-content { display: flex; }
 .accordion-item.active .accordion-icon { transform: rotate(180deg); }
-/* TARJETAS DE PRODUCTO BLINDADAS (CSS CORREGIDO) */
+
+/* TARJETAS DE PRODUCTO BLINDADAS (CSS CORREGIDO Y LIMPIO) */
 .product-card { 
   display: flex; 
   background: white; 
@@ -77,6 +78,13 @@ body { background-color: #f8f9fa; color: #212529; padding: 16px; padding-bottom:
   align-items: center; 
   justify-content: space-between;
   min-height: 110px; 
+}
+.product-details-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex: 1;
+  min-width: 0;
 }
 .product-img-container { 
   width: 80px; 
@@ -93,13 +101,6 @@ body { background-color: #f8f9fa; color: #212529; padding: 16px; padding-bottom:
   width: 100%; 
   height: 100%; 
   object-fit: cover; 
-}
-.product-details-wrapper {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-  flex: 1;
-  min-width: 0;
 }
 .product-info { 
   flex: 1; 
@@ -134,9 +135,9 @@ body { background-color: #f8f9fa; color: #212529; padding: 16px; padding-bottom:
   border-radius: 20px; 
   flex-shrink: 0;
 }
-
 .control-btn { border: none; background: transparent; font-size: 1.4rem; font-weight: 700; color: #495057; cursor: pointer; width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; user-select: none; }
 .qty-num { font-weight: 700; font-size: 1.1rem; min-width: 20px; text-align: center; color: #212529; }
+
 /* FORMULARIO DE CIERRE */
 .checkout-section { display: none; background: white; padding: 20px; border-radius: 16px; box-shadow: 0 4px 6px rgba(0,0,0,0.02); flex-direction: column; gap: 16px; margin-top: 8px; }
 .section-title { font-size: 1.2rem; font-weight: 800; color: #1a1a1a; border-bottom: 2px solid #f1f3f5; padding-bottom: 8px; margin-bottom: 4px; }
@@ -144,11 +145,13 @@ body { background-color: #f8f9fa; color: #212529; padding: 16px; padding-bottom:
 .form-group label { font-size: 0.9rem; font-weight: 700; color: #495057; }
 .form-control { width: 100%; padding: 12px; border: 1px solid #ced4da; border-radius: 10px; font-size: 1rem; background: #f8f9fa; }
 .form-control:focus { outline: none; border-color: #22c55e; background: white; }
+
 /* MÉTODOS DE PAGO */
 .payment-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
 .payment-method { border: 1px solid #ced4da; padding: 12px; text-align: center; border-radius: 10px; font-weight: 700; cursor: pointer; background: #f8f9fa; user-select: none; }
 .payment-method.selected { border-color: #22c55e; background-color: #e6f4ea; color: #137333; }
 #group-efectivo { display: none; }
+
 /* RESUMEN */
 .summary-box { background: #f8f9fa; padding: 16px; border-radius: 12px; border: 1px solid #e9ecef; display: flex; flex-direction: column; gap: 10px; }
 .cart-items-list { display: flex; flex-direction: column; gap: 6px; padding-bottom: 8px; border-bottom: 1px solid #e9ecef; }
@@ -158,6 +161,7 @@ body { background-color: #f8f9fa; color: #212529; padding: 16px; padding-bottom:
 .summary-row { display: flex; justify-content: space-between; font-size: 0.9rem; color: #495057; }
 .summary-total { display: flex; justify-content: space-between; font-size: 1.2rem; font-weight: 800; color: #1a1a1a; border-top: 1px dashed #ced4da; padding-top: 8px; margin-top: 4px; }
 .btn-submit { background-color: #22c55e; color: white; border: none; width: 100%; padding: 16px; border-radius: 12px; font-size: 1.1rem; font-weight: 700; cursor: pointer; text-align: center; margin-top: 8px; box-shadow: 0 4px 12px rgba(34,197,94,0.2); }
+
 /* Banner local cerrado */
 .banner-cerrado {
   display: none;
@@ -171,12 +175,14 @@ body { background-color: #f8f9fa; color: #212529; padding: 16px; padding-bottom:
   text-align: center;
   line-height: 1.4;
 }
+
 /* BARRA FLOTANTE */
 .cart-floating-bar { position: fixed; bottom: 16px; left: 50%; transform: translateX(-50%); width: calc(100% - 32px); max-width: 448px; background-color: #1a1a1a; color: white; padding: 16px 20px; border-radius: 16px; display: none; justify-content: space-between; align-items: center; box-shadow: 0 8px 24px rgba(0,0,0,0.2); z-index: 999; }
 .cart-info { display: flex; flex-direction: column; gap: 2px; }
 .cart-qty { font-size: 0.85rem; color: #adb5bd; font-weight: 500; }
 .cart-total { font-size: 1.2rem; font-weight: 800; color: #ffffff; }
 .cart-btn { background-color: #22c55e; color: white; border: none; padding: 10px 18px; border-radius: 10px; font-size: 0.95rem; font-weight: 700; cursor: pointer; }
+
 /* MODAL EMERGENTE DE PAGO */
 .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 10000; justify-content: center; align-items: center; padding: 16px; }
 .modal-box { background: white; padding: 24px; border-radius: 20px; width: 100%; max-width: 400px; text-align: center; display: flex; flex-direction: column; gap: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.3); }
@@ -204,15 +210,13 @@ body { background-color: #f8f9fa; color: #212529; padding: 16px; padding-bottom:
 
 <div id="maintenance-container" style="display: none; max-width: 480px; width: 100%; background: white; padding: 40px 24px; border-radius: 16px; box-shadow: 0 4px 6px rgba(0,0,0,0.02); text-align: center; margin-top: 40px;">
   <h2 style="font-size: 1.8rem; font-weight: 800; color: #dc2626; margin-bottom: 12px;">⚠️ Local Cerrado Temporalmente</h2>
-  <p id="maintenance-text" style="font-size: 1.05rem; color: #495057; line-height: 1.5; font-weight: 500;">Estamos haciendo mejoras en el sistema. Volveremos muy pronto para tomar tu pedido.</p>
+  <p id="maintenance-text" style="font-size: 1.05rem; color: #495057; line-height: 1.5; font-weight: 500;">Estamos haciendo mejoras en el systema. Volveremos muy pronto para tomar tu pedido.</p>
 </div>
 
 <div class="app-container">
-  <!-- Cabecera de 3 Capas: Fondo (Header), Gradiente (Overlay) y Frente (Logo + Estado) -->
   <header id="app-header-bg" class="header-inmersivo" style="background-image: url('');">
     <div class="header-overlay"></div>
     <div class="header-content">
-      <!-- El nombre del restaurante se mantendrá oculto pero activo para la app -->
       <h1 id="app-nombre-restaurante" style="display: none;">Cargando...</h1>
       <img id="app-logo" class="header-logo" src="" alt="Logo" style="display: none;">
       <div id="app-status-badge" class="status-badge">● Abierto ahora</div>
@@ -246,7 +250,7 @@ body { background-color: #f8f9fa; color: #212529; padding: 16px; padding-bottom:
       <input type="text" id="form-referencia" class="form-control" placeholder="Frente al parque, portón marrón...">
     </div>
     <div class="form-group">
-      <label>Notas adicionales</label>
+      <label>Notes adicionales</label>
       <input type="text" id="form-notas" class="form-control" placeholder="Ej. Sin cebolla, harto orégano...">
     </div>
 
@@ -360,7 +364,6 @@ function aplicarConfiguracion() {
   if (CONFIG.url_header && CONFIG.url_header.trim() !== '') {
     headerBg.style.backgroundImage = `url('${CONFIG.url_header.trim()}')`;
   } else {
-    // Fondo oscuro elegante por defecto si no hay foto de portada en Cloudinary
     headerBg.style.backgroundColor = '#1a1a1a'; 
   }
 
@@ -376,7 +379,6 @@ function aplicarConfiguracion() {
     nombreTxt.innerText = CONFIG.nombre_restaurante;
     nombreTxt.style.display = 'block';
     logoImg.style.display = 'none';
-    // Estilos rápidos para que el texto plano resalte sobre el fondo inmersivo
     nombreTxt.style.color = '#ffffff';
     nombreTxt.style.fontSize = '1.5rem';
     nombreTxt.style.fontWeight = '800';
@@ -494,7 +496,7 @@ function renderizarMenu() {
 
       htmlProductos += `
         <div class="product-card">
-          <div class="product-details-wrapper" style="display: flex; align-items: center; gap: 14px; flex: 1; min-width: 0;">
+          <div class="product-details-wrapper">
             ${htmlFoto}
             <div class="product-info">
               <div class="product-name">${p.nombre}</div>
@@ -595,10 +597,9 @@ function abrirConstructorLibre(productoId) {
     precio: varInicial.precio,
     limite: varInicial.limite_ingredientes,
     ingredientesDisponibles: producto.ingredientes_disponibles,
-    seleccionados: {} // Cambiado a objeto clave-valor para rastrear la cantidad (ej. {"Jamón": 2})
+    seleccionados: {}
   };
 
-  // Inicializar cantidades de ingredientes en cero
   producto.ingredientes_disponibles.forEach(ing => {
     saasItemTemporal.seleccionados[ing] = 0;
   });
@@ -614,7 +615,6 @@ function renderizarCuerpoConstructor() {
   document.getElementById('saas-modal-titulo').innerText = saasItemTemporal.nombreBase;
   document.getElementById('saas-modal-subtitulo').innerText = `Formato: ${saasItemTemporal.variacionNombre}`;
   
-  // Calcular el total acumulado de porciones seleccionadas actualmente
   let totalPorciones = 0;
   for (const ing in saasItemTemporal.seleccionados) {
     totalPorciones += saasItemTemporal.seleccionados[ing];
@@ -625,7 +625,6 @@ function renderizarCuerpoConstructor() {
 
   let html = '';
 
-  // Selector dinámico de tamaño superior
   html += `<div style="background:#f1f3f5; padding:10px; border-radius:12px; display:flex; gap:10px; margin-bottom:10px;">`;
   producto.variaciones.forEach(v => {
     const activo = saasItemTemporal.variacionNombre === v.nombre ? 'checked' : '';
@@ -638,11 +637,8 @@ function renderizarCuerpoConstructor() {
   });
   html += `</div>`;
 
-  // Listado de los ingredientes con controles de cantidad mas y menos
   producto.ingredientes_disponibles.forEach(ing => {
     const cantidadActual = saasItemTemporal.seleccionados[ing] || 0;
-    
-    // Si ya llegamos al tope general, deshabilitamos el botón más
     const deshabilitarMas = totalPorciones >= saasItemTemporal.limite ? 'disabled style="opacity: 0.3; cursor: not-allowed;"' : '';
     
     html += `
@@ -666,14 +662,13 @@ function modificarCantidadIngrediente(ingrediente, cambio) {
   
   if (nuevaCantidad < 0) return;
   
-  // Calcular porciones de otros ingredientes para validar tope global
   let totalPorcionesRestantes = 0;
   for (const ing in saasItemTemporal.seleccionados) {
     if (ing !== ingrediente) totalPorcionesRestantes += saasItemTemporal.seleccionados[ing];
   }
   
   if (totalPorcionesRestantes + nuevaCantidad > saasItemTemporal.limite) {
-    return; // Evita pasarse de los 4 o 5 ingredientes requeridos por el modelo
+    return;
   }
   
   saasItemTemporal.seleccionados[ingrediente] = nuevaCantidad;
@@ -685,13 +680,11 @@ function cambiarTamañoConstructor(nombre, precio, limite) {
   saasItemTemporal.precio = precio;
   saasItemTemporal.limite = limite;
   
-  // Calcular total actual de ingredientes
   let totalPorciones = 0;
   for (const ing in saasItemTemporal.seleccionados) {
     totalPorciones += saasItemTemporal.seleccionados[ing];
   }
   
-  // Si al cambiar a un formato más chico se excede el nuevo tope, reseteamos las porciones a cero
   if (totalPorciones > limite) {
     for (const ing in saasItemTemporal.seleccionados) {
       saasItemTemporal.seleccionados[ing] = 0;
@@ -723,11 +716,9 @@ function procesarSeleccionSaasModal() {
     };
   } 
   else if (saasItemTemporal.tipo_modulo === 'constructor_libre') {
-    // Agrupar y formatear solo los ingredientes elegidos con cantidad > 0
     let arrayDetalleIngredientes = [];
     let totalPorciones = 0;
     
-    // Ordenar llaves alfabéticamente para mantener consistencia de IDs únicos en el carro
     const ingredientesOrdenados = Object.keys(saasItemTemporal.seleccionados).sort();
     
     let stringKeyPartes = [];
@@ -736,7 +727,6 @@ function procesarSeleccionSaasModal() {
       if (cant > 0) {
         totalPorciones += cant;
         stringKeyPartes.push(`${ing}x${cant}`);
-        // Formato visual amigable (ej: "Jamón (x2), Pepperoni")
         arrayDetalleIngredientes.push(cant > 1 ? `${ing} (x${cant})` : ing);
       }
     });
@@ -783,6 +773,7 @@ function calcularPrecios() {
     let cantidad = 0, precioUnitario = 0, nombreMostrar = "";
 
     if (item && item.esComplejo) {
+      amount = item.cantidad;
       cantidad = item.cantidad;
       precioUnitario = item.precio;
       nombreMostrar = item.nombre + (item.detalles ? `<br><small style="color:#6c757d; font-weight:500;">➔ ${item.detalles}</small>` : '');
