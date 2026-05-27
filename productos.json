@@ -27,15 +27,7 @@
     "nombre": "Inca Kola 1 Litro",
     "desc": "Heladita, como debe ser.",
     "precio": 8,
-    "activo": true
-  },
-  {
-    "id": "5",
-    "nombre": "Taco Chacarero",
-    "desc": "4 carnes y de todo",
-    "precio": 37.5,
-    "categoria": "Tacos 🌮",
-    "activo": true
+    "activo": false
   },
   {
     "id": "6",
