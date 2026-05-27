@@ -388,8 +388,8 @@ function renderizarZonas() {
     const row = document.createElement('div');
     row.className = 'zona-row';
     row.innerHTML = `
-      <input type="text" class="zona-nombre-input form-control" value="${zona.nombre}" placeholder="Nombre de zona" onchange="actualizarZona(${index}, 'nombre', this.value)">
-      <input type="number" class="zona-costo-input form-control" value="${zona.costo}" min="0" step="0.50" placeholder="S/" onchange="actualizarZona(${index}, 'costo', this.value)">
+      <input type="text" class="zona-nombre-input" value="${zona.nombre}" placeholder="Nombre de zona" oninput="actualizarZona(${index}, 'nombre', this.value)" onfocus="this.select()">
+      <input type="number" class="zona-costo-input" value="${zona.costo}" min="0" step="0.50" placeholder="S/" oninput="actualizarZona(${index}, 'costo', this.value)" onfocus="this.select()">
       <button class="btn btn-danger btn-sm" onclick="eliminarZona(${index})">🗑️</button>
     `;
     contenedor.appendChild(row);
