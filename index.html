@@ -8,10 +8,55 @@
 * { box-sizing: border-box; margin: 0; padding: 0; font-family: system-ui, -apple-system, sans-serif; }
 body { background-color: #f8f9fa; color: #212529; padding: 16px; padding-bottom: 110px; display: flex; flex-direction: column; align-items: center; }
 .app-container { width: 100%; max-width: 480px; display: flex; flex-direction: column; gap: 16px; }
-/* HEADERS */
-.header { text-align: center; padding: 20px 0; background: white; border-radius: 16px; box-shadow: 0 4px 6px rgba(0,0,0,0.02); }
-.header h1 { font-size: 1.6rem; font-weight: 800; color: #1a1a1a; }
-.status-badge { display: inline-block; background-color: #e6f4ea; color: #137333; padding: 4px 12px; border-radius: 20px; font-size: 0.85rem; font-weight: 700; margin-top: 8px; }
+/* CABECERA INMERSIVA PREMIUM DE 3 CAPAS */
+.header-inmersivo { 
+  position: relative; 
+  width: 100%; 
+  height: 180px; 
+  border-radius: 16px; 
+  overflow: hidden; 
+  background-size: cover; 
+  background-position: center; 
+  box-shadow: 0 4px 10px rgba(0,0,0,0.05); 
+  display: flex; 
+  flex-direction: column; 
+  align-items: center; 
+  justify-content: center; 
+}
+/* Capa 2: Gradiente oscuro que se desvanece hacia abajo para dar contraste al texto y logo */
+.header-overlay { 
+  position: absolute; 
+  top: 0; 
+  left: 0; 
+  width: 100%; 
+  height: 100%; 
+  background: linear-gradient(to bottom, rgba(0,0,0,0.6) 30%, rgba(0,0,0,0.2) 100%); 
+  z-index: 1; 
+}
+/* Capa 3: Elementos flotantes frontales */
+.header-content { 
+  position: relative; 
+  z-index: 2; 
+  display: flex; 
+  flex-direction: column; 
+  align-items: center; 
+  gap: 8px; 
+  width: 100%; 
+  padding: 0 16px; 
+}
+.header-logo { 
+  height: 65px; 
+  max-width: 180px; 
+  object-fit: contain; 
+}
+.status-badge { 
+  display: inline-block; 
+  padding: 4px 12px; 
+  border-radius: 20px; 
+  font-size: 0.85rem; 
+  font-weight: 700; 
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1); 
+}
 .announcement-banner { background-color: #fff3cd; border-left: 5px solid #ffc107; color: #856404; padding: 16px; border-radius: 12px; font-size: 0.95rem; line-height: 1.4; font-weight: 500; display: none; }
 .announcement-banner img { width: 100%; height: auto; border-radius: 8px; display: block; }
 /* ACORDEONES VERTICALES */
@@ -101,9 +146,15 @@ body { background-color: #f8f9fa; color: #212529; padding: 16px; padding-bottom:
 </div>
 
 <div class="app-container">
-  <header class="header">
-    <h1 id="app-nombre-restaurante">Cargando...</h1>
-    <div id="app-status-badge" class="status-badge">● Abierto ahora</div>
+  <!-- Cabecera de 3 Capas: Fondo (Header), Gradiente (Overlay) y Frente (Logo + Estado) -->
+  <header id="app-header-bg" class="header-inmersivo" style="background-image: url('');">
+    <div class="header-overlay"></div>
+    <div class="header-content">
+      <!-- El nombre del restaurante se mantendrá oculto pero activo para la app -->
+      <h1 id="app-nombre-restaurante" style="display: none;">Cargando...</h1>
+      <img id="app-logo" class="header-logo" src="" alt="Logo" style="display: none;">
+      <div id="app-status-badge" class="status-badge">● Abierto ahora</div>
+    </div>
   </header>
 
   <div id="app-banner" class="announcement-banner"></div>
@@ -236,12 +287,38 @@ async function inicializarAplicacion() {
 }
 
 function aplicarConfiguracion() {
-  document.getElementById('app-nombre-restaurante').innerText = CONFIG.nombre_restaurante;
   document.title = `${CONFIG.nombre_restaurante} - Pidenow`;
 
   const appContainer = document.querySelector('.app-container');
   const maintenanceContainer = document.getElementById('maintenance-container');
   const banner = document.getElementById('app-banner');
+
+  // INYECCIÓN DINÁMICA DE CABECERA PREMIUM (Fondo de Portada)
+  const headerBg = document.getElementById('app-header-bg');
+  if (CONFIG.url_header && CONFIG.url_header.trim() !== '') {
+    headerBg.style.backgroundImage = `url('${CONFIG.url_header.trim()}')`;
+  } else {
+    // Fondo oscuro elegante por defecto si no hay foto de portada en Cloudinary
+    headerBg.style.backgroundColor = '#1a1a1a'; 
+  }
+
+  // VALIDACIÓN Y RENDERIZADO DEL LOGO COMERCIAL VS TEXTO PLANO
+  const logoImg = document.getElementById('app-logo');
+  const nombreTxt = document.getElementById('app-nombre-restaurante');
+  
+  if (CONFIG.url_logo && CONFIG.url_logo.trim() !== '') {
+    logoImg.src = CONFIG.url_logo.trim();
+    logoImg.style.display = 'block';
+    nombreTxt.style.display = 'none';
+  } else {
+    nombreTxt.innerText = CONFIG.nombre_restaurante;
+    nombreTxt.style.display = 'block';
+    logoImg.style.display = 'none';
+    // Estilos rápidos para que el texto plano resalte sobre el fondo inmersivo
+    nombreTxt.style.color = '#ffffff';
+    nombreTxt.style.fontSize = '1.5rem';
+    nombreTxt.style.fontWeight = '800';
+  }
 
   if (CONFIG.banner_activo && CONFIG.banner_texto) {
     const textoLimpio = CONFIG.banner_texto.toLowerCase();
