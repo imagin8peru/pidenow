@@ -668,7 +668,8 @@ function renderizarListasAdmin() {
     const listaPlatos = productosPorCategoria[nombreCategoria] || [];
     const totalPlatos = listaPlatos.length;
     
-    if (totalPlatos === 0) return;
+    // Si está vacía, igual creamos el contenedor pero no fallará al sincronizar
+    const mensajeVacioHTML = totalPlatos === 0 ? `<p style="text-align:center; color:#64748b; padding:14px; font-size:13px; font-style:italic;">Folder vacío. Añade un producto en esta categoría para verla en la carta.</p>` : '';
     
     if (acordeonesAbiertos[nombreCategoria] === undefined) {
       acordeonesAbiertos[nombreCategoria] = false;
@@ -737,6 +738,10 @@ function renderizarListasAdmin() {
       `;
       contenidoAcordeon.appendChild(fila);
     });
+
+    if (totalPlatos === 0) {
+      contenidoAcordeon.innerHTML = mensajeVacioHTML;
+    }
 
     itemAcordeon.innerHTML = cabeceraHTML;
     itemAcordeon.appendChild(contenidoAcordeon);
