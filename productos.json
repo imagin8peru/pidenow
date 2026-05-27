@@ -28,14 +28,14 @@
     "img": ""
   },
   {
-    "id": 4,
-    "categoria": "Bebidas 🥤",
+    "id": "4",
     "nombre": "Inca Kola 1 Litro",
     "desc": "Heladita, como debe ser.",
+    "img": "https://res.cloudinary.com/dtwjcqjkg/image/upload/v1779911064/cekvdmeihlxcdfqtxirg.jpg",
+    "categoria": "Bebidas 🥤",
     "tipo_modulo": "simple",
-    "precio": 8,
     "activo": true,
-    "img": ""
+    "precio": 8
   },
   {
     "id": "5",
