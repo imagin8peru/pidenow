@@ -36,5 +36,19 @@
     "efectivo": true
   },
   "recojo_local": true,
-  "local_abierto": true
+  "local_abierto": true,
+  "categorias": [
+    {
+      "nombre": "Sanguchones 🍔",
+      "activa": true
+    },
+    {
+      "nombre": "Combos 🎁",
+      "activa": true
+    },
+    {
+      "nombre": "Pizzas Matriz 🍕",
+      "activa": true
+    }
+  ]
 }
