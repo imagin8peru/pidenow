@@ -55,6 +55,32 @@ input:checked + .slider:before { transform: translateX(24px); }
 .pago-toggle-row.activo { border-color: #22c55e; background: #f0fdf4; }
 .pago-nombre { font-weight: 700; font-size: 0.95rem; }
 .pago-estado { font-size: 0.75rem; color: #6c757d; margin-top: 2px; }
+/* Botón abierto/cerrado */
+.btn-estado-local {
+  width: 100%;
+  padding: 18px;
+  border-radius: 14px;
+  border: none;
+  font-size: 1.2rem;
+  font-weight: 800;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  transition: all 0.2s ease;
+  letter-spacing: 0.5px;
+}
+.btn-estado-local.abierto {
+  background-color: #22c55e;
+  color: white;
+  box-shadow: 0 4px 14px rgba(34,197,94,0.35);
+}
+.btn-estado-local.cerrado {
+  background-color: #ef4444;
+  color: white;
+  box-shadow: 0 4px 14px rgba(239,68,68,0.35);
+}
 </style>
 </head>
 <body>
@@ -64,6 +90,11 @@ input:checked + .slider:before { transform: translateX(24px); }
   <h1>Panel de Control Pidenow</h1>
   <p>Configura la identidad, anuncios y el menú en tiempo real</p>
 </header>
+
+<!-- BOTÓN ABIERTO / CERRADO -->
+<button id="btn-estado-local" class="btn-estado-local abierto" onclick="toggleEstadoLocal()">
+  🟢 LOCAL ABIERTO
+</button>
 
 <!-- IDENTIDAD -->
 <section class="admin-card">
@@ -277,6 +308,9 @@ async function cargarDatos() {
     // Toggle de recojo en local
     document.getElementById('cfg-recojo-local').checked = CONFIG_LOCAL.recojo_local !== false;
 
+    // Estado abierto/cerrado
+    actualizarBotonEstadoLocal(CONFIG_LOCAL.local_abierto !== false);
+
     // Cargar métodos de pago del config (con fallback a todos activos)
     METODOS_PAGO_LOCAL = CONFIG_LOCAL.metodos_pago || { yape: true, plin: true, tarjeta: true, efectivo: true };
 
@@ -297,6 +331,51 @@ function inyectarConfiguracion() {
   document.getElementById('cfg-numero-pago').value = CONFIG_LOCAL.numero_pago_yape_plin || '';
   document.getElementById('cfg-whatsapp').value = CONFIG_LOCAL.whatsapp_receptor || '';
   document.getElementById('cfg-qr-pago').value = CONFIG_LOCAL.url_qr_pago || '';
+}
+
+// ── ESTADO ABIERTO / CERRADO ──────────────────────────────────
+
+function actualizarBotonEstadoLocal(abierto) {
+  const btn = document.getElementById('btn-estado-local');
+  if (abierto) {
+    btn.innerText = '🟢 LOCAL ABIERTO';
+    btn.className = 'btn-estado-local abierto';
+  } else {
+    btn.innerText = '🔴 LOCAL CERRADO';
+    btn.className = 'btn-estado-local cerrado';
+  }
+  CONFIG_LOCAL.local_abierto = abierto;
+}
+
+async function toggleEstadoLocal() {
+  const nuevoEstado = !CONFIG_LOCAL.local_abierto;
+  actualizarBotonEstadoLocal(nuevoEstado);
+
+  // Guardar solo este campo inmediatamente sin esperar al botón global
+  const paquete = {
+    tipo_accion: "ACTUALIZAR_CONFIGURACION",
+    config: { ...CONFIG_LOCAL, local_abierto: nuevoEstado },
+    productos: PRODUCTOS_LOCAL
+  };
+
+  const btn = document.getElementById('btn-estado-local');
+  btn.disabled = true;
+  btn.innerText = '⏳ Guardando...';
+
+  try {
+    const res = await fetch("https://n8n.imagin8.net.pe/webhook/admin-pidenow-update", {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(paquete)
+    });
+    if (!res.ok) throw new Error();
+  } catch (e) {
+    alert("Error al guardar el estado. Intenta de nuevo.");
+    actualizarBotonEstadoLocal(!nuevoEstado); // revertir
+  } finally {
+    btn.disabled = false;
+    actualizarBotonEstadoLocal(CONFIG_LOCAL.local_abierto);
+  }
 }
 
 // ── ZONAS DE DELIVERY ──────────────────────────────────────────
