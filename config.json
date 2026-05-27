@@ -34,5 +34,6 @@
     "tarjeta": true,
     "efectivo": true
   },
-  "recojo_local": true
+  "recojo_local": true,
+  "local_abierto": false
 }
