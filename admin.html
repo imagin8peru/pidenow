@@ -668,7 +668,7 @@ function renderizarListasAdmin() {
     const listaPlatos = productosPorCategoria[nombreCategoria] || [];
     const totalPlatos = listaPlatos.length;
     
-    // Si está vacía, igual creamos el contenedor pero no fallará al sincronizar
+    // Si está vacía, igual creamos el contenedor con el letrero interactivo
     const mensajeVacioHTML = totalPlatos === 0 ? `<p style="text-align:center; color:#64748b; padding:14px; font-size:13px; font-style:italic;">Folder vacío. Añade un producto en esta categoría para verla en la carta.</p>` : '';
     
     if (acordeonesAbiertos[nombreCategoria] === undefined) {
@@ -974,13 +974,10 @@ function procesarGuardadoGlobal() {
   CONFIG_LOCAL.metodos_pago = { ...METODOS_PAGO_LOCAL };
   CONFIG_LOCAL.categorias = CATEGORIAS_LOCAL.map(c => ({ nombre: c.nombre, activa: c.activa }));
 
-  const nombresCatValidas = CATEGORIAS_LOCAL.map(c => c.nombre);
-  const productosFinales = PRODUCTOS_LOCAL.filter(p => nombresCatValidas.includes(p.categoria));
-
   const paqueteSincronizacion = {
     tipo_accion: "ACTUALIZAR_CONFIGURACION",
     config: CONFIG_LOCAL,
-    productos: productosFinales
+    productos: PRODUCTOS_LOCAL
   };
 
   const botonSubmit = document.querySelector('.btn-block');
