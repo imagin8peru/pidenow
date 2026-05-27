@@ -30,6 +30,14 @@
     "activo": false
   },
   {
+    "id": "5",
+    "nombre": "Taco Chacarero",
+    "desc": "4 carnes y de todo",
+    "precio": 37.5,
+    "categoria": "Tacos 🌮",
+    "activo": true
+  },
+  {
     "id": "6",
     "nombre": "Pepsi 600 ml",
     "desc": "",
