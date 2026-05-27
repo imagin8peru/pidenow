@@ -344,7 +344,7 @@ function calcularPrecios() {
 
   if (totalProductos > 0) {
     if (checkoutContainer.style.display !== 'flex') bar.style.display = 'flex';
-    document.getElementById('cart-qty-text').innerText = `${totalProductos} productos`;
+    document.getElementById('cart-qty-text').innerText = `${totalProductos} products`;
     document.getElementById('cart-total-text').innerText = `S/ ${montoSubtotal.toFixed(2)}`;
     document.getElementById('checkout-items-list').innerHTML = htmlDesglose;
 
@@ -402,16 +402,31 @@ function prepararEnvio() {
     if (referencia) textoWA += `🔍 *Ref:* ${referencia}\n`;
   }
   if (notas) textoWA += `📝 *Notas:* ${notas}\n`;
+  
   textoWA += `\n🧾 *DETALLE DEL PEDIDO:*\n`;
   for (const id in memoriaCarrito) {
     const producto = PRODUCTOS.find(p => p.id == id);
     textoWA += `• ${memoriaCarrito[id]}x ${producto.nombre} (S/ ${(producto.precio * memoriaCarrito[id]).toFixed(2)})\n`;
   }
-  textoWA += `\n💵 *Pago:* ${etiquetasPago[metodoPagoSeleccionado] || metodoPagoSeleccionado}\n`;
-  if (metodoPagoSeleccionado === 'efectivo') {
-    const cuanto = document.getElementById('form-efectivo-monto').value;
-    textoWA += ` Paga con: S/ ${cuanto || montoTotalGlobal}\n`;
+
+  // Costo de envío mapeado dinámicamente
+  const selectZona = document.getElementById('form-zona');
+  const costoDeliveryActual = selectZona.options.length ? parseFloat(selectZona.options[selectZona.selectedIndex].getAttribute('data-costo')) : 0;
+  textoWA += `\n🛵 *Costo de envío:* S/ ${costoDeliveryActual.toFixed(2)}\n`;
+
+  // Modificación del bloque de pago con recordatorio inteligente para QR
+  if (metodoPagoSeleccionado === 'yape' || metodoPagoSeleccionado === 'plin') {
+    textoWA += `💳 *Pago:* ${etiquetasPago[metodoPagoSeleccionado]}\n`;
+    textoWA += `📲 _El QR de pago ya se descargó en tu teléfono._\n`;
+    textoWA += `*Por favor, adjunta la captura de tu pago aquí.*\n\n`;
+  } else {
+    textoWA += `💵 *Pago:* ${etiquetasPago[metodoPagoSeleccionado] || metodoPagoSeleccionado}\n`;
+    if (metodoPagoSeleccionado === 'efectivo') {
+      const cuanto = document.getElementById('form-efectivo-monto').value;
+      textoWA += ` Paga con: S/ ${cuanto || montoTotalGlobal.toFixed(2)}\n\n`;
+    }
   }
+  
   textoWA += `💰 *TOTAL A PAGAR: S/ ${montoTotalGlobal.toFixed(2)}*`;
 
   enlaceWhatsAppGlobal = `https://api.whatsapp.com/send?phone=${CONFIG.whatsapp_receptor}&text=${encodeURIComponent(textoWA)}`;
@@ -472,14 +487,16 @@ function accionCopiar() {
 }
 
 function accionDescargarQR() {
+  // 1. PRIMERO: Cerramos modal, mandamos a Sheets y abrimos WhatsApp al instante
+  ejecutadoExitoso();
+
+  // 2. DESPUÉS: Se procesa la descarga en segundo plano sin cerrar o trabar el flujo
   const link = document.createElement('a');
   link.href = CONFIG.url_qr_pago;
   link.download = 'qr-pago.jpg';
   document.body.appendChild(link);
   link.click();
   document.body.removeChild(link);
-  alert("¡QR Descargado! Te estamos redirigiendo a WhatsApp...");
-  ejecutadoExitoso();
 }
 
 function accionEntendido() {
