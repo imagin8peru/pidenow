@@ -26,5 +26,15 @@
     ],
     "activo": true,
     "img": ""
+  },
+  {
+    "id": "8",
+    "nombre": "Hamburguesa",
+    "desc": "Hamburguesa 100 g, huevo, queso, ensalada, papas al hilo y salsas",
+    "img": "https://res.cloudinary.com/dtwjcqjkg/image/upload/v1779923734/b0qxiutoeftd8k9qwiha.jpg",
+    "categoria": "Sanguchones 🍔",
+    "tipo_modulo": "simple",
+    "activo": true,
+    "precio": 18
   }
 ]
