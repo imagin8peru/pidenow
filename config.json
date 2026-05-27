@@ -28,6 +28,7 @@
     }
   ],
   "url_logo": "",
+  "url_header": "",
   "metodos_pago": {
     "yape": true,
     "plin": true,
