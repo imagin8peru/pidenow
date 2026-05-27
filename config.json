@@ -1,7 +1,7 @@
 {
-  "nombre_restaurante": "SOPAS LA DOÑITA",
+  "nombre_restaurante": "Sanguchería 105",
   "whatsapp_receptor": "51946260227",
-  "banner_activo": true,
+  "banner_activo": false,
   "banner_texto": "⚠️ <strong>Aviso importante:</strong> Queridos clientes, este sábado 24 de junio no atenderemos por modificaciones en el local. Agradecemos su comprensión y los esperamos como siempre desde el 25 de junio.",
   "numero_pago_yape_plin": "987654321",
   "url_qr_pago": "./QR-YAPE-VICTOR.jpg",
@@ -27,8 +27,8 @@
       "costo": 0
     }
   ],
-  "url_logo": "",
-  "url_header": "https://res.cloudinary.com/dtwjcqjkg/image/upload/v1779912523/r0uz57youvpl6yb7ehzk.jpg",
+  "url_logo": "https://res.cloudinary.com/dtwjcqjkg/image/upload/v1779919732/a9gnhakwo4ijaq1n3usz.png",
+  "url_header": "https://res.cloudinary.com/dtwjcqjkg/image/upload/v1779919717/co2dhuxj93mxigb9kejl.jpg",
   "metodos_pago": {
     "yape": true,
     "plin": true,
