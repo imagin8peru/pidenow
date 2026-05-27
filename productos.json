@@ -5,7 +5,8 @@
     "nombre": "Pizza Americana NYORKER",
     "desc": "Salsa de tomate, muzzarella y jamón inglés.",
     "tipo_modulo": "simple",
-    "precio": 95
+    "precio": 95,
+    "img": ""
   },
   {
     "id": 2,
@@ -14,7 +15,8 @@
     "desc": "Salsa de tomate, muzzarella y harto pepperoni americano.",
     "tipo_modulo": "simple",
     "precio": 85,
-    "activo": true
+    "activo": true,
+    "img": ""
   },
   {
     "id": 3,
@@ -22,7 +24,8 @@
     "nombre": "Combo Maradoniano",
     "desc": "1 Pizza Grande + 2 Calzones + 1 Gaseosa 1L.",
     "tipo_modulo": "simple",
-    "precio": 7.85
+    "precio": 7.85,
+    "img": ""
   },
   {
     "id": 4,
@@ -31,7 +34,8 @@
     "desc": "Heladita, como debe ser.",
     "tipo_modulo": "simple",
     "precio": 8,
-    "activo": true
+    "activo": true,
+    "img": ""
   },
   {
     "id": "5",
@@ -40,7 +44,8 @@
     "categoria": "Tacos 🌮",
     "tipo_modulo": "simple",
     "precio": 37.5,
-    "activo": true
+    "activo": true,
+    "img": ""
   },
   {
     "id": "6",
@@ -49,7 +54,8 @@
     "categoria": "Bebidas 🥤",
     "tipo_modulo": "simple",
     "precio": 12,
-    "activo": true
+    "activo": true,
+    "img": ""
   },
   {
     "id": "7",
@@ -61,7 +67,8 @@
       { "nombre": "Grande", "precio": 27.00 },
       { "nombre": "Familiar", "precio": 37.00 }
     ],
-    "activo": true
+    "activo": true,
+    "img": ""
   },
   {
     "id": "8",
@@ -76,6 +83,7 @@
     "ingredientes_disponibles": [
       "Jamón", "Pepperoni", "Champiñones", "Piña", "Tocino", "Aceitunas", "Cebolla", "Pimiento"
     ],
-    "activo": true
+    "activo": true,
+    "img": ""
   }
 ]
