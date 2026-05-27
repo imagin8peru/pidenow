@@ -50,12 +50,12 @@
   {
     "id": "6",
     "nombre": "Pepsi 600 ml",
-    "desc": "",
+    "desc": "Prueba para ver formato correcto y otros detalles en descripción",
+    "img": "https://res.cloudinary.com/dtwjcqjkg/image/upload/v1779914980/jwuljzmmrhxp6e5hp304.jpg",
     "categoria": "Bebidas 🥤",
     "tipo_modulo": "simple",
-    "precio": 12,
     "activo": true,
-    "img": ""
+    "precio": 7.85
   },
   {
     "id": "7",
