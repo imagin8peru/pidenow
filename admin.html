@@ -16,15 +16,13 @@ body { background-color: #f1f3f5; color: #212529; padding: 16px; display: flex; 
 .form-group { display: flex; flex-direction: column; gap: 6px; }
 .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
 label { font-size: 0.85rem; font-weight: 700; color: #495057; }
-.form-control { width: 100%; padding: 12px; border: 1px solid #ced4da; border-radius: 10px; font-size: 1rem; background: #f8f9fa; }
-.form-control:focus { outline: none; border-color: #22c55e; background: white; }
+.form-control { width: 100%; padding: 12px; border: 1px solid #ced4da; border-radius: 10px; font-size: 1rem; background: #f8f9fa; outline: none; }
+.form-control:focus { border-color: #22c55e; background: white; }
 
-/* BOTÓN ESTADO LOCAL */
-.btn-estado-local { width: 100%; padding: 18px; border-radius: 14px; border: none; font-size: 1.2rem; font-weight: 800; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; transition: all 0.2s ease; letter-spacing: 0.5px; }
+.btn-estado-local { width: 100%; padding: 18px; border-radius: 14px; border: none; font-size: 1.2rem; font-weight: 800; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; transition: all 0.2s ease; }
 .btn-estado-local.abierto { background-color: #22c55e; color: white; box-shadow: 0 4px 14px rgba(34,197,94,0.35); }
 .btn-estado-local.cerrado { background-color: #ef4444; color: white; box-shadow: 0 4px 14px rgba(239,68,68,0.35); }
 
-/* SWITCHES */
 .switch-container { display: flex; align-items: center; justify-content: space-between; background: #f8f9fa; padding: 12px; border-radius: 10px; border: 1px solid #e9ecef; }
 .switch-label { display: flex; flex-direction: column; gap: 2px; }
 .switch-title { font-weight: 700; font-size: 0.95rem; }
@@ -36,27 +34,23 @@ label { font-size: 0.85rem; font-weight: 700; color: #495057; }
 input:checked + .slider { background-color: #22c55e; }
 input:checked + .slider:before { transform: translateX(22px); }
 
-/* LISTAS SIMPLES Y ELEMENTOS */
 .item-list { display: flex; flex-direction: column; gap: 10px; margin-top: 6px; }
 .list-row { background: #f8f9fa; padding: 12px; border-radius: 12px; border: 1px solid #e9ecef; display: flex; align-items: center; justify-content: space-between; gap: 10px; }
 .list-info { flex: 1; }
 .list-name { font-weight: 700; font-size: 0.95rem; }
 .list-sub { font-size: 0.8rem; color: #6c757d; margin-top: 2px; }
 
-/* ── REPARACIÓN ESTILO ORIGINAL: ZONAS DE DELIVERY ── */
+/* SECCIÓN CORREGIDA: EN LÍNEA HORIZONTAL MÓVIL */
 .zona-row { background: #f8f9fa; padding: 10px 14px; border-radius: 12px; border: 1px solid #e9ecef; display: flex; align-items: center; gap: 10px; width: 100%; }
-.zona-nombre-input { flex: 1; min-width: 0; }
+.zona-nombre-input { flex: 2; min-width: 0; }
 .zona-costo-input { width: 90px; text-align: right; flex-shrink: 0; }
-.zona-hint { font-size: 0.75rem; color: #6c757d; margin-top: -6px; }
 
-/* MÉTODOS DE PAGO */
 .pago-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
 .pago-toggle-row { background: #f8f9fa; border: 1px solid #e9ecef; border-radius: 12px; padding: 14px; display: flex; align-items: center; justify-content: space-between; gap: 10px; }
 .pago-toggle-row.activo { border-color: #22c55e; background: #f0fdf4; }
 .pago-nombre { font-weight: 700; font-size: 0.95rem; }
 .pago-estado { font-size: 0.75rem; color: #6c757d; margin-top: 2px; }
 
-/* BOTONES */
 .btn { padding: 10px 14px; border-radius: 10px; font-weight: 700; font-size: 0.9rem; cursor: pointer; border: none; text-align: center; display: flex; align-items: center; justify-content: center; gap: 6px; }
 .btn-primary { background: #22c55e; color: white; }
 .btn-danger { background: #ef4444; color: white; }
@@ -64,21 +58,19 @@ input:checked + .slider:before { transform: translateX(22px); }
 .btn-sm { padding: 6px 10px; font-size: 0.8rem; border-radius: 6px; }
 .btn-block { width: 100%; padding: 16px; font-size: 1.1rem; border-radius: 12px; box-shadow: 0 4px 12px rgba(34,197,94,0.3); }
 
-/* MODALES */
 .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 2000; justify-content: center; align-items: center; padding: 16px; }
 .modal-content { background: white; padding: 20px; border-radius: 16px; width: 100%; max-width: 440px; display: flex; flex-direction: column; gap: 14px; max-height: 90vh; overflow-y: auto; }
 
-/* CARPETAS ACORDEÓN (UX PEDIDOS YA) */
-.category-accordion { background: #ffffff; border-radius: 12px; margin-bottom: 12px; border: 1px solid #e2e8f0; overflow: hidden; transition: all 0.25s ease; }
-.category-header { width: 100%; display: flex; justify-content: space-between; align-items: center; padding: 16px; background: none; border: none; text-align: left; font-size: 16px; font-weight: 700; color: #1e293b; cursor: pointer; outline: none; }
+/* ── INTERFAZ DE ACORDEONES CON COLOR DIFERENCIADOR (UX PEDIDOS YA) ── */
+.category-accordion { background: #ffffff; border-radius: 12px; margin-bottom: 12px; border: 1px solid #e2e8f0; overflow: hidden; }
+.category-header { width: 100%; display: flex; justify-content: space-between; align-items: center; padding: 16px; background: #f1f5f9; border: none; text-align: left; font-size: 16px; font-weight: 700; color: #1e293b; cursor: pointer; outline: none; border-bottom: 1px solid #e2e8f0; }
 .category-header-info { display: flex; align-items: center; gap: 8px; }
-.category-counter { font-size: 12px; background: #f1f5f9; color: #64748b; padding: 2px 8px; border-radius: 20px; font-weight: 600; }
+.category-counter { font-size: 12px; background: #ffffff; color: #64748b; padding: 2px 8px; border-radius: 20px; font-weight: 600; border: 1px solid #e2e8f0; }
 .category-icon { font-size: 13px; transition: transform 0.25s ease; color: #64748b; }
 .category-accordion.is-open .category-icon { transform: rotate(180deg); }
-.category-content { max-height: 0; overflow: hidden; transition: max-height 0.3s cubic-bezier(0, 1, 0, 1); background: #ffffff; }
-.category-accordion.is-open .category-content { max-height: 2500px; border-top: 1px solid #e2e8f0; transition: max-height 0.3s cubic-bezier(0.4, 0, 1, 1); }
+.category-content { display: none; background: #ffffff; }
+.category-accordion.is-open .category-content { display: block; }
 
-/* FILAS DE PRODUCTOS DENTRO DE CARPETAS */
 .product-row { display: flex; justify-content: space-between; align-items: center; padding: 14px 16px; border-bottom: 1px solid #e2e8f0; transition: all 0.2s; }
 .product-row:last-child { border-bottom: none; }
 .product-row.is-hidden { opacity: 0.4; background-color: #f8fafc; }
@@ -87,7 +79,6 @@ input:checked + .slider:before { transform: translateX(22px); }
 .product-title { font-size: 15px; font-weight: 600; color: #1e293b; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; }
 .product-meta-details { font-size: 13px; color: #64748b; font-weight: 500; }
 
-/* ACCIONES RAPIDAS */
 .product-actions { display: flex; align-items: center; gap: 6px; }
 .btn-action { width: 36px; height: 36px; border-radius: 8px; border: 1px solid #e2e8f0; background: #ffffff; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 15px; transition: all 0.2s; }
 .btn-action:active { transform: scale(0.92); }
@@ -95,7 +86,6 @@ input:checked + .slider:before { transform: translateX(22px); }
 .btn-action.btn-edit { color: #0284c7; background-color: #f0f9ff; border-color: #bae6fd; }
 .btn-action.btn-delete { color: #dc2626; background-color: #fef2f2; border-color: #fecaca; }
 
-/* BADGES DE PRODUCTO */
 .module-badge { font-size: 10px; font-weight: 700; text-transform: uppercase; padding: 2px 6px; border-radius: 4px; letter-spacing: 0.3px; display: inline-block; }
 .badge-simple { background-color: #f1f5f9; color: #475569; }
 .badge-matriz { background-color: #dcfce7; color: #15803d; }
@@ -111,7 +101,7 @@ input:checked + .slider:before { transform: translateX(22px); }
 </header>
 
 <button id="btn-estado-local" class="btn-estado-local abierto" onclick="toggleEstadoLocal()">
-  ⏳ Cargando...
+  🟢 LOCAL ABIERTO
 </button>
 
 <section class="admin-card">
@@ -248,8 +238,7 @@ input:checked + .slider:before { transform: translateX(22px); }
 
 <div id="modal-categoria" class="modal">
   <div class="modal-content">
-    <h3 id="modal-cat-titulo">Agregar Categoría</h3>
-    <input type="hidden" id="form-cat-index">
+    <h3>Agregar Categoría</h3>
     <div class="form-group">
       <label>Nombre de la Categoría</label>
       <input type="text" id="form-cat-nombre" class="form-control" placeholder="Ej: Hamburguesas, Bebidas">
@@ -279,11 +268,11 @@ input:checked + .slider:before { transform: translateX(22px); }
     <div class="form-row">
       <div class="form-group">
         <label>Categoría</label>
-        <select id="form-prod-categoria" class="form-control"></select>
+        <select id="form-prod-categoria" class="form-control" style="background: white;"></select>
       </div>
       <div class="form-group">
         <label>Tipo de Módulo</label>
-        <select id="form-prod-tipo-modulo" class="form-control" onchange="conmutarCamposFormularioProducto()">
+        <select id="form-prod-tipo-modulo" class="form-control" onchange="conmutarCamposFormularioProducto()" style="background: white;">
           <option value="simple">Clásico (Precio Fijo Único)</option>
           <option value="matriz_precios">Matriz (Precio por Tamaño)</option>
           <option value="constructor_libre">Constructor (Arma tu Plato)</option>
@@ -346,6 +335,8 @@ let PRODUCTOS_LOCAL = [];
 let CATEGORIAS_LOCAL = [];
 let ZONAS_LOCAL = [];
 let METODOS_PAGO_LOCAL = { yape: true, plin: true, tarjeta: true, efectivo: true };
+
+// Memoria UX: Cerrados (false) por defecto al iniciar la app
 let acordeonesAbiertos = {};
 
 const MAPA_MODULOS = {
@@ -462,7 +453,6 @@ async function toggleEstadoLocal() {
   }
 }
 
-/* ── RENDER SECCIÓN REPARADA: DELINEADO HORIZONTAL ALINEADO PARA DELIVERY ── */
 function renderizarZonas() {
   const contenedor = document.getElementById('lista-zonas');
   contenedor.innerHTML = '';
@@ -520,6 +510,7 @@ function actualizarEstadoPago(metodo) {
   }
 }
 
+/* ── NUEVA LÓGICA DE CARPETAS ACORDEÓN COMPACTA (CERRADA POR DEFECTO) ── */
 function renderizarListasAdmin() {
   const contenedorCat = document.getElementById('lista-categorias');
   contenedorCat.innerHTML = '';
@@ -561,6 +552,7 @@ function renderizarListasAdmin() {
 
   const productosPorCategoria = PRODUCTOS_LOCAL.reduce((acc, producto) => {
     const cat = producto.categoria || 'Sin Categoría';
+    if (!acc[cat]) acc[acc[cat] = []]; // Arreglado dinámicamente
     if (!acc[cat]) acc[cat] = [];
     acc[cat].push(producto);
     return acc;
@@ -570,8 +562,9 @@ function renderizarListasAdmin() {
     const listaPlatos = productosPorCategoria[nombreCategoria];
     const totalPlatos = listaPlatos.length;
     
+    // Regla de Negocio: Inicializar obligatoriamente en FALSE (Cerrados por defecto)
     if (acordeonesAbiertos[nombreCategoria] === undefined) {
-      acordeonesAbiertos[nombreCategoria] = true;
+      acordeonesAbiertos[nombreCategoria] = false;
     }
     const isOpen = acordeonesAbiertos[nombreCategoria];
 
@@ -579,6 +572,7 @@ function renderizarListasAdmin() {
     itemAcordeon.className = `category-accordion ${isOpen ? 'is-open' : ''}`;
     itemAcordeon.dataset.categoria = nombreCategoria;
 
+    // Cabecera diferenciada con color de contraste #f1f5f9
     const cabeceraHTML = `
       <button type="button" class="category-header" onclick="alternarAcordeon('${nombreCategoria.replace(/'/g, "\\'")}')">
         <div class="category-header-info">
@@ -614,13 +608,13 @@ function renderizarListasAdmin() {
           <span class="product-meta-details">${infoPrecioStr}</span>
         </div>
         <div class="product-actions">
-          <button type="button" class="btn-action btn-toggle" onclick="conmutarProducto('${p.id}')" title="Mostrar/Ocultar">
+          <button type="button" class="btn-action btn-toggle" onclick="conmutarProducto('${p.id}')">
             ${p.activo !== false ? '👁️' : '🙈'}
           </button>
-          <button type="button" class="btn-action btn-edit" onclick="editarProductoVisual('${p.id}')" title="Editar">
+          <button type="button" class="btn-action btn-edit" onclick="editarProductoVisual('${p.id}')">
             ✏️
           </button>
-          <button type="button" class="btn-action btn-danger btn-delete" onclick="eliminarProducto('${p.id}')" title="Eliminar">
+          <button type="button" class="btn-action btn-delete" onclick="eliminarProducto('${p.id}')">
             🗑️
           </button>
         </div>
@@ -648,9 +642,7 @@ function alternarAcordeon(nombreCategoria) {
 }
 
 function abrirModalCategoria() {
-  document.getElementById('form-cat-index').value = '';
   document.getElementById('form-cat-nombre').value = '';
-  document.getElementById('modal-cat-titulo').innerText = "Agregar Categoría";
   document.getElementById('modal-categoria').style.display = 'flex';
 }
 
@@ -689,7 +681,7 @@ function conmutarCategoria(index) {
 }
 
 function eliminarCategoria(index) {
-  if (confirm("¿Seguro que deseas eliminar esta categoría? Los productos asociados se mantendrán pero deberás reasignarlos.")) {
+  if (confirm("¿Seguro que deseas eliminar esta categoría?")) {
     CATEGORIAS_LOCAL.splice(index, 1);
     renderizarListasAdmin();
   }
@@ -725,7 +717,7 @@ function guardarProducto() {
 
     if (tipoModulo === 'constructor_libre') {
       const rawIng = document.getElementById('form-prod-ingredientes').value;
-      if (!rawIng.trim()) return alert("Ingresa la lista de ingredientes para el constructor.");
+      if (!rawIng.trim()) return alert("Ingresa la lista de ingredientes.");
       itemEstructurado.ingredientes_disponibles = rawIng.split(',').map(i => i.trim()).filter(i => i !== "");
     }
   }
@@ -783,7 +775,7 @@ function conmutarProducto(id) {
 }
 
 function eliminarProducto(id) {
-  if (confirm("¿Deseas eliminar este plato por completo de la base de datos?")) {
+  if (confirm("¿Deseas eliminar este plato?")) {
     PRODUCTOS_LOCAL = PRODUCTOS_LOCAL.filter(p => p.id != id);
     renderizarListasAdmin();
   }
@@ -837,12 +829,12 @@ function procesarGuardadoGlobal() {
       alert("¡Éxito! Los cambios fueron enviados. El servidor se está actualizando.");
       setTimeout(() => cargarDatos(), 5000);
     } else {
-      alert("El panel procesó la data pero n8n devolvió un error. Revisa el flujo.");
+      alert("El panel procesó la data pero n8n devolvió un error.");
     }
   })
   .catch(error => {
     console.error("Error en la petición de guardado:", error);
-    alert("Error de conexión. No se pudo conectar con el webhook de n8n.");
+    alert("Error de conexión con n8n.");
   })
   .finally(() => {
     botonSubmit.innerText = textoOriginal;
