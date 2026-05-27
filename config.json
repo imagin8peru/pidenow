@@ -36,5 +36,5 @@
     "efectivo": true
   },
   "recojo_local": true,
-  "local_abierto": false
+  "local_abierto": true
 }
