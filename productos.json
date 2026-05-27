@@ -19,13 +19,14 @@
     "img": ""
   },
   {
-    "id": 3,
-    "categoria": "Combos 🎁",
+    "id": "3",
     "nombre": "Combo Maradoniano",
     "desc": "1 Pizza Grande + 2 Calzones + 1 Gaseosa 1L.",
+    "img": "https://res.cloudinary.com/dtwjcqjkg/image/upload/v1779918693/fon7tfgsoijityoju7de.jpg",
+    "categoria": "Combos 🎁",
     "tipo_modulo": "simple",
-    "precio": 7.85,
-    "img": ""
+    "activo": true,
+    "precio": 7.85
   },
   {
     "id": "4",
