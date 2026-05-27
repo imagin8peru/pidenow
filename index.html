@@ -51,6 +51,19 @@ body { background-color: #f8f9fa; color: #212529; padding: 16px; padding-bottom:
 .summary-row { display: flex; justify-content: space-between; font-size: 0.9rem; color: #495057; }
 .summary-total { display: flex; justify-content: space-between; font-size: 1.2rem; font-weight: 800; color: #1a1a1a; border-top: 1px dashed #ced4da; padding-top: 8px; margin-top: 4px; }
 .btn-submit { background-color: #22c55e; color: white; border: none; width: 100%; padding: 16px; border-radius: 12px; font-size: 1.1rem; font-weight: 700; cursor: pointer; text-align: center; margin-top: 8px; box-shadow: 0 4px 12px rgba(34,197,94,0.2); }
+/* Banner local cerrado */
+.banner-cerrado {
+  display: none;
+  background-color: #fef2f2;
+  border: 2px solid #ef4444;
+  color: #b91c1c;
+  padding: 14px 16px;
+  border-radius: 12px;
+  font-size: 0.95rem;
+  font-weight: 700;
+  text-align: center;
+  line-height: 1.4;
+}
 /* BARRA FLOTANTE */
 .cart-floating-bar { position: fixed; bottom: 16px; left: 50%; transform: translateX(-50%); width: calc(100% - 32px); max-width: 448px; background-color: #1a1a1a; color: white; padding: 16px 20px; border-radius: 16px; display: none; justify-content: space-between; align-items: center; box-shadow: 0 8px 24px rgba(0,0,0,0.2); z-index: 999; }
 .cart-info { display: flex; flex-direction: column; gap: 2px; }
@@ -85,6 +98,7 @@ body { background-color: #f8f9fa; color: #212529; padding: 16px; padding-bottom:
   </header>
 
   <div id="app-banner" class="announcement-banner"></div>
+  <div id="banner-cerrado" class="banner-cerrado">🔴 Estamos cerrados por ahora. Puedes explorar nuestra carta para tu próximo pedido.</div>
   <div id="menu-container" style="display: flex; flex-direction: column; gap: 12px;"></div>
 
   <div id="checkout-container" class="checkout-section">
@@ -158,8 +172,8 @@ body { background-color: #f8f9fa; color: #212529; padding: 16px; padding-bottom:
       <button class="btn-copy" onclick="accionCopiar()">Copiar Número</button>
     </div>
     <div id="modal-qr-box" class="qr-placeholder-box">
-      <img id="qr-imagen" src="" alt="QR de Pago" style="width:160px; height:160px; border-radius:12px; object-fit:contain; border:2px solid #e9ecef;">
-      <button class="btn-download-qr" onclick="accionDescargarQR()">⬇️ Descargar QR</button>
+      <div class="qr-placeholder">[ QR Pago ]</div>
+      <button class="btn-download-qr" onclick="accionDescargarQR()">Descargar QR</button>
     </div>
     <button id="btn-entendido" class="btn-action-direct" onclick="accionEntendido()">Entendido</button>
   </div>
@@ -229,7 +243,13 @@ function aplicarConfiguracion() {
   }
 
   document.getElementById('number-to-copy').innerText = CONFIG.numero_pago_yape_plin;
-  document.getElementById('qr-imagen').src = CONFIG.url_qr_pago;
+
+  // Estado abierto/cerrado
+  const localAbierto = CONFIG.local_abierto !== false;
+  document.getElementById('banner-cerrado').style.display = localAbierto ? 'none' : 'block';
+  document.getElementById('app-status-badge').innerText = localAbierto ? '● Abierto ahora' : '● Cerrado';
+  document.getElementById('app-status-badge').style.backgroundColor = localAbierto ? '#e6f4ea' : '#fef2f2';
+  document.getElementById('app-status-badge').style.color = localAbierto ? '#137333' : '#b91c1c';
 
   // Zonas de delivery
   const selectZona = document.getElementById('form-zona');
@@ -310,6 +330,7 @@ function configurarEventos() {
 }
 
 function modificarCarrito(productoId, cambio) {
+  if (CONFIG.local_abierto === false) return; // bloqueado si está cerrado
   let cantActual = memoriaCarrito[productoId] || 0;
   let nuevaCant = cantActual + cambio;
   if (nuevaCant < 0) nuevaCant = 0;
@@ -344,7 +365,7 @@ function calcularPrecios() {
 
   if (totalProductos > 0) {
     if (checkoutContainer.style.display !== 'flex') bar.style.display = 'flex';
-    document.getElementById('cart-qty-text').innerText = `${totalProductos} products`;
+    document.getElementById('cart-qty-text').innerText = `${totalProductos} productos`;
     document.getElementById('cart-total-text').innerText = `S/ ${montoSubtotal.toFixed(2)}`;
     document.getElementById('checkout-items-list').innerHTML = htmlDesglose;
 
@@ -402,31 +423,16 @@ function prepararEnvio() {
     if (referencia) textoWA += `🔍 *Ref:* ${referencia}\n`;
   }
   if (notas) textoWA += `📝 *Notas:* ${notas}\n`;
-  
   textoWA += `\n🧾 *DETALLE DEL PEDIDO:*\n`;
   for (const id in memoriaCarrito) {
     const producto = PRODUCTOS.find(p => p.id == id);
     textoWA += `• ${memoriaCarrito[id]}x ${producto.nombre} (S/ ${(producto.precio * memoriaCarrito[id]).toFixed(2)})\n`;
   }
-
-  // Costo de envío mapeado dinámicamente
-  const selectZona = document.getElementById('form-zona');
-  const costoDeliveryActual = selectZona.options.length ? parseFloat(selectZona.options[selectZona.selectedIndex].getAttribute('data-costo')) : 0;
-  textoWA += `\n🛵 *Costo de envío:* S/ ${costoDeliveryActual.toFixed(2)}\n`;
-
-  // Modificación del bloque de pago con recordatorio inteligente para QR
-  if (metodoPagoSeleccionado === 'yape' || metodoPagoSeleccionado === 'plin') {
-    textoWA += `💳 *Pago:* ${etiquetasPago[metodoPagoSeleccionado]}\n`;
-    textoWA += `📲 _El QR de pago ya se descargó en tu teléfono._\n`;
-    textoWA += `*Por favor, adjunta la captura de tu pago aquí.*\n\n`;
-  } else {
-    textoWA += `💵 *Pago:* ${etiquetasPago[metodoPagoSeleccionado] || metodoPagoSeleccionado}\n`;
-    if (metodoPagoSeleccionado === 'efectivo') {
-      const cuanto = document.getElementById('form-efectivo-monto').value;
-      textoWA += ` Paga con: S/ ${cuanto || montoTotalGlobal.toFixed(2)}\n\n`;
-    }
+  textoWA += `\n💵 *Pago:* ${etiquetasPago[metodoPagoSeleccionado] || metodoPagoSeleccionado}\n`;
+  if (metodoPagoSeleccionado === 'efectivo') {
+    const cuanto = document.getElementById('form-efectivo-monto').value;
+    textoWA += ` Paga con: S/ ${cuanto || montoTotalGlobal}\n`;
   }
-  
   textoWA += `💰 *TOTAL A PAGAR: S/ ${montoTotalGlobal.toFixed(2)}*`;
 
   enlaceWhatsAppGlobal = `https://api.whatsapp.com/send?phone=${CONFIG.whatsapp_receptor}&text=${encodeURIComponent(textoWA)}`;
@@ -487,16 +493,14 @@ function accionCopiar() {
 }
 
 function accionDescargarQR() {
-  // 1. PRIMERO: Cerramos modal, mandamos a Sheets y abrimos WhatsApp al instante
-  ejecutadoExitoso();
-
-  // 2. DESPUÉS: Se procesa la descarga en segundo plano sin cerrar o trabar el flujo
   const link = document.createElement('a');
   link.href = CONFIG.url_qr_pago;
   link.download = 'qr-pago.jpg';
   document.body.appendChild(link);
   link.click();
   document.body.removeChild(link);
+  alert("¡QR Descargado! Te estamos redirigiendo a WhatsApp...");
+  ejecutadoExitoso();
 }
 
 function accionEntendido() {
