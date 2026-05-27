@@ -39,14 +39,14 @@ body { background-color: #f8f9fa; color: #212529; padding: 16px; padding-bottom:
   display: flex; 
   flex-direction: column; 
   align-items: center; 
-  justify-content: space-between; /* Empuja la cápsula de estado hacia abajo */
-  height: 100%; /* Toma todo el alto disponible para separarlos */
+  justify-content: space-between; 
+  height: 100%; 
   width: 100%; 
-  padding: 20px 16px 14px 16px; /* Le da aire arriba y abajo */
+  padding: 20px 16px 14px 16px; 
 }
 .header-logo { 
-  height: 110px; /* Le damos buena presencia pero con un tope firme */
-  max-width: 240px; /* Evita que se estire demasiado hacia los lados */
+  height: 110px; 
+  max-width: 240px; 
   object-fit: contain; 
   margin-top: 5px; 
 }
@@ -216,7 +216,7 @@ body { background-color: #f8f9fa; color: #212529; padding: 16px; padding-bottom:
 
 <div id="maintenance-container" style="display: none; max-width: 480px; width: 100%; background: white; padding: 40px 24px; border-radius: 16px; box-shadow: 0 4px 6px rgba(0,0,0,0.02); text-align: center; margin-top: 40px;">
   <h2 style="font-size: 1.8rem; font-weight: 800; color: #dc2626; margin-bottom: 12px;">⚠️ Local Cerrado Temporalmente</h2>
-  <p id="maintenance-text" style="font-size: 1.05rem; color: #495057; line-height: 1.5; font-weight: 500;">Estamos haciendo mejoras en el sistema. Volveremos muy pronto para tomar tu pedido.</p>
+  <p id="maintenance-text" style="font-size: 1.05rem; color: #495057; line-height: 1.5; font-weight: 500;">Estamos haciendo mejoras en el systema. Volveremos muy pronto para tomar tu pedido.</p>
 </div>
 
 <div class="app-container">
@@ -458,14 +458,19 @@ function renderizarMenu() {
   const container = document.getElementById('menu-container');
   container.innerHTML = '';
   const productosActivos = PRODUCTOS.filter(p => p.activo !== false);
-  const categories = [...new Set(productosActivos.map(p => p.categoria))];
+  
+  const listaCategoriasOrdenadas = (CONFIG.categorias || []).map(cat => typeof cat === 'string' ? cat : cat.nombre);
+  const categoriasFinales = listaCategoriasOrdenadas.length > 0 ? listaCategoriasOrdenadas : [...new Set(productosActivos.map(p => p.categoria))];
 
-  categories.forEach(cat => {
+  categoriasFinales.forEach(cat => {
+    const platosDeEstaCategoria = productosActivos.filter(p => p.categoria === cat);
+    if (platosDeEstaCategoria.length === 0) return;
+
     const item = document.createElement('div');
     item.className = 'accordion-item';
     let htmlProductos = '';
     
-    productosActivos.filter(p => p.categoria === cat).forEach(p => {
+    platosDeEstaCategoria.forEach(p => {
       let textoPrecio = '';
       let htmlControlesBotones = '';
 
@@ -497,7 +502,6 @@ function renderizarMenu() {
         `;
       }
 
-      /* RENDERIZADO EN DOS FILAS IDÉNTICO A ILLUSTRATOR */
       htmlProductos += `
         <div class="product-card">
           <div class="product-top-row">
@@ -754,7 +758,7 @@ function procesarSeleccionSaasModal() {
   if (memoriaCarrito[carritoId]) {
     memoriaCarrito[carritoId].cantidad += 1;
   } else {
-    memoriaCarrito[carritoId] = { ...itemCarrito, cantidad: 1 };
+    memoriaCarrito[carritoId] = { ...itemCarrito, bandwidth_cantidad: 1, cantidad: 1 };
   }
 
   cerrarSaasModal();
@@ -882,7 +886,7 @@ function prepararEnvio() {
     const item = memoriaCarrito[id];
     if (item && item.esComplejo) {
       textoWA += `• ${item.cantidad}x ${item.nombre} (S/ ${(item.precio * item.cantidad).toFixed(2)})\n`;
-      if (item.detalles) textoWA += `  └ _Ingredientes: ${item.detalles}_\n`;
+      if (item.detalles) textoWA += `   └ _Ingredientes: ${item.detalles}_\n`;
       if (item.esConstructor) contadorPizzasConstructor += item.cantidad;
     } else {
       const producto = PRODUCTOS.find(p => p.id == id);
