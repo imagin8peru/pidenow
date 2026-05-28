@@ -580,19 +580,31 @@ const productosActivos = PRODUCTOS.filter(p => p.activo !== false);
           textoPrecio = "S/ " + parseFloat(p.precio || 0).toFixed(2);
           const configExtras = obtenerConfigExtras(p.categoria);
           const tieneExtras = configExtras && configExtras.extras && configExtras.extras.filter(e => e.activo).length > 0;
-          if (tieneExtras) {
-            htmlControlesBotones = `
-              <button class="control-btn btn-menos" data-id="${p.id}">−</button>
-              <span id="qty-${p.id}" class="qty-num">0</span>
-              <button class="control-btn btn-mas-extras" data-id="${p.id}">+</button>
-            `;
-          } else {
-            htmlControlesBotones = `
-              <button class="control-btn btn-menos" data-id="${p.id}">−</button>
-              <span id="qty-${p.id}" class="qty-num">0</span>
-              <button class="control-btn btn-mas" data-id="${p.id}">+</button>
-            `;
-          }
+         if (tieneExtras) {
+    htmlControlesBotones = `
+      <div class="quantity-control">
+        <button class="qty-btn btn-menos" data-id="${p.id}">−</button>
+        <span id="qty-${p.id}" class="qty-val">0</span>
+        <button class="qty-btn btn-mas-extras" data-id="${p.id}">+</button>
+      </div>
+      <div style="display:flex; align-items:center; gap:8px;">
+        <button class="btn-trash-clear btn-trash-simple" data-id="${p.id}">🗑️</button>
+        <button class="btn-add-item" id="btn-simple-${p.id}" onclick="agregarSimple('${p.id}')">Agregar</button>
+      </div>
+    `;
+  } else {
+    htmlControlesBotones = `
+      <div class="quantity-control">
+        <button class="qty-btn btn-menos" data-id="${p.id}">−</button>
+        <span id="qty-${p.id}" class="qty-val">0</span>
+        <button class="qty-btn btn-mas" data-id="${p.id}">+</button>
+      </div>
+      <div style="display:flex; align-items:center; gap:8px;">
+        <button class="btn-trash-clear btn-trash-simple" data-id="${p.id}">🗑️</button>
+        <button class="btn-add-item" id="btn-simple-${p.id}" onclick="agregarSimple('${p.id}')">Agregar</button>
+      </div>
+    `;
+  }
         } else {
           const precios = p.variaciones.map(v => v.precio);
           textoPrecio = "Desde S/ " + Math.min(...precios).toFixed(2);
@@ -610,9 +622,11 @@ const productosActivos = PRODUCTOS.filter(p => p.activo !== false);
                 <div class="product-desc">${p.desc || ''}</div>
               </div>
             </div>
-            <div class="product-bottom-row">
-              <div class="product-price">${textoPrecio}</div>
-              <div class="product-controls" id="controles-wrapper-${p.id}">
+            <div class="size-vertical-row" style="margin-top:4px;">
+              <div class="size-info-meta">
+                <span class="product-price">${textoPrecio}</span>
+              </div>
+              <div class="size-controls-actions" id="controles-wrapper-${p.id}">
                 ${htmlControlesBotones}
               </div>
             </div>
@@ -667,6 +681,12 @@ function configurarEventos() {
 
     const btnMas = e.target.closest('.btn-mas');
     if (btnMas) { modificarCarrito(btnMas.getAttribute('data-id'), 1); return; }
+
+    const btnTrashSimple = e.target.closest('.btn-trash-simple');
+    if (btnTrashSimple) {
+      resetearSimple(btnTrashSimple.getAttribute('data-id'));
+      return;
+    }
 
     // Al presionar el botón MENOS (−) en un sanguchón con extras
     const btnMenos = e.target.closest('.btn-menos');
@@ -1524,6 +1544,34 @@ function agregarMatriz(productoId, nombreBase, variacionNombre, precio) {
   calcularPrecios();
 }
 
+function agregarSimple(productoId) {
+  if (CONFIG.local_abierto === false) return;
+  const cant = parseInt(document.getElementById('qty-' + productoId).innerText) || 0;
+  if (cant === 0) return;
+  memoriaCarrito[productoId] = cant;
+  const btn = document.getElementById('btn-simple-' + productoId);
+  if (btn) {
+    btn.innerText = '✔ Agregado';
+    btn.classList.add('is-added');
+  }
+  calcularPrecios();
+}
+
+function resetearSimple(productoId) {
+  delete memoriaCarrito[productoId];
+  const elQty = document.getElementById('qty-' + productoId);
+  if (elQty) elQty.innerText = 0;
+  const btn = document.getElementById('btn-simple-' + productoId);
+  if (btn) {
+    btn.innerText = 'Agregar';
+    btn.classList.remove('is-added');
+  }
+  const contenedor = document.getElementById('contenedor-cajitas-extras-' + productoId);
+  if (contenedor) contenedor.remove();
+  const botonConfirmar = document.getElementById('btn-confirmar-extras-' + productoId);
+  if (botonConfirmar) botonConfirmar.remove();
+  calcularPrecios();
+}
 inicializarAplicacion();
 </script>
 </body>
