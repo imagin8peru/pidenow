@@ -112,11 +112,11 @@
   },
   {
     "id": "16",
-    "nombre": "Pizza de la casa",
-    "desc": "Elige la que quieras a un mismo precio",
-    "img": "https://res.cloudinary.com/dtwjcqjkg/image/upload/v1779928499/d5uhpbapgymwlsomhfpz.png",
-    "categoria": "Pizza de la casa 🍕",
-    "tipo_modulo": "matriz_precios",
+    "nombre": "Arma tu pizza",
+    "desc": "Eliges tus ingredientes",
+    "img": "https://res.cloudinary.com/dtwjcqjkg/image/upload/v1779928603/qdz8ukcctaheh3acfxrm.png",
+    "categoria": "Pizza a tu medida",
+    "tipo_modulo": "constructor_libre",
     "activo": true,
     "variaciones": [
       {
@@ -129,6 +129,16 @@
         "precio": 30,
         "limite_ingredientes": 5
       }
+    ],
+    "ingredientes_disponibles": [
+      "Jamón",
+      "Pepperoni",
+      "Champiñones",
+      "Piña",
+      "Tocino",
+      "Aceitunas",
+      "Cebolla",
+      "Pimiento"
     ]
   }
 ]
