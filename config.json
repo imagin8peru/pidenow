@@ -56,7 +56,7 @@
     },
     {
       "nombre": "Pizza a tu medida",
-      "activa": false
+      "activa": true
     }
   ],
   "extras_categorias": [
