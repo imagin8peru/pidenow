@@ -59,4 +59,29 @@
       "activa": true
     }
   ]
+  ,
+"extras_categorias": [
+  {
+    "categoria": "Sanguchones 🍔",
+    "limite": 3,
+    "extras": [
+      { "nombre": "Ketchup", "activo": true },
+      { "nombre": "Mayonesa", "activo": true },
+      { "nombre": "Mostaza", "activo": true },
+      { "nombre": "Ají amarillo", "activo": true },
+      { "nombre": "Chimichurri", "activo": true },
+      { "nombre": "Salsa de la casa", "activo": true }
+    ]
+  },
+  {
+    "categoria": "Enchiladas ​🌯",
+    "limite": 3,
+    "extras": [
+      { "nombre": "Ketchup", "activo": true },
+      { "nombre": "Mayonesa", "activo": true },
+      { "nombre": "Ají amarillo", "activo": true },
+      { "nombre": "Chimichurri", "activo": true }
+    ]
+  }
+]
 }
