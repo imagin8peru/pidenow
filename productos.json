@@ -1,31 +1,24 @@
 [
   {
-    "id": 3,
-    "categoria": "Combos 🎁",
-    "nombre": "Combo Maradoniano",
-    "desc": "1 Pizza Grande + 2 Calzones + 1 Gaseosa 1L.",
-    "tipo_modulo": "simple",
-    "precio": 7.85,
-    "img": ""
-  },
-  {
     "id": "7",
-    "categoria": "Pizzas Matriz 🍕",
-    "nombre": "Pizza de la Casa (Precio Fijo)",
-    "desc": "Selecciona el tamaño ideal. Todos los sabores de esta categoría cuestan igual.",
+    "nombre": "Pizza de la Casa",
+    "desc": "Pepperoni, mozarella, carne y cebolla",
+    "img": "https://res.cloudinary.com/dtwjcqjkg/image/upload/v1779927514/oqkplvarml6wgv5gnknn.jpg",
+    "categoria": "Pizzas Por tamaños 🍕",
     "tipo_modulo": "matriz_precios",
+    "activo": true,
     "variaciones": [
       {
         "nombre": "Grande",
-        "precio": 27
+        "precio": 25,
+        "limite_ingredientes": 4
       },
       {
         "nombre": "Familiar",
-        "precio": 37
+        "precio": 30,
+        "limite_ingredientes": 5
       }
-    ],
-    "activo": true,
-    "img": ""
+    ]
   },
   {
     "id": "8",
@@ -106,5 +99,117 @@
     "tipo_modulo": "simple",
     "activo": true,
     "precio": 23
+  },
+  {
+    "id": "16",
+    "nombre": "Salchi Simple",
+    "desc": "Hot dog, papas fritas y ensalada",
+    "img": "https://res.cloudinary.com/dtwjcqjkg/image/upload/v1779926991/utvuj5liro8bcx8kl2nz.jpg",
+    "categoria": "Salchipapas 🍟​",
+    "tipo_modulo": "simple",
+    "activo": true,
+    "precio": 15
+  },
+  {
+    "id": "17",
+    "nombre": "Salchi Especial",
+    "desc": "Hotdog, queso, papas fritas, ensaladas y salsas",
+    "img": "https://res.cloudinary.com/dtwjcqjkg/image/upload/v1779927121/w4l6j45thsdzv2rjtfh5.jpg",
+    "categoria": "Salchipapas 🍟​",
+    "tipo_modulo": "simple",
+    "activo": true,
+    "precio": 18
+  },
+  {
+    "id": "18",
+    "nombre": "Salchi Súper Especial",
+    "desc": "Hot dog, qhorizo, queso, papas fritas, ensalada y salsas",
+    "img": "https://res.cloudinary.com/dtwjcqjkg/image/upload/v1779927176/jrsfmsfpc41b56b6ksu3.jpg",
+    "categoria": "Salchipapas 🍟​",
+    "tipo_modulo": "simple",
+    "activo": true,
+    "precio": 22
+  },
+  {
+    "id": "19",
+    "nombre": "Salchi 105",
+    "desc": "Hot dog, chorizo, filete de pollo, ensalada, papas fritas y salsas",
+    "img": "https://res.cloudinary.com/dtwjcqjkg/image/upload/v1779927241/ws0ofdcfmpu867b21066.jpg",
+    "categoria": "Salchipapas 🍟​",
+    "tipo_modulo": "simple",
+    "activo": true,
+    "precio": 27
+  },
+  {
+    "id": "20",
+    "nombre": "Combo Royal King",
+    "desc": "Sanguchón Royal King + Gaseosa o chicha morada",
+    "img": "https://res.cloudinary.com/dtwjcqjkg/image/upload/v1779927412/qn9nihhqrv3bl8vlaftu.jpg",
+    "categoria": "Combos 🎁",
+    "tipo_modulo": "simple",
+    "activo": true,
+    "precio": 22
+  },
+  {
+    "id": "21",
+    "nombre": "Arma tu pizza como gustes!",
+    "desc": "Elige tus ingredientes preferidos",
+    "img": "https://res.cloudinary.com/dtwjcqjkg/image/upload/v1779927627/t97eri0lnu51lkhvjuot.png",
+    "categoria": "Sanguchones 🍔",
+    "tipo_modulo": "constructor_libre",
+    "activo": true,
+    "variaciones": [
+      {
+        "nombre": "Grande",
+        "precio": 20,
+        "limite_ingredientes": 4
+      },
+      {
+        "nombre": "Familiar",
+        "precio": 30,
+        "limite_ingredientes": 5
+      }
+    ],
+    "ingredientes_disponibles": [
+      "Jamón",
+      "Pepperoni",
+      "Champiñones",
+      "Piña",
+      "Tocino",
+      "Aceitunas",
+      "Cebolla",
+      "Pimiento"
+    ]
+  },
+  {
+    "id": "22",
+    "nombre": "Arma tu pizza como gustes!",
+    "desc": "Elige tus ingredientes favoritos!",
+    "img": "https://res.cloudinary.com/dtwjcqjkg/image/upload/v1779927697/nymlmp2japdx68zjjpjg.png",
+    "categoria": "Arma tu pizza 🍕",
+    "tipo_modulo": "constructor_libre",
+    "activo": true,
+    "variaciones": [
+      {
+        "nombre": "Grande",
+        "precio": 20,
+        "limite_ingredientes": 3
+      },
+      {
+        "nombre": "Familiar",
+        "precio": 30,
+        "limite_ingredientes": 4
+      }
+    ],
+    "ingredientes_disponibles": [
+      "Jamón",
+      "Pepperoni",
+      "Champiñones",
+      "Piña",
+      "Tocino",
+      "Aceitunas",
+      "Cebolla",
+      "Pimiento"
+    ]
   }
 ]
