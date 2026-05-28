@@ -200,6 +200,7 @@ body { background-color: #f8f9fa; color: #212529; padding: 16px; padding-bottom:
 .qr-placeholder-box { display: flex; flex-direction: column; gap: 8px; align-items: center; }
 .qr-placeholder { background: #f1f3f5; width: 160px; height: 160px; display: flex; justify-content: center; align-items: center; font-weight: 700; border: 2px dashed #ced4da; border-radius: 12px; color: #6c757d; font-size: 0.9rem; }
 .btn-download-qr { background: #007bff; color: white; border: none; padding: 8px 14px; border-radius: 8px; font-size: 0.85rem; font-weight: 700; cursor: pointer; width: 160px; }
+.btn-download-qr { background: #007bff; color: white; border: none; padding: 8px 14px; border-radius: 8px; font-size: 0.85rem; font-weight: 700; cursor: pointer; width: 160px; }
 .btn-action-direct { background: #6c757d; color: white; border: none; padding: 14px; border-radius: 12px; font-weight: 700; font-size: 1rem; cursor: pointer; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
 
 /* AUXILIARES PARA EL SISTEMA MODAL MULTI-MÓDULO */
@@ -319,7 +320,6 @@ body { background-color: #f8f9fa; color: #212529; padding: 16px; padding-bottom:
   </div>
 </div>
 
-<!-- MODAL SAAS (matriz_precios y constructor_libre) -->
 <div id="saas-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 50000; justify-content: center; align-items: flex-end;">
   <div style="background: white; width: 100%; max-width: 480px; border-radius: 20px 20px 0 0; padding: 20px; display: flex; flex-direction: column; max-height: 85vh; box-shadow: 0 -4px 20px rgba(0,0,0,0.15);">
     <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #e9ecef; padding-bottom: 12px; margin-bottom: 16px;">
@@ -341,7 +341,6 @@ body { background-color: #f8f9fa; color: #212529; padding: 16px; padding-bottom:
   </div>
 </div>
 
-<!-- MODAL DE EXTRAS (productos simple con extras configurados) -->
 <div id="extras-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 50000; justify-content: center; align-items: flex-end;">
   <div style="background: white; width: 100%; max-width: 480px; border-radius: 20px 20px 0 0; padding: 20px; display: flex; flex-direction: column; max-height: 85vh; box-shadow: 0 -4px 20px rgba(0,0,0,0.15);">
     <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #e9ecef; padding-bottom: 12px; margin-bottom: 12px;">
@@ -425,7 +424,7 @@ function aplicarConfiguracion() {
       document.getElementById('maintenance-text').innerHTML = CONFIG.banner_texto;
       return;
     }
-    if (textoLimpio.includes(".jpg") || textoLimpio.includes(".png") || textoLimpio.includes(".webp") || textoLimpio.includes("http")) {
+    if (textoLimpio.includes(".jpg") || textoLimpio.includes(".png") || textoLimpio.includes(".webp") || textoLoptio.includes("http")) {
       maintenanceContainer.style.display = 'none';
       appContainer.style.display = 'flex';
       banner.innerHTML = '<img src="' + CONFIG.banner_texto.trim() + '" alt="Promoción Especial">';
@@ -509,14 +508,12 @@ function renderizarMenu() {
         const configExtras = obtenerConfigExtras(p.categoria);
         const tieneExtras = configExtras && configExtras.extras && configExtras.extras.filter(e => e.activo).length > 0;
         if (tieneExtras) {
-          // Con extras: el + abre el modal de extras
           htmlControlesBotones = `
             <button class="control-btn btn-menos" data-id="${p.id}">−</button>
             <span id="qty-${p.id}" class="qty-num">0</span>
             <button class="control-btn btn-mas-extras" data-id="${p.id}">+</button>
           `;
         } else {
-          // Sin extras: comportamiento clásico
           htmlControlesBotones = `
             <button class="control-btn btn-menos" data-id="${p.id}">−</button>
             <span id="qty-${p.id}" class="qty-num">0</span>
@@ -592,14 +589,258 @@ function configurarEventos() {
     const header = e.target.closest('.accordion-header');
     if (header) { header.parentElement.classList.toggle('active'); return; }
 
+    // Al presionar el botón MÁS (+) en un sanguchón con extras
+    const btnMasExtras = e.target.closest('.btn-mas-extras');
+    if (btnMasExtras) { 
+      const productoId = btnMasExtras.getAttribute('data-id');
+      if (CONFIG.local_abierto === false) return;
+      
+      let elQty = document.getElementById("qty-" + productoId);
+      let nuevaCant = (parseInt(elQty.innerText) || 0) + 1;
+      elQty.innerText = nuevaCant;
+      
+      // DISPARADOR: Dibuja la cajita en la pantalla
+      agregarCajitaExtraEnPantalla(productoId, nuevaCant);
+      return; 
+    }
+
     const btnMas = e.target.closest('.btn-mas');
     if (btnMas) { modificarCarrito(btnMas.getAttribute('data-id'), 1); return; }
 
-    const btnMasExtras = e.target.closest('.btn-mas-extras');
-    if (btnMasExtras) { abrirExtrasModal(btnMasExtras.getAttribute('data-id')); return; }
-
+    // Al presionar el botón MENOS (−) en un sanguchón con extras
     const btnMenos = e.target.closest('.btn-menos');
-    if (btnMenos) { modificarCarrito(btnMenos.getAttribute('data-id'), -1); return; }
+    if (btnMenos) { 
+      const productoId = btnMenos.getAttribute('data-id');
+      if (CONFIG.local_abierto === false) return;
+      
+      let elQty = document.getElementById("qty-" + productoId);
+      let cantActual = parseInt(elQty.innerText) || 0;
+      if (cantActual <= 0) return;
+      
+      let nuevaCant = cantActual - 1;
+      elQty.innerText = nuevaCant;
+      
+      // DISPARADOR: Borra la última cajita de la pantalla
+      removerUltimaCajitaExtraEnPantalla(productoId, cantActual);
+      return; 
+    }
+  });
+}
+
+function agregarCajitaExtraEnPantalla(productoId, numeroInstancia) {
+  const wrapperControles = document.getElementById(`controles-wrapper-${productoId}`);
+  if (!wrapperControles) return;
+  
+  const producto = PRODUCTOS.find(p => p.id == productoId);
+  if (!producto) return;
+  
+  const configExtras = obtenerConfigExtras(producto.categoria);
+  if (!configExtras) return;
+  
+  const extrasActivos = configExtras.extras.filter(e => e.activo);
+  if (extrasActivos.length === 0) return;
+
+  const limite = configExtras.limite || 3;
+
+  // Si es la primera unidad, creamos un contenedor abajo del plato para meter las cajitas
+  let contenedorGralCajitas = document.getElementById(`contenedor-cajitas-extras-${productoId}`);
+  if (!contenedorGralCajitas) {
+    contenedorGralCajitas = document.createElement('div');
+    contenedorGralCajitas.id = `contenedor-cajitas-extras-${productoId}`;
+    contenedorGralCajitas.style.width = '100%';
+    contenedorGralCajitas.style.marginTop = '12px';
+    contenedorGralCajitas.style.display = 'flex';
+    contenedorGralCajitas.style.flexDirection = 'column';
+    contenedorGralCajitas.style.gap = '10px';
+    
+    // Lo metemos al final de la tarjeta del producto
+    wrapperControles.closest('.product-card').appendChild(contenedorGralCajitas);
+  }
+
+  // Creamos la cajita para la Hamburguesa individual #1, #2, etc.
+  const cajitaIndividual = document.createElement('div');
+  cajitaIndividual.id = `cajita-extra-${productoId}-${numeroInstancia}`;
+  cajitaIndividual.style.background = '#f8f9fa';
+  cajitaIndividual.style.border = '1px dashed #ced4da';
+  cajitaIndividual.style.padding = '12px';
+  cajitaIndividual.style.borderRadius = '14px';
+
+  // Contenido de la cajita con su título y sus botones de salsas
+  let htmlInterno = `
+    <div style="font-size: 0.9rem; font-weight: 700; color: #495057; margin-bottom: 8px; border-bottom: 1px solid #e9ecef; padding-bottom: 4px;">
+      Opción para ${producto.nombre} #${numeroInstancia} <span style="font-weight:400; font-size:0.8rem; color:#6c757d;">(Elige hasta ${limite})</span>
+    </div>
+    <div class="contenedor-botones-salsas" style="display: flex; flex-wrap: wrap; gap: 6px;">
+  `;
+
+  extrasActivos.forEach(extra => {
+    htmlInterno += `
+      <button type="button" 
+        class="btn-salsa-item" 
+        data-salsa="${extra.nombre.replace(/'/g, "\\'")}"
+        style="padding: 6px 12px; border: 1px solid #ced4da; background: white; border-radius: 8px; font-size: 0.85rem; font-weight: 600; cursor: pointer; color: #495057; transition: all 0.15s;"
+        onclick="manejarClickSalsaDinamica('${productoId}', ${numeroInstancia}, '${extra.nombre.replace(/'/g, "\\'")}', ${limite}, this)">
+        ${extra.nombre}
+      </button>
+    `;
+  });
+
+  htmlInterno += `</div>`;
+  cajitaIndividual.innerHTML = htmlInterno;
+  contenedorGralCajitas.appendChild(cajitaIndividual);
+  
+  // Orden final interna para actualizar el botón de confirmar pedido inferior
+  actualizarBotonConfirmarExtras(productoId);
+}
+
+function removerUltimaCajitaExtraEnPantalla(productoId, cantidadActual) {
+  const cajitaParaRemover = document.getElementById(`cajita-extra-${productoId}-${cantidadActual}`);
+  if (cajitaParaRemover) {
+    cajitaParaRemover.remove();
+  }
+
+  // Si ya no quedan hamburguesas, destruimos el contenedor general y el botón de confirmar
+  if (cantidadActual - 1 === 0) {
+    const contenedorGralCajitas = document.getElementById(`contenedor-cajitas-extras-${productoId}`);
+    if (contenedorGralCajitas) contenedorGralCajitas.remove();
+    
+    const botonConfirmar = document.getElementById(`btn-confirmar-extras-${productoId}`);
+    if (botonConfirmar) botonConfirmar.remove();
+  } else {
+    // Si todavía quedan unidades, refrescamos el botón para que vuelva a decir "AÑADIR" por si agregaron o quitaron extras
+    actualizarBotonConfirmarExtras(productoId);
+  }
+}
+
+function actualizarBotonConfirmarExtras(productoId) {
+  const wrapperControles = document.getElementById(`controles-wrapper-${productoId}`);
+  if (!wrapperControles) return;
+
+  let botonConfirmar = document.getElementById(`btn-confirmar-extras-${productoId}`);
+  
+  // Si el botón no existe en pantalla, lo creamos justo debajo de las cajitas
+  if (!botonConfirmar) {
+    botonConfirmar = document.createElement('button');
+    botonConfirmar.id = `btn-confirmar-extras-${productoId}`;
+    botonConfirmar.type = 'button';
+    botonConfirmar.style.width = '100%';
+    botonConfirmar.style.marginTop = '10px';
+    botonConfirmar.style.padding = '12px';
+    botonConfirmar.style.borderRadius = '12px';
+    botonConfirmar.style.border = 'none';
+    botonConfirmar.style.fontSize = '0.95rem';
+    botonConfirmar.style.fontWeight = '700';
+    botonConfirmar.style.cursor = 'pointer';
+    botonConfirmar.style.transition = 'all 0.2s';
+    
+    // Lo enganchamos al final de la tarjeta del producto
+    wrapperControles.closest('.product-card').appendChild(botonConfirmar);
+  }
+
+  // Estado inicial por defecto: color negro y texto AÑADIR
+  botonConfirmar.innerText = 'AÑADIR AL PEDIDO ➔';
+  botonConfirmar.style.background = '#1a1a1a';
+  botonConfirmar.style.color = 'white';
+  botonConfirmar.onclick = function() { procesarGuardadoExtrasDinamicos(productoId); };
+}
+
+function procesarGuardadoExtrasDinamicos(productoId) {
+  const producto = PRODUCTOS.find(p => p.id == productoId);
+  if (!producto) return;
+
+  const contenedorGral = document.getElementById(`contenedor-cajitas-extras-${productoId}`);
+  if (!contenedorGral) return;
+
+  // Buscamos todas las cajitas de hamburguesa que se abrieron en la pantalla
+  const cajitas = contenedorGral.querySelectorAll('[id^="cajita-extra-"]');
+  
+  // Limpiamos los registros viejos de este producto en el carrito antes de meter los nuevos
+  for (const key in memoriaCarrito) {
+    if (key === productoId || key.startsWith(`dinamico-${productoId}-`)) {
+      delete memoriaCarrito[key];
+    }
+  }
+
+  // Recorremos cada cajita individual para extraer qué salsas eligió el cliente
+  cajitas.forEach((cajita, index) => {
+    const numeroInstancia = index + 1;
+    const botonesActivos = cajita.querySelectorAll('.btn-salsa-item[data-activo="true"]');
+    
+    let salsasElegidas = [];
+    botonesActivos.forEach(btn => {
+      salsasElegidas.push(btn.getAttribute('data-salsa'));
+    });
+
+    // Generamos un identificador único en el carrito para cada hamburguesa con su combinación de cremas
+    const strSalsas = salsasElegidas.length > 0 ? salsasElegidas.join(', ') : 'Sin salsas';
+    const carritoId = `dinamico-${productoId}-${numeroInstancia}-${salsasElegidas.sort().join('-')}`;
+
+    memoriaCarrito[carritoId] = {
+      id: productoId,
+      nombre: `${producto.nombre} (#${numeroInstancia})`,
+      precio: producto.precio,
+      detalles: strSalsas,
+      esComplejo: true,
+      cantidad: 1
+    };
+  });
+
+  // Buscamos el botón para aplicarle el cambio de estado visual a AÑADIDO (Verde)
+  const botonConfirmar = document.getElementById(`btn-confirmar-extras-${productoId}`);
+  if (botonConfirmar) {
+    botonConfirmar.innerText = '✓ AÑADIDO';
+    botonConfirmar.style.background = '#22c55e';
+    botonConfirmar.style.color = 'white';
+  }
+
+  // Ejecutamos el recálculo matemático de la barra flotante y la sección final de verificación
+  calcularPrecios();
+}
+
+function manejarClickSalsaDinamica(productoId, numeroInstancia, nombreSalsa, limiteMaximo, botonPresionado) {
+  // Buscamos la cajita específica donde el cliente está haciendo los clics
+  const cajitaEspecifica = document.getElementById(`cajita-extra-${productoId}-${numeroInstancia}`);
+  if (!cajitaEspecifica) return;
+
+  // Evaluamos si el botón ya estaba activo o no
+  const yaEstaActivo = botonPresionado.getAttribute('data-activo') === 'true';
+
+  if (yaEstaActivo) {
+    // Si ya estaba activo, lo apagamos y restauramos su estilo visual original (blanco)
+    botonPresionado.setAttribute('data-activo', 'false');
+    botonPresionado.style.background = 'white';
+    botonPresionado.style.color = '#495057';
+    botonPresionado.style.borderColor = '#ced4da';
+  } else {
+    // Primero contamos cuántos botones están encendidos en ESTA cajita actualmente
+    const activosEnCajita = cajitaEspecifica.querySelectorAll('.btn-salsa-item[data-activo="true"]');
+    
+    // Si ya alcanzó el límite, no le dejamos marcar más
+    if (activosEnCajita.length >= limiteMaximo) return;
+
+    // Si tiene espacio, lo encendemos y lo pintamos de color verde
+    botonPresionado.setAttribute('data-activo', 'true');
+    botonPresionado.style.background = '#22c55e';
+    botonPresionado.style.color = 'white';
+    botonPresionado.style.borderColor = '#22c55e';
+  }
+
+  // Recorremos nuevamente para aplicar la regla de desaparecer el resto
+  const todosLosBotones = cajitaEspecifica.querySelectorAll('.btn-salsa-item');
+  const activosFinales = cajitaEspecifica.querySelectorAll('.btn-salsa-item[data-activo="true"]');
+
+  todosLosBotones.forEach(btn => {
+    const esteBtnActivo = btn.getAttribute('data-activo') === 'true';
+    
+    if (activosFinales.length >= limiteMaximo) {
+      // Si llegó al límite (3 de 3): ocultamos físicamente los que se quedaron sin marcar
+      if (!esteBtnActivo) {
+        btn.style.display = 'none';
+      }
+    } else {
+      // Si está por debajo del límite (2 de 3, etc.): volvemos a mostrar absolutamente todos
+      btn.style.display = 'inline-block';
+    }
   });
 }
 
@@ -1067,7 +1308,7 @@ function prepararEnvio() {
     textoWA += `🏠 *Dirección:* ${direccion}\n`;
     if (referencia) textoWA += `🔍 *Ref:* ${referencia}\n`;
   }
-  if (notas) textoWA += `📝 *Notes:* ${notas}\n`;
+  if (notes) textoWA += `📝 *Notes:* ${notas}\n`;
   textoWA += `\n🧾 *DETALLE DEL PEDIDO:*\n`;
 
   let contadorPizzasConstructor = 0;
@@ -1075,7 +1316,7 @@ function prepararEnvio() {
     const item = memoriaCarrito[id];
     if (item && item.esComplejo) {
       textoWA += `• ${item.cantidad}x ${item.nombre} (S/ ${(item.precio * item.cantidad).toFixed(2)})\n`;
-      if (item.detalles) textoWA += `   └ _${item.detalles}_\n`;
+      if (item.detalles) textoWA += `    └ _${item.detalles}_\n`;
       if (item.esConstructor) contadorPizzasConstructor += item.cantidad;
     } else {
       const producto = PRODUCTOS.find(p => p.id == id);
@@ -1138,7 +1379,7 @@ async function ejecutadoExitoso() {
         };
       } else {
         const p = PRODUCTOS.find(prod => prod.id == id);
-        return { nombre: p.nombre, Math_cantidad: memoriaCarrito[id], subtotal: p.precio * memoriaCarrito[id] };
+        return { nombre: p.nombre, cantidad: memoriaCarrito[id], subtotal: p.precio * memoriaCarrito[id] };
       }
     })
   };
