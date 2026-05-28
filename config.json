@@ -47,19 +47,11 @@
       "activa": true
     },
     {
-      "nombre": "Salchipapas 🍟​",
-      "activa": true
-    },
-    {
       "nombre": "Combos 🎁",
       "activa": true
     },
     {
-      "nombre": "Pizzas Por tamaños 🍕",
-      "activa": true
-    },
-    {
-      "nombre": "Arma tu pizza 🍕",
+      "nombre": "Pizzas por tamaños 🍕",
       "activa": true
     }
   ]
