@@ -53,6 +53,10 @@
     {
       "nombre": "Pizza de la casa 🍕",
       "activa": true
+    },
+    {
+      "nombre": "Pizza a tu medida",
+      "activa": true
     }
   ]
 }
