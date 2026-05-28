@@ -140,5 +140,26 @@
       "Cebolla",
       "Pimiento"
     ]
+  },
+  {
+    "id": "17",
+    "nombre": "Pizza de la casa",
+    "desc": "Todas al mismo precio",
+    "img": "https://res.cloudinary.com/dtwjcqjkg/image/upload/v1779929142/bkwxx8fcx0mapugzrlzs.jpg",
+    "categoria": "Pizza de la casa 🍕",
+    "tipo_modulo": "matriz_precios",
+    "activo": true,
+    "variaciones": [
+      {
+        "nombre": "Grande",
+        "precio": 20,
+        "limite_ingredientes": 4
+      },
+      {
+        "nombre": "Familiar",
+        "precio": 30,
+        "limite_ingredientes": 5
+      }
+    ]
   }
 ]
