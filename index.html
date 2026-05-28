@@ -319,6 +319,7 @@ body { background-color: #f8f9fa; color: #212529; padding: 16px; padding-bottom:
   </div>
 </div>
 
+<!-- MODAL SAAS (matriz_precios y constructor_libre) -->
 <div id="saas-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 50000; justify-content: center; align-items: flex-end;">
   <div style="background: white; width: 100%; max-width: 480px; border-radius: 20px 20px 0 0; padding: 20px; display: flex; flex-direction: column; max-height: 85vh; box-shadow: 0 -4px 20px rgba(0,0,0,0.15);">
     <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #e9ecef; padding-bottom: 12px; margin-bottom: 16px;">
@@ -340,6 +341,7 @@ body { background-color: #f8f9fa; color: #212529; padding: 16px; padding-bottom:
   </div>
 </div>
 
+<!-- MODAL DE EXTRAS (productos simple con extras configurados) -->
 <div id="extras-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 50000; justify-content: center; align-items: flex-end;">
   <div style="background: white; width: 100%; max-width: 480px; border-radius: 20px 20px 0 0; padding: 20px; display: flex; flex-direction: column; max-height: 85vh; box-shadow: 0 -4px 20px rgba(0,0,0,0.15);">
     <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #e9ecef; padding-bottom: 12px; margin-bottom: 12px;">
@@ -364,7 +366,9 @@ let metodoPagoSeleccionado = "";
 let montoTotalGlobal = 0;
 let enlaceWhatsAppGlobal = "";
 let saasItemTemporal = null;
-let extrasItemTemporal = null;
+
+// Estado temporal para el modal de extras
+let extrasItemTemporal = null; // { productoId, seleccionados: { nombre: cantidad } }
 
 async function inicializarAplicacion() {
   try {
@@ -484,21 +488,8 @@ function renderizarMenu() {
   container.innerHTML = '';
   const productosActivos = PRODUCTOS.filter(p => p.activo !== false);
   
-  // SOLUCIÓN PUNTO 1: El cliente descarta por completo las categorías que el admin guardó como "activa: false"
-  const categoriasConfig = CONFIG.categorias || [];
-  const categoriasFinales = [];
-  
-  categoriasConfig.forEach(cat => {
-    if (typeof cat === 'string') {
-      categoriasFinales.push(cat);
-    } else if (cat && cat.activa !== false) {
-      categoriasFinales.push(cat.nombre);
-    }
-  });
-
-  if (categoriasFinales.length === 0) {
-    categoriasFinales.push(...new Set(productosActivos.map(p => p.categoria)));
-  }
+  const listaCategoriasOrdenadas = (CONFIG.categorias || []).map(cat => typeof cat === 'string' ? cat : cat.nombre);
+  const categoriasFinales = listaCategoriasOrdenadas.length > 0 ? listaCategoriasOrdenadas : [...new Set(productosActivos.map(p => p.categoria))];
 
   categoriasFinales.forEach(cat => {
     const platosDeEstaCategoria = productosActivos.filter(p => p.categoria === cat);
@@ -514,15 +505,18 @@ function renderizarMenu() {
 
       if (!p.tipo_modulo || p.tipo_modulo === 'simple') {
         textoPrecio = "S/ " + p.precio.toFixed(2);
+        // Verificar si esta categoría tiene extras configurados
         const configExtras = obtenerConfigExtras(p.categoria);
         const tieneExtras = configExtras && configExtras.extras && configExtras.extras.filter(e => e.activo).length > 0;
         if (tieneExtras) {
+          // Con extras: el + abre el modal de extras
           htmlControlesBotones = `
             <button class="control-btn btn-menos" data-id="${p.id}">−</button>
             <span id="qty-${p.id}" class="qty-num">0</span>
             <button class="control-btn btn-mas-extras" data-id="${p.id}">+</button>
           `;
         } else {
+          // Sin extras: comportamiento clásico
           htmlControlesBotones = `
             <button class="control-btn btn-menos" data-id="${p.id}">−</button>
             <span id="qty-${p.id}" class="qty-num">0</span>
@@ -583,6 +577,7 @@ function renderizarMenu() {
   }
 }
 
+// Devuelve la config de extras para una categoría (o null si no tiene)
 function obtenerConfigExtras(nombreCategoria) {
   if (!CONFIG.extras_categorias) return null;
   return CONFIG.extras_categorias.find(ec => ec.categoria === nombreCategoria) || null;
@@ -607,6 +602,8 @@ function configurarEventos() {
     if (btnMenos) { modificarCarrito(btnMenos.getAttribute('data-id'), -1); return; }
   });
 }
+
+// ─── MODAL DE EXTRAS ────────────────────────────────────────────────────────
 
 function abrirExtrasModal(productoId) {
   if (CONFIG.local_abierto === false) return;
@@ -699,6 +696,7 @@ function confirmarExtrasYAgregar() {
   if (!extrasItemTemporal) return;
   const productoId = extrasItemTemporal.productoId;
 
+  // Construir lista de extras seleccionados
   const extrasElegidos = [];
   for (const nombre in extrasItemTemporal.seleccionados) {
     const cant = extrasItemTemporal.seleccionados[nombre];
@@ -707,6 +705,8 @@ function confirmarExtrasYAgregar() {
     }
   }
 
+  // Agregar al carrito
+  // Si tiene extras, usamos una clave compuesta para que cada combinación sea única
   let carritoId;
   if (extrasElegidos.length > 0) {
     const keyExtras = extrasElegidos.join('|');
@@ -725,6 +725,7 @@ function confirmarExtrasYAgregar() {
       };
     }
   } else {
+    // Sin extras elegidos: comportamiento normal de carrito simple
     carritoId = productoId;
     const cantActual = typeof memoriaCarrito[carritoId] === 'number' ? memoriaCarrito[carritoId] : 0;
     memoriaCarrito[carritoId] = cantActual + 1;
@@ -735,6 +736,8 @@ function confirmarExtrasYAgregar() {
   cerrarExtrasModal();
   calcularPrecios();
 }
+
+// ─── FIN MODAL DE EXTRAS ─────────────────────────────────────────────────────
 
 function modificarCarrito(productoId, cambio) {
   if (CONFIG.local_abierto === false) return;
@@ -749,6 +752,7 @@ function modificarCarrito(productoId, cambio) {
   calcularPrecios();
 }
 
+/* LÓGICA DE CONTROL DEL INTERFAZ MODAL INTERACTIVA (SPA) */
 function abrirMatrizPrecios(productoId) {
   const producto = PRODUCTOS.find(p => p.id == productoId);
   if (!producto) return;
@@ -899,8 +903,7 @@ function procesarSeleccionSaasModal() {
   let carritoId = "";
   let itemCarrito = {};
 
-  // SOLUCIÓN PUNTO 3: Estandarizamos el objeto de guardado para la Matriz y el Constructor
-  if (saasItemTemporal.tipo_modulo === 'matriz_precios') {
+  if (saasItemTemporal.type_modulo === 'matriz_precios' || saasItemTemporal.tipo_modulo === 'matriz_precios') {
     if (!saasItemTemporal.seleccionado) { alert("Por favor, selecciona una opción."); return; }
     
     carritoId = saasItemTemporal.id + "-" + saasItemTemporal.seleccionado.nombre;
@@ -908,8 +911,7 @@ function procesarSeleccionSaasModal() {
       id: saasItemTemporal.id,
       nombre: saasItemTemporal.nombreBase + " (" + saasItemTemporal.seleccionado.nombre + ")",
       precio: saasItemTemporal.seleccionado.precio,
-      esComplejo: true,
-      cantidad: 1
+      esComplejo: true
     };
   } 
   else if (saasItemTemporal.tipo_modulo === 'constructor_libre') {
@@ -917,8 +919,8 @@ function procesarSeleccionSaasModal() {
     let totalPorciones = 0;
     
     const ingredientesOrdenados = Object.keys(saasItemTemporal.seleccionados).sort();
-    let stringKeyPartes = [];
     
+    let stringKeyPartes = [];
     ingredientesOrdenados.forEach(ing => {
       const cant = saasItemTemporal.seleccionados[ing];
       if (cant > 0) {
@@ -938,15 +940,14 @@ function procesarSeleccionSaasModal() {
       precio: saasItemTemporal.precio,
       detalles: arrayDetalleIngredientes.join(", "),
       esComplejo: true,
-      esConstructor: true,
-      cantidad: 1
+      esConstructor: true
     };
   }
 
   if (memoriaCarrito[carritoId]) {
     memoriaCarrito[carritoId].cantidad += 1;
   } else {
-    memoriaCarrito[carritoId] = itemCarrito;
+    memoriaCarrito[carritoId] = { ...itemCarrito, bandwidth_cantidad: 1, cantidad: 1 };
   }
 
   cerrarSaasModal();
@@ -1066,7 +1067,7 @@ function prepararEnvio() {
     textoWA += `🏠 *Dirección:* ${direccion}\n`;
     if (referencia) textoWA += `🔍 *Ref:* ${referencia}\n`;
   }
-  if (notas) textoWA += `📝 *Notas:* ${notas}\n`;
+  if (notas) textoWA += `📝 *Notes:* ${notas}\n`;
   textoWA += `\n🧾 *DETALLE DEL PEDIDO:*\n`;
 
   let contadorPizzasConstructor = 0;
@@ -1124,7 +1125,7 @@ async function ejecutadoExitoso() {
     zona_delivery: document.getElementById('form-zona').value,
     direccion: document.getElementById('form-direccion').value.trim(),
     referencia: document.getElementById('form-referencia').value.trim(),
-    notas_cocina: document.getElementById('form-notas').value.trim(),
+    notes_cocina: document.getElementById('form-notas').value.trim(),
     metodo_pago: metodoPagoSeleccionado,
     total_pago: montoTotalGlobal,
     articulos: Object.keys(memoriaCarrito).map(id => {
@@ -1137,7 +1138,7 @@ async function ejecutadoExitoso() {
         };
       } else {
         const p = PRODUCTOS.find(prod => prod.id == id);
-        return { nombre: p.nombre, cantidad: memoriaCarrito[id], subtotal: p.precio * memoriaCarrito[id] };
+        return { nombre: p.nombre, Math_cantidad: memoriaCarrito[id], subtotal: p.precio * memoriaCarrito[id] };
       }
     })
   };
