@@ -958,6 +958,7 @@ function abrirModalExtras(nombreCategoria) {
 
   const config = EXTRAS_CATEGORIAS_LOCAL.find(ec => ec.categoria === nombreCategoria);
   document.getElementById('form-extras-limite').value = config ? config.limite : 3;
+  document.getElementById('form-extras-etiqueta').value = config ? (config.etiqueta || '') : '';
 
   renderizarListaExtrasModal(nombreCategoria);
   document.getElementById('modal-extras').style.display = 'flex';
@@ -984,6 +985,7 @@ function renderizarListaExtrasModal(nombreCategoria) {
         <input type="checkbox" ${extra.activo ? 'checked' : ''} onchange="toggleExtraEnModal('${nombreCategoria}', ${idx}, this.checked)">
         <span class="slider"></span>
       </label>
+      <button type="button" class="btn btn-secondary btn-sm" onclick="editarExtraEnModal('${nombreCategoria}', ${idx})">✏️</button>
       <button type="button" class="btn btn-danger btn-sm" onclick="eliminarExtraEnModal('${nombreCategoria}', ${idx})">🗑️</button>
     `;
     contenedor.appendChild(row);
@@ -1003,6 +1005,18 @@ function eliminarExtraEnModal(nombreCategoria, idx) {
     config.extras.splice(idx, 1);
     renderizarListaExtrasModal(nombreCategoria);
   }
+}
+
+function editarExtraEnModal(nombreCategoria, idx) {
+  const config = EXTRAS_CATEGORIAS_LOCAL.find(ec => ec.categoria === nombreCategoria);
+  if (!config) return;
+  const nombreActual = config.extras[idx].nombre;
+  const nuevoNombre = prompt('Editar nombre del extra:', nombreActual);
+  if (!nuevoNombre || !nuevoNombre.trim()) return;
+  const yaExiste = config.extras.some((e, i) => i !== idx && e.nombre.toLowerCase() === nuevoNombre.trim().toLowerCase());
+  if (yaExiste) return alert('Ya existe un extra con ese nombre.');
+  config.extras[idx].nombre = nuevoNombre.trim();
+  renderizarListaExtrasModal(nombreCategoria);
 }
 
 function agregarExtraEnModal() {
@@ -1028,12 +1042,14 @@ function guardarExtrasModal() {
   const nombreCategoria = document.getElementById('form-extras-categoria').value;
   const limite = parseInt(document.getElementById('form-extras-limite').value) || 3;
 
+  const etiqueta = document.getElementById('form-extras-etiqueta').value.trim() || 'Extras';
   let config = EXTRAS_CATEGORIAS_LOCAL.find(ec => ec.categoria === nombreCategoria);
   if (!config) {
-    config = { categoria: nombreCategoria, limite, extras: [] };
+    config = { categoria: nombreCategoria, etiqueta, limite, extras: [] };
     EXTRAS_CATEGORIAS_LOCAL.push(config);
   } else {
     config.limite = limite;
+    config.etiqueta = etiqueta;
   }
 
   cerrarModal('modal-extras');
@@ -1110,10 +1126,14 @@ cargarDatos();
     <h3 id="modal-extras-titulo">Extras de Categoría</h3>
     <input type="hidden" id="form-extras-categoria">
 
+    <div class="form-group">
+      <label>Nombre de esta lista (ej: Salsas, Cremas, Toppings...)</label>
+      <input type="text" id="form-extras-etiqueta" class="form-control" placeholder="Ej: Salsas">
+    </div>
     <div class="form-group" style="flex-direction: row; align-items: center; justify-content: space-between; background:#f8f9fa; padding:12px; border-radius:10px; border:1px solid #e9ecef;">
       <div>
         <div style="font-weight:700; font-size:0.95rem;">Límite de selección</div>
-        <div style="font-size:0.8rem; color:#6c757d;">Máximo de extras que el cliente puede elegir</div>
+        <div style="font-size:0.8rem; color:#6c757d;">Máximo que el cliente puede elegir</div>
       </div>
       <input type="number" id="form-extras-limite" class="form-control" min="1" max="20" style="width:70px; text-align:center;">
     </div>
