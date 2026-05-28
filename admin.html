@@ -1102,8 +1102,8 @@ function procesarGuardadoGlobal() {
   })
   .then(response => {
     if (response.ok) {
-      alert("¡Éxito! Los cambios fueron enviados. El servidor se está actualizando.");
-      setTimeout(() => cargarDatos(), 5000);
+      alert("¡Éxito! Los cambios fueron enviados. El servidor se está actualizando en segundo plano.");
+      // Se eliminó la recarga forzada para evitar el efecto rebote en la pantalla
     } else {
       alert("El panel procesó la data pero n8n devolvió un error.");
     }
