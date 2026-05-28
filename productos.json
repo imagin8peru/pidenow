@@ -117,7 +117,7 @@
     "img": "https://res.cloudinary.com/dtwjcqjkg/image/upload/v1779928603/qdz8ukcctaheh3acfxrm.png",
     "categoria": "Pizza a tu medida",
     "tipo_modulo": "constructor_libre",
-    "activo": true,
+    "activo": false,
     "variaciones": [
       {
         "nombre": "Grande",
