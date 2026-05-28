@@ -375,6 +375,7 @@ body { background-color: #f8f9fa; color: #212529; padding: 16px; padding-bottom:
 let CONFIG = {};
 let PRODUCTOS = [];
 let memoriaCarrito = {};
+let cantidadesMatriz = {};
 let metodoPagoSeleccionado = "";
 let montoTotalGlobal = 0;
 let enlaceWhatsAppGlobal = "";
@@ -516,39 +517,6 @@ const productosActivos = PRODUCTOS.filter(p => p.activo !== false);
     let htmlProductos = '';
     
     platosDeEstaCategoria.forEach(p => {
-      let textoPrecio = '';
-      let htmlControlesBotones = '';
-
-      if (!p.tipo_modulo || p.tipo_modulo === 'simple') {
-        textoPrecio = "S/ " + p.precio.toFixed(2);
-        // Verificar si esta categoría tiene extras configurados
-        const configExtras = obtenerConfigExtras(p.categoria);
-        const tieneExtras = configExtras && configExtras.extras && configExtras.extras.filter(e => e.activo).length > 0;
-        if (tieneExtras) {
-          htmlControlesBotones = `
-            <button class="control-btn btn-menos" data-id="${p.id}">−</button>
-            <span id="qty-${p.id}" class="qty-num">0</span>
-            <button class="control-btn btn-mas-extras" data-id="${p.id}">+</button>
-          `;
-        } else {
-          htmlControlesBotones = `
-            <button class="control-btn btn-menos" data-id="${p.id}">−</button>
-            <span id="qty-${p.id}" class="qty-num">0</span>
-            <button class="control-btn btn-mas" data-id="${p.id}">+</button>
-          `;
-        }
-      } else {
-        const precios = p.variaciones.map(v => v.precio);
-        const minPrecio = Math.min(...precios);
-        textoPrecio = "Desde S/ " + minPrecio.toFixed(2);
-        
-        if (p.tipo_modulo === 'matriz_precios') {
-          htmlControlesBotones = `<button class="cart-btn" onclick="abrirMatrizPrecios('${p.id}')" style="font-size:0.85rem; padding:8px 12px;">Elegir 🍕</button>`;
-        } else if (p.tipo_modulo === 'constructor_libre') {
-          htmlControlesBotones = `<button class="cart-btn" onclick="abrirConstructorLibre('${p.id}')" style="font-size:0.85rem; padding:8px 12px; background-color:#007bff;">Armar 🛠️</button>`;
-        }
-      }
-
       let htmlFoto = '';
       if (p.img && p.img.trim() !== '') {
         htmlFoto = `
@@ -558,23 +526,99 @@ const productosActivos = PRODUCTOS.filter(p => p.activo !== false);
         `;
       }
 
-      htmlProductos += `
-        <div class="product-card">
-          <div class="product-top-row">
-            ${htmlFoto}
-            <div class="product-info">
-              <div class="product-name">${p.nombre}</div>
-              <div class="product-desc">${p.desc || ''}</div>
+      // 🍕 SI ES MÓDULO MATRIZ (Estilo Pulcinella)
+      if (p.tipo_modulo === 'matriz_precios') {
+        let htmlMatriz = '<div class="pizza-size-vertical-container">';
+        p.variaciones.forEach(v => {
+          const key = p.id + '-' + v.nombre;
+          const enCarrito = memoriaCarrito[key];
+          const cantMostrar = enCarrito ? enCarrito.cantidad : (cantidadesMatriz[key] || 1);
+          const btnClass = enCarrito ? 'btn-add-item is-added' : 'btn-add-item';
+          const btnText = enCarrito ? 'Agregado ✔' : 'Agregar';
+
+          htmlMatriz += `
+            <div class="size-vertical-row">
+              <div class="size-info-meta">
+                <span class="size-name-label">${v.nombre}</span>
+                <span class="size-price-label">S/ ${v.precio.toFixed(2)}</span>
+              </div>
+              <div class="size-controls-actions">
+                <div class="quantity-control">
+                  <button class="qty-btn" onclick="cambiarCantMatriz('${p.id}', '${v.nombre}', -1)">−</button>
+                  <span class="qty-val" id="qty-${key}">${cantMostrar}</span>
+                  <button class="qty-btn" onclick="cambiarCantMatriz('${p.id}', '${v.nombre}', 1)">+</button>
+                </div>
+                <div style="display: flex; gap: 8px; align-items: center;">
+                  <button class="btn-trash-clear" onclick="eliminarMatriz('${p.id}', '${v.nombre}')">🗑️</button>
+                  <button class="${btnClass}" id="btn-matriz-${key}" onclick="agregarMatriz('${p.id}', '${p.nombre.replace(/'/g, "\\'")}', '${v.nombre}', ${v.precio})">${btnText}</button>
+                </div>
+              </div>
+            </div>
+          `;
+        });
+        htmlMatriz += '</div>';
+
+        htmlProductos += `
+          <div class="product-card">
+            <div class="product-top-row">
+              ${htmlFoto}
+              <div class="product-info">
+                <div class="product-name">${p.nombre}</div>
+                <div class="product-desc">${p.desc || ''}</div>
+              </div>
+            </div>
+            ${htmlMatriz}
+          </div>
+        `;
+      } 
+      // 🍔 SI ES MÓDULO CLÁSICO O CONSTRUCTOR LIBRE
+      else {
+        let textoPrecio = '';
+        let htmlControlesBotones = '';
+
+        if (!p.tipo_modulo || p.tipo_modulo === 'simple') {
+          textoPrecio = "S/ " + parseFloat(p.precio || 0).toFixed(2);
+          const configExtras = obtenerConfigExtras(p.categoria);
+          const tieneExtras = configExtras && configExtras.extras && configExtras.extras.filter(e => e.activo).length > 0;
+          if (tieneExtras) {
+            htmlControlesBotones = `
+              <button class="control-btn btn-menos" data-id="${p.id}">−</button>
+              <span id="qty-${p.id}" class="qty-num">0</span>
+              <button class="control-btn btn-mas-extras" data-id="${p.id}">+</button>
+            `;
+          } else {
+            htmlControlesBotones = `
+              <button class="control-btn btn-menos" data-id="${p.id}">−</button>
+              <span id="qty-${p.id}" class="qty-num">0</span>
+              <button class="control-btn btn-mas" data-id="${p.id}">+</button>
+            `;
+          }
+        } else {
+          const precios = p.variaciones.map(v => v.precio);
+          textoPrecio = "Desde S/ " + Math.min(...precios).toFixed(2);
+          if (p.tipo_modulo === 'constructor_libre') {
+            htmlControlesBotones = `<button class="cart-btn" onclick="abrirConstructorLibre('${p.id}')" style="font-size:0.85rem; padding:8px 12px; background-color:#007bff;">Armar 🛠️</button>`;
+          }
+        }
+
+        htmlProductos += `
+          <div class="product-card">
+            <div class="product-top-row">
+              ${htmlFoto}
+              <div class="product-info">
+                <div class="product-name">${p.nombre}</div>
+                <div class="product-desc">${p.desc || ''}</div>
+              </div>
+            </div>
+            <div class="product-bottom-row">
+              <div class="product-price">${textoPrecio}</div>
+              <div class="product-controls" id="controles-wrapper-${p.id}">
+                ${htmlControlesBotones}
+              </div>
             </div>
           </div>
-          <div class="product-bottom-row">
-            <div class="product-price">${textoPrecio}</div>
-            <div class="product-controls" id="controles-wrapper-${p.id}">
-              ${htmlControlesBotones}
-            </div>
-          </div>
-        </div>
-      `;
+        `;
+      }
     });
     
     item.innerHTML = `<div class="accordion-header"><span>` + cat + `</span><span class="accordion-icon">▼</span></div><div class="accordion-content">` + htmlProductos + `</div>`;
