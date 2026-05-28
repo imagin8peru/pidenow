@@ -63,6 +63,7 @@
 "extras_categorias": [
   {
     "categoria": "Sanguchones 🍔",
+    "etiqueta": "Salsas",
     "limite": 3,
     "extras": [
       { "nombre": "Ketchup", "activo": true },
