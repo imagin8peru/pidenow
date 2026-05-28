@@ -693,7 +693,9 @@ function renderizarListasAdmin() {
     const contenidoAcordeon = document.createElement('div');
     contenidoAcordeon.className = 'category-content';
 
-    listaPlatos.forEach(p => {
+    listaPlatos.forEach((p, posEnLista) => {
+      const esElPrimero = posEnLista === 0;
+      const esElUltimo = posEnLista === listaPlatos.length - 1;
       const configBadge = MAPA_MODULOS[p.tipo_modulo] || { texto: 'Clásico', clase: 'badge-simple' };
       
       let infoPrecioStr = "";
@@ -734,6 +736,8 @@ function renderizarListasAdmin() {
           <button type="button" class="btn-action btn-delete" onclick="eliminarProducto('${p.id}')">
             🗑️
           </button>
+          <button type="button" class="btn-action btn-mover" onclick="moverProducto('${p.id}', -1)" ${esElPrimero ? 'disabled style="opacity:0.3; cursor:not-allowed;"' : ''}>🔼</button>
+          <button type="button" class="btn-action btn-mover" onclick="moverProducto('${p.id}', 1)" ${esElUltimo ? 'disabled style="opacity:0.3; cursor:not-allowed;"' : ''}>🔽</button>
         </div>
       `;
       contenidoAcordeon.appendChild(fila);
@@ -945,6 +949,24 @@ function moverCategoria(index, direccion) {
   CATEGORIAS_LOCAL[index] = CATEGORIAS_LOCAL[nuevoIndex];
   CATEGORIAS_LOCAL[nuevoIndex] = categoriaTemporal;
 
+  renderizarListasAdmin();
+}
+
+function moverProducto(id, direccion) {
+  const categoria = PRODUCTOS_LOCAL.find(p => p.id == id).categoria;
+  const indicesEnCategoria = PRODUCTOS_LOCAL
+    .map((p, i) => p.categoria === categoria ? i : -1)
+    .filter(i => i !== -1);
+
+  const posEnCategoria = indicesEnCategoria.findIndex(i => PRODUCTOS_LOCAL[i].id == id);
+  const nuevaPosEnCategoria = posEnCategoria + direccion;
+
+  if (nuevaPosEnCategoria < 0 || nuevaPosEnCategoria >= indicesEnCategoria.length) return;
+
+  const idxA = indicesEnCategoria[posEnCategoria];
+  const idxB = indicesEnCategoria[nuevaPosEnCategoria];
+
+  [PRODUCTOS_LOCAL[idxA], PRODUCTOS_LOCAL[idxB]] = [PRODUCTOS_LOCAL[idxB], PRODUCTOS_LOCAL[idxA]];
   renderizarListasAdmin();
 }
 
