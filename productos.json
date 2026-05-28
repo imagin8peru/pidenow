@@ -2,8 +2,8 @@
   {
     "id": "3",
     "nombre": "Combo Royal King",
-    "desc": "Sanguchón Royal King + gaseosa o chicha morada",
-    "img": "https://res.cloudinary.com/dtwjcqjkg/image/upload/v1779927852/wyzprvlfcab7gs2j8mqu.jpg",
+    "desc": "Sanguchón Royal King + gaseosa o chicha morada.",
+    "img": "https://res.cloudinary.com/dtwjcqjkg/image/upload/v1779928088/aswzvztyjzoylojfi9xa.jpg",
     "categoria": "Combos 🎁",
     "tipo_modulo": "simple",
     "activo": true,
@@ -11,24 +11,22 @@
   },
   {
     "id": "7",
-    "nombre": "Pizza de la casa",
-    "desc": "Elige tu pizza al mismo precio",
-    "img": "https://res.cloudinary.com/dtwjcqjkg/image/upload/v1779927970/m69gdkewgas4tdo68za1.jpg",
-    "categoria": "Pizzas por tamaños 🍕",
+    "categoria": "Pizzas Matriz 🍕",
+    "nombre": "Pizza de la Casa (Precio Fijo)",
+    "desc": "Selecciona el tamaño ideal. Todos los sabores de esta categoría cuestan igual.",
     "tipo_modulo": "matriz_precios",
-    "activo": true,
     "variaciones": [
       {
         "nombre": "Grande",
-        "precio": 20,
-        "limite_ingredientes": 4
+        "precio": 27
       },
       {
         "nombre": "Familiar",
-        "precio": 30,
-        "limite_ingredientes": 5
+        "precio": 37
       }
-    ]
+    ],
+    "activo": true,
+    "img": ""
   },
   {
     "id": "8",
