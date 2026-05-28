@@ -393,6 +393,7 @@ let PRODUCTOS_LOCAL = [];
 let CATEGORIAS_LOCAL = [];
 let ZONAS_LOCAL = [];
 let METODOS_PAGO_LOCAL = { yape: true, plin: true, tarjeta: true, efectivo: true };
+let EXTRAS_CATEGORIAS_LOCAL = [];
 
 let urlTemporalCloudinary = {};
 let acordeonesAbiertos = {};
@@ -427,6 +428,7 @@ async function cargarDatos() {
     document.getElementById('cfg-recojo-local').checked = CONFIG_LOCAL.recojo_local !== false;
     actualizarBotonEstadoLocal(CONFIG_LOCAL.local_abierto !== false);
     METODOS_PAGO_LOCAL = CONFIG_LOCAL.metodos_pago || { yape: true, plin: true, tarjeta: true, efectivo: true };
+    EXTRAS_CATEGORIAS_LOCAL = (CONFIG_LOCAL.extras_categorias || []).map(ec => ({ ...ec, extras: ec.extras.map(e => ({ ...e })) }));
 
     inyectarConfiguracion();
     renderizarZonas();
@@ -635,6 +637,7 @@ function renderizarListasAdmin() {
         <button class="btn btn-secondary btn-sm" style="margin-left:8px;" onclick="conmutarCategoria(${index})">${cat.activa ? 'Desactivar' : 'Activar'}</button>
         <button class="btn btn-secondary btn-sm" onclick="editarCategoriaVisual(${index})">✏️</button>
         <button class="btn btn-danger btn-sm" onclick="eliminarCategoria(${index})">🗑️</button>
+        <button class="btn btn-secondary btn-sm" style="margin-left:4px;" onclick="abrirModalExtras('${cat.nombre}')">🧂 Extras</button>
       </div>
     `;
     contenedorCat.appendChild(row);
@@ -693,9 +696,7 @@ function renderizarListasAdmin() {
     const contenidoAcordeon = document.createElement('div');
     contenidoAcordeon.className = 'category-content';
 
-    listaPlatos.forEach((p, posEnLista) => {
-      const esElPrimero = posEnLista === 0;
-      const esElUltimo = posEnLista === listaPlatos.length - 1;
+    listaPlatos.forEach(p => {
       const configBadge = MAPA_MODULOS[p.tipo_modulo] || { texto: 'Clásico', clase: 'badge-simple' };
       
       let infoPrecioStr = "";
@@ -736,8 +737,6 @@ function renderizarListasAdmin() {
           <button type="button" class="btn-action btn-delete" onclick="eliminarProducto('${p.id}')">
             🗑️
           </button>
-          <button type="button" class="btn-action btn-mover" onclick="moverProducto('${p.id}', -1)" ${esElPrimero ? 'disabled style="opacity:0.3; cursor:not-allowed;"' : ''}>🔼</button>
-          <button type="button" class="btn-action btn-mover" onclick="moverProducto('${p.id}', 1)" ${esElUltimo ? 'disabled style="opacity:0.3; cursor:not-allowed;"' : ''}>🔽</button>
         </div>
       `;
       contenidoAcordeon.appendChild(fila);
@@ -952,22 +951,93 @@ function moverCategoria(index, direccion) {
   renderizarListasAdmin();
 }
 
-function moverProducto(id, direccion) {
-  const categoria = PRODUCTOS_LOCAL.find(p => p.id == id).categoria;
-  const indicesEnCategoria = PRODUCTOS_LOCAL
-    .map((p, i) => p.categoria === categoria ? i : -1)
-    .filter(i => i !== -1);
 
-  const posEnCategoria = indicesEnCategoria.findIndex(i => PRODUCTOS_LOCAL[i].id == id);
-  const nuevaPosEnCategoria = posEnCategoria + direccion;
+function abrirModalExtras(nombreCategoria) {
+  document.getElementById('form-extras-categoria').value = nombreCategoria;
+  document.getElementById('modal-extras-titulo').innerText = '🧂 Extras — ' + nombreCategoria;
 
-  if (nuevaPosEnCategoria < 0 || nuevaPosEnCategoria >= indicesEnCategoria.length) return;
+  const config = EXTRAS_CATEGORIAS_LOCAL.find(ec => ec.categoria === nombreCategoria);
+  document.getElementById('form-extras-limite').value = config ? config.limite : 3;
 
-  const idxA = indicesEnCategoria[posEnCategoria];
-  const idxB = indicesEnCategoria[nuevaPosEnCategoria];
+  renderizarListaExtrasModal(nombreCategoria);
+  document.getElementById('modal-extras').style.display = 'flex';
+}
 
-  [PRODUCTOS_LOCAL[idxA], PRODUCTOS_LOCAL[idxB]] = [PRODUCTOS_LOCAL[idxB], PRODUCTOS_LOCAL[idxA]];
-  renderizarListasAdmin();
+function renderizarListaExtrasModal(nombreCategoria) {
+  const config = EXTRAS_CATEGORIAS_LOCAL.find(ec => ec.categoria === nombreCategoria);
+  const extras = config ? config.extras : [];
+  const contenedor = document.getElementById('lista-extras-modal');
+  contenedor.innerHTML = '';
+
+  if (extras.length === 0) {
+    contenedor.innerHTML = '<p style="text-align:center; color:#64748b; font-size:13px; padding:10px;">Sin extras configurados aún.</p>';
+    return;
+  }
+
+  extras.forEach((extra, idx) => {
+    const row = document.createElement('div');
+    row.className = 'zona-row';
+    row.style.opacity = extra.activo ? '1' : '0.5';
+    row.innerHTML = `
+      <span style="flex:1; font-weight:600; font-size:0.95rem;">${extra.nombre}</span>
+      <label class="switch" style="flex-shrink:0;">
+        <input type="checkbox" ${extra.activo ? 'checked' : ''} onchange="toggleExtraEnModal('${nombreCategoria}', ${idx}, this.checked)">
+        <span class="slider"></span>
+      </label>
+      <button type="button" class="btn btn-danger btn-sm" onclick="eliminarExtraEnModal('${nombreCategoria}', ${idx})">🗑️</button>
+    `;
+    contenedor.appendChild(row);
+  });
+}
+
+function toggleExtraEnModal(nombreCategoria, idx, activo) {
+  const config = EXTRAS_CATEGORIAS_LOCAL.find(ec => ec.categoria === nombreCategoria);
+  if (config) config.extras[idx].activo = activo;
+  renderizarListaExtrasModal(nombreCategoria);
+}
+
+function eliminarExtraEnModal(nombreCategoria, idx) {
+  const config = EXTRAS_CATEGORIAS_LOCAL.find(ec => ec.categoria === nombreCategoria);
+  if (!config) return;
+  if (confirm('¿Eliminar el extra "' + config.extras[idx].nombre + '"?')) {
+    config.extras.splice(idx, 1);
+    renderizarListaExtrasModal(nombreCategoria);
+  }
+}
+
+function agregarExtraEnModal() {
+  const nombreCategoria = document.getElementById('form-extras-categoria').value;
+  const nombreExtra = document.getElementById('form-nuevo-extra').value.trim();
+  if (!nombreExtra) return alert('Escribe el nombre del extra.');
+
+  let config = EXTRAS_CATEGORIAS_LOCAL.find(ec => ec.categoria === nombreCategoria);
+  if (!config) {
+    config = { categoria: nombreCategoria, limite: 3, extras: [] };
+    EXTRAS_CATEGORIAS_LOCAL.push(config);
+  }
+
+  const yaExiste = config.extras.some(e => e.nombre.toLowerCase() === nombreExtra.toLowerCase());
+  if (yaExiste) return alert('Ya existe un extra con ese nombre.');
+
+  config.extras.push({ nombre: nombreExtra, activo: true });
+  document.getElementById('form-nuevo-extra').value = '';
+  renderizarListaExtrasModal(nombreCategoria);
+}
+
+function guardarExtrasModal() {
+  const nombreCategoria = document.getElementById('form-extras-categoria').value;
+  const limite = parseInt(document.getElementById('form-extras-limite').value) || 3;
+
+  let config = EXTRAS_CATEGORIAS_LOCAL.find(ec => ec.categoria === nombreCategoria);
+  if (!config) {
+    config = { categoria: nombreCategoria, limite, extras: [] };
+    EXTRAS_CATEGORIAS_LOCAL.push(config);
+  } else {
+    config.limite = limite;
+  }
+
+  cerrarModal('modal-extras');
+  alert('Extras guardados en el panel. Recuerda presionar "Guardar y Sincronizar Cambios" para que se reflejen en la carta.');
 }
 
 function procesarGuardadoGlobal() {
@@ -995,6 +1065,8 @@ function procesarGuardadoGlobal() {
   CONFIG_LOCAL.recojo_local = document.getElementById('cfg-recojo-local').checked;
   CONFIG_LOCAL.metodos_pago = { ...METODOS_PAGO_LOCAL };
   CONFIG_LOCAL.categorias = CATEGORIAS_LOCAL.map(c => ({ nombre: c.nombre, activa: c.activa }));
+
+  CONFIG_LOCAL.extras_categorias = EXTRAS_CATEGORIAS_LOCAL;
 
   const paqueteSincronizacion = {
     tipo_accion: "ACTUALIZAR_CONFIGURACION",
@@ -1032,5 +1104,33 @@ function procesarGuardadoGlobal() {
 
 cargarDatos();
 </script>
+
+<div id="modal-extras" class="modal">
+  <div class="modal-content">
+    <h3 id="modal-extras-titulo">Extras de Categoría</h3>
+    <input type="hidden" id="form-extras-categoria">
+
+    <div class="form-group" style="flex-direction: row; align-items: center; justify-content: space-between; background:#f8f9fa; padding:12px; border-radius:10px; border:1px solid #e9ecef;">
+      <div>
+        <div style="font-weight:700; font-size:0.95rem;">Límite de selección</div>
+        <div style="font-size:0.8rem; color:#6c757d;">Máximo de extras que el cliente puede elegir</div>
+      </div>
+      <input type="number" id="form-extras-limite" class="form-control" min="1" max="20" style="width:70px; text-align:center;">
+    </div>
+
+    <div id="lista-extras-modal" class="item-list"></div>
+
+    <div style="display:flex; gap:8px; margin-top:4px;">
+      <input type="text" id="form-nuevo-extra" class="form-control" placeholder="Nombre del nuevo extra...">
+      <button type="button" class="btn btn-secondary" style="white-space:nowrap;" onclick="agregarExtraEnModal()">+ Agregar</button>
+    </div>
+
+    <div class="form-row" style="margin-top:10px;">
+      <button class="btn btn-secondary" onclick="cerrarModal('modal-extras')">Cancelar</button>
+      <button class="btn btn-primary" onclick="guardarExtrasModal()">Guardar</button>
+    </div>
+  </div>
+</div>
+
 </body>
 </html>
