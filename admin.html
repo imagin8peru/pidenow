@@ -164,9 +164,22 @@ input:checked + .slider:before { transform: translateX(22px); }
   </div>
   
   <div class="form-group">
-    <label>Contenido del Banner (Texto, HTML o Enlace a Imagen de Promoción)</label>
-    <textarea id="cfg-banner-texto" class="form-control" rows="3" placeholder="Escribe texto o pega el link de una imagen. Si pones 'mantenimiento' o 'cerrado', se bloqueo la web."></textarea>
+  <label>Contenido del Banner (Texto o Imagen de Promoción)</label>
+  <div style="display: flex; gap: 8px;">
+    <textarea id="cfg-banner-texto" class="form-control" rows="3" placeholder="Escribe texto o sube una imagen. Si pones 'mantenimiento' o 'cerrado', se bloquea la web."></textarea>
+    <button type="button" class="btn btn-secondary" style="white-space: nowrap; align-self: flex-start;" onclick="abrirSubidaCloudinary('cfg-banner-texto')">📷 Subir</button>
   </div>
+  <div id="approval-box-cfg-banner-texto" class="cloudinary-approval-box">
+    <div style="display: flex; align-items: center; gap: 8px; min-width: 0; flex: 1;">
+      <img id="approval-img-cfg-banner-texto" class="approval-preview-thumb" src="">
+      <span style="font-size: 12px; color: #166534; font-weight: 600;">¿Aceptar imagen de banner?</span>
+    </div>
+    <div style="display: flex; gap: 4px; flex-shrink: 0;">
+      <button type="button" class="btn btn-danger btn-sm" onclick="cancelarSubidaCloudinary('cfg-banner-texto')">❌ Cancelar</button>
+      <button type="button" class="btn btn-primary btn-sm" onclick="aceptarSubidaCloudinary('cfg-banner-texto')">✅ Aceptar</button>
+    </div>
+  </div>
+</div>
 </section>
 
 <section class="admin-card">
