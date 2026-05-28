@@ -11,21 +11,21 @@
   },
   {
     "id": "7",
-    "nombre": "Pizza de la Casa",
+    "nombre": "Pizza de la Casa (Precio Fijo)",
     "desc": "Selecciona el tamaño ideal. Todos los sabores de esta categoría cuestan igual.",
-    "img": "https://res.cloudinary.com/dtwjcqjkg/image/upload/v1779928323/nuj2ofuqfktyzmrp3gwh.jpg",
-    "categoria": "Pizza de la casa 🍕",
+    "img": "https://res.cloudinary.com/dtwjcqjkg/image/upload/v1779928439/ws9kcqyxmtjwls3mjuxq.png",
+    "categoria": "Pizzas Matriz 🍕",
     "tipo_modulo": "matriz_precios",
     "activo": true,
     "variaciones": [
       {
         "nombre": "Grande",
-        "precio": 20,
+        "precio": 27,
         "limite_ingredientes": 4
       },
       {
         "nombre": "Familiar",
-        "precio": 30,
+        "precio": 37,
         "limite_ingredientes": 5
       }
     ]
