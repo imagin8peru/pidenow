@@ -485,9 +485,12 @@ function aplicarConfiguracion() {
 function renderizarMenu() {
   const container = document.getElementById('menu-container');
   container.innerHTML = '';
-  const productosActivos = PRODUCTOS.filter(p => p.activo !== false);
+const productosActivos = PRODUCTOS.filter(p => p.activo !== false);
   
-  const listaCategoriasOrdenadas = (CONFIG.categorias || []).map(cat => typeof cat === 'string' ? cat : cat.nombre);
+  const listaCategoriasOrdenadas = (CONFIG.categorias || [])
+    .filter(cat => typeof cat === 'string' || cat.activa !== false)
+    .map(cat => typeof cat === 'string' ? cat : cat.nombre);
+    
   const categoriasFinales = listaCategoriasOrdenadas.length > 0 ? listaCategoriasOrdenadas : [...new Set(productosActivos.map(p => p.categoria))];
 
   categoriasFinales.forEach(cat => {
