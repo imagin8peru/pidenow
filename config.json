@@ -75,7 +75,8 @@
     ]
   },
   {
-    "categoria": "Enchiladas ​🌯",
+    "categoria": "Enchiladas 🌯",
+    "etiqueta": "Salsas",
     "limite": 3,
     "extras": [
       { "nombre": "Ketchup", "activo": true },
