@@ -1,165 +1,60 @@
 [
   {
-    "id": "3",
-    "nombre": "Combo Royal King",
-    "desc": "Sanguchón Royal King + gaseosa o chicha morada.",
-    "img": "https://res.cloudinary.com/dtwjcqjkg/image/upload/v1779928088/aswzvztyjzoylojfi9xa.jpg",
-    "categoria": "Combos 🎁",
-    "tipo_modulo": "simple",
-    "activo": true,
-    "precio": 22
-  },
-  {
-    "id": "7",
-    "nombre": "Pizza de la Casa (Precio Fijo)",
-    "desc": "Selecciona el tamaño ideal. Todos los sabores de esta categoría cuestan igual.",
-    "img": "https://res.cloudinary.com/dtwjcqjkg/image/upload/v1779928439/ws9kcqyxmtjwls3mjuxq.png",
-    "categoria": "Pizzas Matriz 🍕",
-    "tipo_modulo": "matriz_precios",
-    "activo": true,
-    "variaciones": [
-      {
-        "nombre": "Grande",
-        "precio": 27,
-        "limite_ingredientes": 4
-      },
-      {
-        "nombre": "Familiar",
-        "precio": 37,
-        "limite_ingredientes": 5
-      }
-    ]
-  },
-  {
-    "id": "8",
-    "nombre": "Hamburguesa",
-    "desc": "Hamburguesa 100 g, huevo, queso, ensalada, papas al hilo y salsas",
-    "img": "https://res.cloudinary.com/dtwjcqjkg/image/upload/v1779923734/b0qxiutoeftd8k9qwiha.jpg",
-    "categoria": "Sanguchones 🍔",
-    "tipo_modulo": "simple",
-    "activo": true,
-    "precio": 18
-  },
-  {
-    "id": "9",
-    "nombre": "Enchilada Simple",
-    "desc": "1 proteína a elección, ensalada y papas al hilo",
-    "img": "https://res.cloudinary.com/dtwjcqjkg/image/upload/v1779925818/lwthmaj2v6wyodtynnwl.jpg",
-    "categoria": "Enchiladas ​🌯",
-    "tipo_modulo": "simple",
-    "activo": true,
-    "precio": 15
-  },
-  {
-    "id": "11",
-    "nombre": "Pollo Deshilachado",
-    "desc": "Pollo deshilachado, huevo, queso, papas y ensalada",
-    "img": "https://res.cloudinary.com/dtwjcqjkg/image/upload/v1779925880/b53aomzredkydojhbx0a.jpg",
-    "categoria": "Sanguchones 🍔",
-    "tipo_modulo": "simple",
-    "activo": true,
-    "precio": 18
-  },
-  {
-    "id": "12",
-    "nombre": "Filete de pollo",
-    "desc": "Filete de pollo, huevo, queso, ensalada, papas al hilo y salsas",
-    "img": "https://res.cloudinary.com/dtwjcqjkg/image/upload/v1779925928/zflz7gntt8bbpx3nbdpu.jpg",
-    "categoria": "Sanguchones 🍔",
-    "tipo_modulo": "simple",
-    "activo": true,
-    "precio": 18
-  },
-  {
-    "id": "13",
-    "nombre": "Chorizo",
-    "desc": "Chorizo, huevo, queso, ensalada, papas al hilo y salsas",
-    "img": "https://res.cloudinary.com/dtwjcqjkg/image/upload/v1779925959/om0hgpmuisbartnc6uqj.jpg",
-    "categoria": "Sanguchones 🍔",
-    "tipo_modulo": "simple",
-    "activo": true,
-    "precio": 18
-  },
-  {
-    "id": "10",
-    "nombre": "Royal King",
-    "desc": "Hamburguesa 100 g, chorizo, huevo, queso, ensalada, papas al hilo y salsas",
-    "img": "https://res.cloudinary.com/dtwjcqjkg/image/upload/v1779925853/vpxa0fuozzt6kqbp0y1i.jpg",
-    "categoria": "Sanguchones 🍔",
-    "tipo_modulo": "simple",
-    "activo": true,
-    "precio": 22
-  },
-  {
-    "id": "14",
-    "nombre": "Enchilada Mixta",
-    "desc": "2 proteínas a elección, ensalada y papas al hilo",
-    "img": "https://res.cloudinary.com/dtwjcqjkg/image/upload/v1779926002/ftncvci4lq7vbkqz5oud.jpg",
-    "categoria": "Enchiladas ​🌯",
-    "tipo_modulo": "simple",
-    "activo": true,
-    "precio": 19
-  },
-  {
-    "id": "15",
-    "nombre": "Enchilada Triple",
-    "desc": "3 proteínas a elección, ensalada y papas al hilo",
-    "img": "https://res.cloudinary.com/dtwjcqjkg/image/upload/v1779926037/rq3qo1xdlipd6axbomwh.jpg",
-    "categoria": "Enchiladas ​🌯",
-    "tipo_modulo": "simple",
-    "activo": true,
-    "precio": 23
-  },
-  {
-    "id": "16",
-    "nombre": "Arma tu pizza",
-    "desc": "Eliges tus ingredientes",
-    "img": "https://res.cloudinary.com/dtwjcqjkg/image/upload/v1779928603/qdz8ukcctaheh3acfxrm.png",
-    "categoria": "Pizza a tu medida",
-    "tipo_modulo": "constructor_libre",
-    "activo": true,
-    "variaciones": [
-      {
-        "nombre": "Grande",
-        "precio": 20,
-        "limite_ingredientes": 4
-      },
-      {
-        "nombre": "Familiar",
-        "precio": 30,
-        "limite_ingredientes": 5
-      }
+    "id": "1",
+    "categoria": "Pizzas 🍕",
+    "nombre": "Pizza Americana",
+    "desc": "Salsa de tomate, muzzarella y jamón inglés.",
+    "tipo": "variantes",
+    "variantes": [
+      { "nombre": "Personal (4 porciones)", "precio": 15.00 },
+      { "nombre": "Grande (8 porciones)", "precio": 27.00 },
+      { "nombre": "Familiar (12 porciones)", "precio": 37.00 }
     ],
-    "ingredientes_disponibles": [
-      "Jamón",
-      "Pepperoni",
-      "Champiñones",
-      "Piña",
-      "Tocino",
-      "Aceitunas",
-      "Cebolla",
-      "Pimiento"
-    ]
+    "activo": true
   },
   {
-    "id": "17",
-    "nombre": "Pizza de la casa",
-    "desc": "Todas al mismo precio",
-    "img": "https://res.cloudinary.com/dtwjcqjkg/image/upload/v1779929142/bkwxx8fcx0mapugzrlzs.jpg",
-    "categoria": "Pizza de la casa 🍕",
-    "tipo_modulo": "matriz_precios",
-    "activo": true,
-    "variaciones": [
-      {
-        "nombre": "Grande",
-        "precio": 20,
-        "limite_ingredientes": 4
-      },
-      {
-        "nombre": "Familiar",
-        "precio": 30,
-        "limite_ingredientes": 5
-      }
-    ]
+    "id": "2",
+    "categoria": "Pizzas 🍕",
+    "nombre": "Pizza Pepperoni",
+    "desc": "Salsa de tomate, muzzarella y harto pepperoni americano.",
+    "tipo": "variantes",
+    "variantes": [
+      { "nombre": "Personal (4 porciones)", "precio": 15.00 },
+      { "nombre": "Grande (8 porciones)", "precio": 27.00 },
+      { "nombre": "Familiar (12 porciones)", "precio": 37.00 }
+    ],
+    "activo": true
+  },
+  {
+    "id": "3",
+    "categoria": "Combos 🎁",
+    "nombre": "Combo Maradoniano",
+    "desc": "1 Pizza Grande + 2 Calzones + 1 Gaseosa 1L.",
+    "precio": 50.00,
+    "activo": true
+  },
+  {
+    "id": "4",
+    "categoria": "Bebidas 🥤",
+    "nombre": "Inca Kola 1 Litro",
+    "desc": "Heladita, como debe ser.",
+    "precio": 8.00,
+    "activo": true
+  },
+  {
+    "id": "5",
+    "categoria": "Tacos 🌮",
+    "nombre": "Taco Chacarero",
+    "desc": "4 carnes y de todo.",
+    "precio": 37.50,
+    "activo": true
+  },
+  {
+    "id": "6",
+    "categoria": "Bebidas 🥤",
+    "nombre": "Pepsi 600 ml",
+    "desc": "Fresquita y helada.",
+    "precio": 12.00,
+    "activo": true
   }
 ]
