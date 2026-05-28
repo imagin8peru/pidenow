@@ -439,7 +439,7 @@ function aplicarConfiguracion() {
       document.getElementById('maintenance-text').innerHTML = CONFIG.banner_texto;
       return;
     }
-    if (textoLimpio.includes(".jpg") || textoLimpio.includes(".png") || textoLimpio.includes(".webp") || textoLoptio.includes("http")) {
+    if (textoLimpio.includes(".jpg") || textoLimpio.includes(".png") || textoLimpio.includes(".webp") || textoLimpio.includes("http")) {
       maintenanceContainer.style.display = 'none';
       appContainer.style.display = 'flex';
       banner.innerHTML = '<img src="' + CONFIG.banner_texto.trim() + '" alt="Promoción Especial">';
