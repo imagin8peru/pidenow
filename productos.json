@@ -109,5 +109,26 @@
     "tipo_modulo": "simple",
     "activo": true,
     "precio": 23
+  },
+  {
+    "id": "16",
+    "nombre": "Pizza de la casa",
+    "desc": "Elige la que quieras a un mismo precio",
+    "img": "https://res.cloudinary.com/dtwjcqjkg/image/upload/v1779928499/d5uhpbapgymwlsomhfpz.png",
+    "categoria": "Pizza de la casa 🍕",
+    "tipo_modulo": "matriz_precios",
+    "activo": true,
+    "variaciones": [
+      {
+        "nombre": "Grande",
+        "precio": 20,
+        "limite_ingredientes": 4
+      },
+      {
+        "nombre": "Familiar",
+        "precio": 30,
+        "limite_ingredientes": 5
+      }
+    ]
   }
 ]
