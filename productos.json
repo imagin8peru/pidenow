@@ -51,16 +51,6 @@
     "precio": 15
   },
   {
-    "id": "10",
-    "nombre": "Royal King",
-    "desc": "Hamburguesa 100 g, chorizo, huevo, queso, ensalada, papas al hilo y salsas",
-    "img": "https://res.cloudinary.com/dtwjcqjkg/image/upload/v1779925853/vpxa0fuozzt6kqbp0y1i.jpg",
-    "categoria": "Sanguchones 🍔",
-    "tipo_modulo": "simple",
-    "activo": true,
-    "precio": 22
-  },
-  {
     "id": "11",
     "nombre": "Pollo Deshilachado",
     "desc": "Pollo deshilachado, huevo, queso, papas y ensalada",
@@ -89,6 +79,16 @@
     "tipo_modulo": "simple",
     "activo": true,
     "precio": 18
+  },
+  {
+    "id": "10",
+    "nombre": "Royal King",
+    "desc": "Hamburguesa 100 g, chorizo, huevo, queso, ensalada, papas al hilo y salsas",
+    "img": "https://res.cloudinary.com/dtwjcqjkg/image/upload/v1779925853/vpxa0fuozzt6kqbp0y1i.jpg",
+    "categoria": "Sanguchones 🍔",
+    "tipo_modulo": "simple",
+    "activo": true,
+    "precio": 22
   },
   {
     "id": "14",
