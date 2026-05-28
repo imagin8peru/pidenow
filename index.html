@@ -1369,7 +1369,7 @@ function prepararEnvio() {
     textoWA += `🏠 *Dirección:* ${direccion}\n`;
     if (referencia) textoWA += `🔍 *Ref:* ${referencia}\n`;
   }
-  if (notes) textoWA += `📝 *Notes:* ${notas}\n`;
+  if (notas) textoWA += `📝 *Notas:* ${notas}\n`;
   textoWA += `\n🧾 *DETALLE DEL PEDIDO:*\n`;
 
   let contadorPizzasConstructor = 0;
@@ -1478,6 +1478,50 @@ function accionDescargarQR() {
 
 function accionEntendido() {
   ejecutadoExitoso();
+}
+function cambiarCantMatriz(productoId, variacionNombre, cambio) {
+  const key = productoId + '-' + variacionNombre;
+  let cant = cantidadesMatriz[key] || 1;
+  cant = Math.max(1, cant + cambio);
+  cantidadesMatriz[key] = cant;
+  const elQty = document.getElementById('qty-' + key);
+  if (elQty) elQty.innerText = cant;
+}
+
+function eliminarMatriz(productoId, variacionNombre) {
+  const key = productoId + '-' + variacionNombre;
+  delete memoriaCarrito[key];
+  cantidadesMatriz[key] = 1;
+  const elQty = document.getElementById('qty-' + key);
+  if (elQty) elQty.innerText = 1;
+  const btnAgregar = document.getElementById('btn-matriz-' + key);
+  if (btnAgregar) {
+    btnAgregar.innerText = 'Agregar';
+    btnAgregar.classList.remove('is-added');
+  }
+  calcularPrecios();
+}
+
+function agregarMatriz(productoId, nombreBase, variacionNombre, precio) {
+  if (CONFIG.local_abierto === false) return;
+  const key = productoId + '-' + variacionNombre;
+  const cantidad = cantidadesMatriz[key] || 1;
+
+  memoriaCarrito[key] = {
+    id: productoId,
+    nombre: nombreBase + ' (' + variacionNombre + ')',
+    precio: precio,
+    cantidad: cantidad,
+    esComplejo: true
+  };
+
+  const btnAgregar = document.getElementById('btn-matriz-' + key);
+  if (btnAgregar) {
+    btnAgregar.innerText = '✔ Agregado';
+    btnAgregar.classList.add('is-added');
+  }
+
+  calcularPrecios();
 }
 
 inicializarAplicacion();
