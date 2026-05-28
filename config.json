@@ -113,6 +113,33 @@
           "activo": true
         }
       ]
+    },
+    {
+      "categoria": "Enchiladas ​🌯",
+      "limite": 3,
+      "extras": [
+        {
+          "nombre": "Ketchup",
+          "activo": true
+        },
+        {
+          "nombre": "Mostaza",
+          "activo": true
+        },
+        {
+          "nombre": "Mayonesa",
+          "activo": true
+        },
+        {
+          "nombre": "Aceituna",
+          "activo": true
+        },
+        {
+          "nombre": "Tártara",
+          "activo": true
+        }
+      ],
+      "etiqueta": "Salsas"
     }
   ]
 }
