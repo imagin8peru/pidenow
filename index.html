@@ -505,7 +505,7 @@ function aplicarConfiguracion() {
 function renderizarMenu() {
   const container = document.getElementById('menu-container');
   container.innerHTML = '';
-const productosActivos = PRODUCTOS.filter(p => p.activo !== false);
+  const productosActivos = PRODUCTOS.filter(p => p.activo !== false);
   
   const listaCategoriasOrdenadas = (CONFIG.categorias || [])
     .filter(cat => typeof cat === 'string' || cat.activa !== false)
@@ -578,69 +578,113 @@ const productosActivos = PRODUCTOS.filter(p => p.activo !== false);
       } 
       // 🍔 SI ES MÓDULO CLÁSICO O CONSTRUCTOR LIBRE
       else {
-        let textoPrecio = '';
-        let htmlControlesBotones = '';
+        if (p.tipo_modulo === 'constructor_libre') {
+          // 🛠️ MULTI-TARJETA INLINE: Recorremos cada tamaño del array variaciones
+          p.variaciones.forEach(v => {
+            const sizeKey = `${p.id}-${v.nombre}`; // Identificador único: Ej. "16-Grande"
+            
+            // Inicializamos el valor en 1 en nuestra variable del Paso 1 si no existe
+            if (!constructorUnidadesTemporales[sizeKey]) {
+              constructorUnidadesTemporales[sizeKey] = 1;
+            }
+            
+            const unidadesActuales = constructorUnidadesTemporales[sizeKey];
+            const isConfirmado = constructorConfirmadoStatus[sizeKey] === true;
+            
+            // Estilos dinámicos para el botón CONFIRMAR / CONFIRMADO ✓
+            const btnText = isConfirmado ? 'CONFIRMADO ✓' : 'CONFIRMAR';
+            const btnStyle = isConfirmado 
+              ? 'background-color: #22c55e; border-color: #22c55e;' 
+              : 'background-color: #1a1a1a; border-color: #1a1a1a;';
+            const btnClass = isConfirmado ? 'btn-add-item is-added' : 'btn-add-item';
 
-        if (!p.tipo_modulo || p.tipo_modulo === 'simple') {
-          textoPrecio = "S/ " + parseFloat(p.precio || 0).toFixed(2);
+            htmlProductos += `
+              <div class="product-card" id="card-constructor-${sizeKey}">
+                <div class="product-top-row">
+                  ${htmlFoto}
+                  <div class="product-info">
+                    <div class="product-name">${p.nombre} ${v.nombre}</div>
+                    <div class="product-desc">Elige hasta ${v.limite_ingredientes} porciones de ingredientes incluidos de la lista (puedes repetir).</div>
+                  </div>
+                </div>
+                <div class="size-vertical-row" style="margin-top:4px;">
+                  <div class="size-controls-actions" id="controles-wrapper-${sizeKey}">
+                    <span class="product-price">S/ ${v.precio.toFixed(2)}</span>
+                    
+                    <div class="quantity-control">
+                      <button class="qty-btn" onclick="cambiarUnidadesConstructor('${p.id}', '${v.nombre}', -1)">−</button>
+                      <span id="constructor-qty-${sizeKey}" class="qty-val">${unidadesActuales}</span>
+                      <button class="qty-btn" onclick="cambiarUnidadesConstructor('${p.id}', '${v.nombre}', 1)">+</button>
+                    </div>
+                    <div style="display:flex; align-items:center; gap:8px;">
+                      <button class="btn-trash-clear" onclick="limpiarTarjetaConstructor('${p.id}', '${v.nombre}')">🗑️</button>
+                      <button class="${btnClass}" id="btn-constructor-${sizeKey}" style="${btnStyle}" onclick="confirmarUnidadesConstructor('${p.id}', '${v.nombre}')">${btnText}</button>
+                    </div>
+                  </div>
+                </div>
+                
+                <div class="salsas-dynamic-container" id="ingredientes-dinamicos-${sizeKey}" style="display: ${isConfirmado ? 'flex' : 'none'}; flex-direction: column; gap: 12px; width: 100%; margin-top: 5px;"></div>
+              </div>
+            `;
+          });
+        } 
+        else {
+          // COMPORTAMIENTO CLÁSICO (Para productos simples: Sánguchones, combos, etc.)
+          let textoPrecio = "S/ " + parseFloat(p.precio || 0).toFixed(2);
+          let htmlControlesBotones = '';
           const configExtras = obtenerConfigExtras(p.categoria);
           const tieneExtras = configExtras && configExtras.extras && configExtras.extras.filter(e => e.activo).length > 0;
-         if (tieneExtras) {
-    htmlControlesBotones = `
-      <div class="quantity-control">
-        <button class="qty-btn btn-menos" data-id="${p.id}">−</button>
-        <span id="qty-${p.id}" class="qty-val">0</span>
-        <button class="qty-btn btn-mas-extras" data-id="${p.id}">+</button>
-      </div>
-      <div style="display:flex; align-items:center; gap:8px;">
-        <button class="btn-trash-clear btn-trash-simple" data-id="${p.id}">🗑️</button>
-        <button class="btn-add-item" id="btn-simple-${p.id}" onclick="agregarSimple('${p.id}')">Agregar</button>
-      </div>
-    `;
-  } else {
-    htmlControlesBotones = `
-      <div class="quantity-control">
-        <button class="qty-btn btn-menos" data-id="${p.id}">−</button>
-        <span id="qty-${p.id}" class="qty-val">0</span>
-        <button class="qty-btn btn-mas" data-id="${p.id}">+</button>
-      </div>
-      <div style="display:flex; align-items:center; gap:8px;">
-        <button class="btn-trash-clear btn-trash-simple" data-id="${p.id}">🗑️</button>
-        <button class="btn-add-item" id="btn-simple-${p.id}" onclick="agregarSimple('${p.id}')">Agregar</button>
-      </div>
-    `;
-  }
-        } else {
-          const precios = p.variaciones.map(v => v.precio);
-          textoPrecio = "Desde S/ " + Math.min(...precios).toFixed(2);
-          if (p.tipo_modulo === 'constructor_libre') {
-            htmlControlesBotones = `<button class="cart-btn" onclick="abrirConstructorLibre('${p.id}')" style="font-size:0.85rem; padding:8px 12px; background-color:#007bff;">Armar 🛠️</button>`;
+          
+          if (tieneExtras) {
+            htmlControlesBotones = `
+              <div class="quantity-control">
+                <button class="qty-btn btn-menos" data-id="${p.id}">−</button>
+                <span id="qty-${p.id}" class="qty-val">0</span>
+                <button class="qty-btn btn-mas-extras" data-id="${p.id}">+</button>
+              </div>
+              <div style="display:flex; align-items:center; gap:8px;">
+                <button class="btn-trash-clear btn-trash-simple" data-id="${p.id}">🗑️</button>
+                <button class="btn-add-item" id="btn-simple-${p.id}" onclick="agregarSimple('${p.id}')">Agregar</button>
+              </div>
+            `;
+          } else {
+            htmlControlesBotones = `
+              <div class="quantity-control">
+                <button class="qty-btn btn-menos" data-id="${p.id}">−</button>
+                <span id="qty-${p.id}" class="qty-val">0</span>
+                <button class="qty-btn btn-mas" data-id="${p.id}">+</button>
+              </div>
+              <div style="display:flex; align-items:center; gap:8px;">
+                <button class="btn-trash-clear btn-trash-simple" data-id="${p.id}">🗑️</button>
+                <button class="btn-add-item" id="btn-simple-${p.id}" onclick="agregarSimple('${p.id}')">Agregar</button>
+              </div>
+            `;
           }
-        }
 
-        htmlProductos += `
-          <div class="product-card">
-            <div class="product-top-row">
-              ${htmlFoto}
-              <div class="product-info">
-                <div class="product-name">${p.nombre}</div>
-                <div class="product-desc">${p.desc || ''}</div>
+          htmlProductos += `
+            <div class="product-card">
+              <div class="product-top-row">
+                ${htmlFoto}
+                <div class="product-info">
+                  <div class="product-name">${p.nombre}</div>
+                  <div class="product-desc">${p.desc || ''}</div>
+                </div>
+              </div>
+              <div class="size-vertical-row" style="margin-top:4px;">
+                <div class="size-controls-actions" id="controles-wrapper-${p.id}">
+                  <span class="product-price">${textoPrecio}</span>
+                  ${htmlControlesBotones}
+                </div>
               </div>
             </div>
-            <div class="size-vertical-row" style="margin-top:4px;">
-              <div class="size-controls-actions" id="controles-wrapper-${p.id}">
-                <span class="product-price">${textoPrecio}</span>
-                ${htmlControlesBotones}
-              </div>
-            </div>
-          </div>
-        `;
+          `;
+        }
       }
-    });
+    }); // Cierre del forEach de productos
     
     item.innerHTML = `<div class="accordion-header"><span>` + cat + `</span><span class="accordion-icon">▼</span></div><div class="accordion-content">` + htmlProductos + `</div>`;
     container.appendChild(item);
-  });
+  }); // Cierre del forEach de categorías
 
   configurarEventos();
   
@@ -650,12 +694,6 @@ const productosActivos = PRODUCTOS.filter(p => p.activo !== false);
       elQty.innerText = memoriaCarrito[id];
     }
   }
-}
-
-// Devuelve la config de extras para una categoría (o null si no tiene)
-function obtenerConfigExtras(nombreCategoria) {
-  if (!CONFIG.extras_categorias) return null;
-  return CONFIG.extras_categorias.find(ec => ec.categoria === nombreCategoria) || null;
 }
 
 function configurarEventos() {
