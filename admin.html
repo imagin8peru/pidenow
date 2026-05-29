@@ -171,7 +171,7 @@
       </div>
       
       <!-- Status Card (Hero banner matching style) -->
-      <div id="status-card-container" style="background-image: url('./HEADER-ADMIN.jpg'); background-size: cover; background-position: right center;" class="bg-zinc-950 text-white rounded-md p-5 relative overflow-hidden shadow-lg border border-emerald-900/30 flex flex-col justify-between min-h-[160px] transition-all duration-500">
+      <div id="status-card-container" style="background-image: url('./HEADER-ADMIN.jpg'); background-size: cover; background-position: right center;" class="bg-zinc-950 text-white rounded-md p-4 md:p-5 relative overflow-hidden shadow-lg border border-emerald-900/30 flex flex-col justify-between min-h-[160px] transition-all duration-500">
         <!-- Glow effect behind the store -->
         <div id="status-card-glow" class="absolute -right-6 -bottom-6 w-36 h-36 rounded-full blur-3xl z-0 pointer-events-none transition-all duration-500 bg-emerald-500/20"></div>
         
@@ -179,15 +179,15 @@
           <div id="lbl-estado-badge" class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-extrabold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 w-fit">
             <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span> LOCAL ABIERTO
           </div>
-          <h3 class="text-base font-extrabold tracking-tight mt-1 leading-tight" id="lbl-estado-desc">Tu tienda está visible para recibir pedidos.</h3>
+          <h3 class="text-sm md:text-base font-extrabold tracking-tight mt-1 leading-tight" id="lbl-estado-desc">Tu tienda está visible para recibir pedidos.</h3>
         </div>
         
         <!-- Toggle button / Edit controls -->
         <div class="flex items-center gap-2 mt-4 z-20">
-          <button id="btn-estado-local" onclick="toggleEstadoLocal()" class="py-2.5 px-5 rounded-full text-xs font-bold transition-all active:scale-[0.98] cursor-pointer flex items-center justify-center gap-1.5 shadow-sm bg-primary text-white hover:bg-primary-hover border-none">
+          <button id="btn-estado-local" onclick="toggleEstadoLocal()" class="py-1.5 px-3 md:py-2 md:px-4 rounded-full text-[10px] md:text-xs font-bold transition-all active:scale-[0.98] cursor-pointer flex items-center justify-center gap-1 shadow-sm bg-primary text-white hover:bg-primary-hover border-none">
             Cerrar tienda
           </button>
-          <button onclick="selectTab('configuracion')" class="py-2.5 px-5 rounded-full text-xs font-bold transition-all active:scale-[0.98] cursor-pointer flex items-center justify-center gap-1.5 shadow-sm bg-white text-slate-900 hover:bg-gray-100 border-none">
+          <button onclick="selectTab('configuracion')" class="py-1.5 px-3 md:py-2 md:px-4 rounded-full text-[10px] md:text-xs font-bold transition-all active:scale-[0.98] cursor-pointer flex items-center justify-center gap-1 shadow-sm bg-white text-slate-900 hover:bg-gray-100 border-none">
             ⚙️ Ajustes
           </button>
         </div>
@@ -1010,18 +1010,18 @@ function actualizarBotonEstadoLocal(abierto) {
   if (btn) {
     if (abierto) {
       btn.innerHTML = `
-        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M10 9v6m4-6v6m7-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
         </svg> Cerrar tienda
       `;
-      btn.className = 'py-2 px-4 rounded-full text-xs font-extrabold cursor-pointer flex items-center justify-center gap-1.5 transition-all active:scale-[0.98] shadow-sm bg-primary text-white hover:bg-primary-hover border-none';
+      btn.className = 'py-1.5 px-3 md:py-2 md:px-4 rounded-full text-[10px] md:text-xs font-extrabold cursor-pointer flex items-center justify-center gap-1 transition-all active:scale-[0.98] shadow-sm bg-primary text-white hover:bg-primary-hover border-none';
     } else {
       btn.innerHTML = `
-        <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
           <path d="M8 5v14l11-7z"></path>
         </svg> Abrir tienda
       `;
-      btn.className = 'py-2 px-4 rounded-full text-xs font-extrabold cursor-pointer flex items-center justify-center gap-1.5 transition-all active:scale-[0.98] shadow-sm bg-emerald-500 text-white hover:bg-emerald-600 border-none';
+      btn.className = 'py-1.5 px-3 md:py-2 md:px-4 rounded-full text-[10px] md:text-xs font-extrabold cursor-pointer flex items-center justify-center gap-1 transition-all active:scale-[0.98] shadow-sm bg-emerald-500 text-white hover:bg-emerald-600 border-none';
     }
   }
   
