@@ -1751,6 +1751,55 @@ function renderBloquesOInstancias(productoId, variacionNombre) {
     renderizarBloquesConstructorInline(productoId, variacionNombre);
   }
 }
+// --- PASO 5.2: ACCIÓN DE LOS BOTONES SUMAR Y RESTAR INGREDIENTES ---
+function modificarIngredienteConstructor(productoId, variacionNombre, unidadIndex, ingrediente, cambio, limiteMax) {
+  if (CONFIG.local_abierto === false) return;
+
+  const sizeKey = `${productoId}-${variacionNombre}`; // Ej. "16-Grande"
+  const unidadKey = `${sizeKey}-u${unidadIndex}`; // Ej. "16-Grande-u1"
+
+  // 1. Calculamos cuántas porciones lleva acumuladas esta pizza actualmente
+  let totalPorciones = 0;
+  for (const ing in constructorIngredientesSeleccionados[unidadKey]) {
+    totalPorciones += constructorIngredientesSeleccionados[unidadKey][ing];
+  }
+
+  // 2. Leemos la cantidad actual del ingrediente específico que se presionó
+  let cantIngrediente = constructorIngredientesSeleccionados[unidadKey][ingrediente] || 0;
+  let nuevaCant = cantIngrediente + cambio;
+
+  // 3. VALIDACIONES MATEMÁTICAS
+  if (nuevaCant < 0) return; // No se puede bajar de 0 porciones
+  if (cambio > 0 && totalPorciones >= limiteMax) return; // Bloqueo si ya llegó al límite (4/4 o 5/5)
+
+  // 4. Guardamos el cambio en la memoria local
+  constructorIngredientesSeleccionados[unidadKey][ingrediente] = nuevaCantidad;
+
+  // 5. RE-RENDERIZADO INMEDIATO: Actualizamos la interfaz del bloque para que cambie de color o muté a verde
+  renderizarCatalogoIngredientesUnidad(productoId, variacionNombre, unidadIndex, limiteMax);
+  
+  // 6. ACTUALIZACIÓN GLOBAL AUTOMÁTICA: Sincronizamos con el carrito de compras
+  if (typeof sincronizarConstructorConCarrito === 'function') {
+    sincronizarConstructorConCarrito(productoId, variacionNombre);
+  }
+}
+
+// --- PASO 5.3: ACCIÓN DE LA "X" EN EL RESUMEN VERDE ---
+function quitarIngredienteConstructor(productoId, variacionNombre, unidadIndex, ingrediente, limiteMax) {
+  const sizeKey = `${productoId}-${variacionNombre}`;
+  const unidadKey = `${sizeKey}-u${unidadIndex}`;
+
+  // Forzamos a que el ingrediente baje a cero porciones al presionar la X
+  constructorIngredientesSeleccionados[unidadKey][ingrediente] = 0;
+
+  // Redibujamos la interfaz: al estar en 3/4, destruirá la caja verde y abrirá el catálogo automáticamente
+  renderizarCatalogoIngredientesUnidad(productoId, variacionNombre, unidadIndex, limiteMax);
+
+  // Sincronizamos inmediatamente con el carrito para restar el costo si corresponde
+  if (typeof sincronizarConstructorConCarrito === 'function') {
+    sincronizarConstructorConCarrito(productoId, variacionNombre);
+  }
+}
 inicializarAplicacion();
 </script>
 </body>
