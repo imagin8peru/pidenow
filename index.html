@@ -1800,6 +1800,65 @@ function quitarIngredienteConstructor(productoId, variacionNombre, unidadIndex, 
     sincronizarConstructorConCarrito(productoId, variacionNombre);
   }
 }
+// --- PASO 6: EMBAJADA DE DATOS - SINCRONIZACIÓN CON EL CARRITO GLOBAL ---
+function sincronizarConstructorConCarrito(productoId, variacionNombre) {
+  const sizeKey = `${productoId}-${variacionNombre}`; // Ej. "16-Grande"
+  const producto = PRODUCTOS.find(p => p.id == productoId);
+  if (!producto) return;
+
+  const variacion = producto.variaciones.find(v => v.nombre === variacionNombre);
+  const limiteMax = variacion ? variacion.limite_ingredientes : 4;
+
+  const totalUnidades = constructorUnidadesTemporales[sizeKey] || 1;
+
+  // 1. Limpiamos cualquier rastro previo de este tamaño específico en el carrito para reescribir limpio
+  for (const llave in memoriaCarrito) {
+    if (llave.startsWith(`inline-${sizeKey}-`)) {
+      delete memoriaCarrito[llave];
+    }
+  }
+
+  // 2. Recorremos cada una de las unidades configuradas para ver cuáles ya se terminaron de armar
+  for (let i = 1; i <= totalUnidades; i++) {
+    const unidadKey = `${sizeKey}-u${i}`;
+    
+    // Contamos porciones
+    let totalPorciones = 0;
+    let ingredientesDeEstaUnidad = [];
+
+    for (const ing in constructorIngredientesSeleccionados[unidadKey]) {
+      const cant = constructorIngredientesSeleccionados[unidadKey][ing];
+      if (cant > 0) {
+        totalPorciones += cant;
+        // Si se repite el ingrediente, lo desglosamos como "Jamón (x2)"
+        ingredientesDeEstaUnidad.push(cant > 1 ? `${ing} (x${cant})` : ing);
+      }
+    }
+
+    // 🎯 REGLA DE NEGOCIO: Solo se sube al carrito si la pizza está armada al 100% (límite completo)
+    if (totalPorciones === limiteMax) {
+      const carritoUniqueId = `inline-${sizeKey}-pizza-${i}`; // ID único: Ej. "inline-16-Grande-pizza-1"
+
+      memoriaCarrito[carritoUniqueId] = {
+        id: productoId,
+        nombre: `${producto.nombre} (${vNombreOCorrecion(variacionNombre)}) (#${i})`,
+        precio: variacion ? variacion.precio : 0,
+        detalles: ingredientesDeEstaUnidad.join(', '),
+        esComplejo: true,
+        esConstructor: true,
+        cantidad: 1 // Cada pizza terminada viaja como una unidad independiente
+      };
+    }
+  }
+
+  // 3. Ejecutamos el motor central de Pidenow para actualizar los totales en la pantalla
+  calcularPrecios();
+}
+
+// Función auxiliar de formateo estético para limpiar variables
+function vNombreOCorrecion(nombre) {
+  return nombre;
+}
 inicializarAplicacion();
 </script>
 </body>
