@@ -1713,6 +1713,38 @@ function renderizarBloquesConstructorInline(productoId, variacionNombre) {
     }
   }
 }
+// --- PASO 4.5: CONTROLADOR DE UNIDADES PRINCIPAL DE LA TARJETA ---
+function cambiarUnidadesConstructor(productoId, variacionNombre, cambio) {
+  if (CONFIG.local_abierto === false) return;
+
+  const sizeKey = `${productoId}-${variacionNombre}`; // Ej. "16-Grande"
+  
+  // 1. Leemos cuántas unidades hay en memoria (por defecto mínimo 1)
+  let unidades = constructorUnidadesTemporales[sizeKey] || 1;
+  
+  // 2. Aplicamos el cambio matemático
+  unidades = unidades + cambio;
+  if (unidades < 1) unidades = 1; // Evitamos cantidades en cero o negativas
+  
+  // 3. Guardamos el nuevo valor en la cajita de memoria del Paso 1
+  constructorUnidadesTemporales[sizeKey] = unidades;
+  
+  // 4. Actualizamos el número visual en el contador de la tarjeta
+  const elQty = document.getElementById(`constructor-qty-${sizeKey}`);
+  if (elQty) elQty.innerText = unidades;
+
+  // 5. REACCIÓN EN TIEMPO REAL (Opción A): Si ya estaba confirmado, redibujamos los bloques al instante
+  if (constructorConfirmadoStatus[sizeKey] === true) {
+    renderBloquesOInstancias(productoId, variacionNombre);
+  }
+}
+
+// Función auxiliar para que el motor refresque la interfaz de manera limpia
+function renderBloquesOInstancias(productoId, variacionNombre) {
+  if (typeof renderizarBloquesConstructorInline === 'function') {
+    renderizarBloquesConstructorInline(productoId, variacionNombre);
+  }
+}
 inicializarAplicacion();
 </script>
 </body>
