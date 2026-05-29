@@ -146,7 +146,7 @@
     "img": "https://res.cloudinary.com/dtwjcqjkg/image/upload/v1779929142/bkwxx8fcx0mapugzrlzs.jpg",
     "categoria": "Pizza de la casa 🍕",
     "tipo_modulo": "matriz_precios",
-    "activo": false,
+    "activo": true,
     "variaciones": [
       {
         "nombre": "Grande",
