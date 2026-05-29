@@ -1,7 +1,7 @@
 {
   "nombre_restaurante": "Sanguchería 105",
   "whatsapp_receptor": "51946260227",
-  "banner_activo": true,
+  "banner_activo": false,
   "banner_texto": "https://res.cloudinary.com/dtwjcqjkg/image/upload/v1780005076/tipgsojd0obxl38davnv.png",
   "numero_pago_yape_plin": "987654321",
   "url_qr_pago": "./QR-YAPE-VICTOR.jpg",
