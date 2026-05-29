@@ -1613,6 +1613,37 @@ function resetearSimple(productoId) {
   if (botonConfirmar) botonConfirmar.remove();
   calcularPrecios();
 }
+// --- PASO 3: FUNCIÓN ACTIVADORA DEL BOTÓN CONFIRMAR ---
+function confirmarUnidadesConstructor(productoId, variacionNombre) {
+  // 1. Si el local está cerrado, bloqueamos cualquier acción
+  if (CONFIG.local_abierto === false) return;
+
+  const sizeKey = `${productoId}-${variacionNombre}`; // Identificador único (Ej: "16-Grande")
+  const boton = document.getElementById(`btn-constructor-${sizeKey}`);
+  const contenedorIngredientes = document.getElementById(`ingredientes-dinamicos-${sizeKey}`);
+
+  // 2. Cambiamos el interruptor de estado en la memoria a TRUE (Confirmado)
+  constructorConfirmadoStatus[sizeKey] = true;
+
+  // 3. CAMBIO ESTÉTICO AUTOMÁTICO: Pasamos el botón a modo "CONFIRMADO ✓" en verde
+  if (boton) {
+    boton.innerText = 'CONFIRMADO ✓';
+    boton.className = 'btn-add-item is-added';
+    boton.style.backgroundColor = '#22c55e';
+    boton.style.borderColor = '#22c55e';
+  }
+
+  // 4. EXPANSION INLINE: Hacemos visible el nido de ingredientes hacia abajo
+  if (contenedorIngredientes) {
+    contenedorIngredientes.style.display = 'flex';
+  }
+
+  // 5. ENCADENAMIENTO ESTRATÉGICO: Llamamos al motor del Paso 4 para dibujar los bloques
+  // (Esta función la crearemos en el siguiente paso, por ahora la dejamos lista para dispararse)
+  if (typeof renderizarBloquesConstructorInline === 'function') {
+    renderizarBloquesConstructorInline(productoId, variacionNombre);
+  }
+}
 inicializarAplicacion();
 </script>
 </body>
