@@ -892,8 +892,8 @@ async function cargarDatos() {
   try {
     const timestamp = Date.now();
     const [resConfig, resProductos] = await Promise.all([
-      fetch("https://raw.githubusercontent.com/imagin8peru/pidenow/main/config.json?v=" + timestamp),
-      fetch("https://raw.githubusercontent.com/imagin8peru/pidenow/main/productos.json?v=" + timestamp)
+      fetch("config.json?v=" + timestamp),
+      fetch("productos.json?v=" + timestamp)
     ]);
     CONFIG_LOCAL = await resConfig.json();
     PRODUCTOS_LOCAL = await resProductos.json();
