@@ -1644,6 +1644,75 @@ function confirmarUnidadesConstructor(productoId, variacionNombre) {
     renderizarBloquesConstructorInline(productoId, variacionNombre);
   }
 }
+// --- PASO 4: MOTOR DE BLOQUES DINÁMICOS POR UNIDAD ---
+function renderizarBloquesConstructorInline(productoId, variacionNombre) {
+  const sizeKey = `${productoId}-${variacionNombre}`; // Ej. "16-Grande"
+  const contenedorGral = document.getElementById(`ingredientes-dinamicos-${sizeKey}`);
+  
+  if (!contenedorGral) return;
+  
+  // 1. Limpiamos el contenedor para refrescar la pantalla sin duplicar
+  contenedorGral.innerHTML = '';
+
+  // 2. Buscamos el producto real en tu base de datos para saber sus ingredientes disponibles y su tope
+  const producto = PRODUCTOS.find(p => p.id == productoId);
+  if (!producto) return;
+  
+  const variacion = producto.variaciones.find(v => v.nombre === variacionNombre);
+  const limiteMax = variacion ? variacion.limite_ingredientes : 4; // Límite: Grande = 4, Familiar = 5
+  
+  // 3. Leemos cuántas unidades quiere el cliente en este momento
+  const totalUnidades = constructorUnidadesTemporales[sizeKey] || 1;
+
+  // 4. BUCLE DE INGENIERÍA: Generamos un bloque independiente por cada unidad (Pizza 1, Pizza 2...)
+  for (let i = 1; i <= totalUnidades; i++) {
+    const unidadKey = `${sizeKey}-u${i}`; // Llave única para la memoria: Ej. "16-Grande-u1"
+
+    // Si es la primera vez que se crea esta pizza, inicializamos su memoria de ingredientes vacía
+    if (!constructorIngredientesSeleccionados[unidadKey]) {
+      constructorIngredientesSeleccionados[unidadKey] = {};
+      producto.ingredientes_disponibles.forEach(ing => {
+        constructorIngredientesSeleccionados[unidadKey][ing] = 0;
+      });
+    }
+
+    // Contamos cuántas porciones totales lleva seleccionadas ESTA pizza individual
+    let conteoActualUnidad = 0;
+    for (const ing in constructorIngredientesSeleccionados[unidadKey]) {
+      conteoActualUnidad += constructorIngredientesSeleccionados[unidadKey][ing];
+    }
+
+    // Creación de la caja visual del bloque (Pizza #1, Pizza #2)
+    const bloqueUnidad = document.createElement('div');
+    bloqueUnidad.className = 'unit-salsa-block';
+    bloqueUnidad.style.width = '100%';
+    bloqueUnidad.style.backgroundColor = 'rgba(255, 255, 255, 0.85)';
+    bloqueUnidad.style.border = '1px solid #ced4da';
+    bloqueUnidad.style.padding = '14px';
+    bloqueUnidad.style.borderRadius = '14px';
+    bloqueUnidad.style.marginBottom = '10px';
+
+    // Título de la sección con el contador dinámico (Ej: ELIGE LOS INGREDIENTES DE TU PIZZA 1 (0/4))
+    let tituloUnidad = totalUnidades === 1 
+      ? `Elige los ingredientes de tu pizza` 
+      : `ELIGE LOS INGREDIENTES DE TU PIZZA ${i}`;
+
+    bloqueUnidad.innerHTML = `
+      <div style="font-size: 0.85rem; font-weight: 700; color: #8E1A1A; margin-bottom: 10px; border-bottom: 1px solid rgba(142, 26, 26, 0.1); padding-bottom: 6px; text-transform: uppercase;">
+        ${tituloUnidad} (<span id="constructor-conteo-unidad-${unidadKey}">${conteoActualUnidad}</span>/${limiteMax})
+      </div>
+      
+      <div id="constructor-interfaz-armado-${unidadKey}" style="width: 100%;"></div>
+    `;
+
+    contenedorGral.appendChild(bloqueUnidad);
+
+    // 5. ENCADENAMIENTO FUTURO: Dejamos la llamada lista para que el Paso 5 pinte el catálogo interno
+    if (typeof renderizarCatalogoIngredientesUnidad === 'function') {
+      renderizarCatalogoIngredientesUnidad(productoId, variacionNombre, i, limiteMax);
+    }
+  }
+}
 inicializarAplicacion();
 </script>
 </body>
