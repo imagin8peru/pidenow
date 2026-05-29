@@ -1224,47 +1224,6 @@ function renderizarCatalogoIngredientesUnidad(productoId, variacionNombre, unida
   contenedorInterfaz.innerHTML = htmlGrid;
 }
 
-function modificarCantidadIngrediente(ingrediente, cambio) {
-  let cantidadActual = saasItemTemporal.seleccionados[ingrediente] || 0;
-  let nuevaCantidad = cantidadActual + cambio;
-  
-  if (nuevaCantidad < 0) return;
-  
-  let totalPorcionesRestantes = 0;
-  for (const ing in saasItemTemporal.seleccionados) {
-    if (ing !== ingrediente) totalPorcionesRestantes += saasItemTemporal.seleccionados[ing];
-  }
-  
-  if (totalPorcionesRestantes + nuevaCantidad > saasItemTemporal.limite) {
-    return;
-  }
-  
-  saasItemTemporal.seleccionados[ingrediente] = nuevaCantidad;
-  renderizarCuerpoConstructor();
-}
-
-function cambiarTamañoConstructor(nombre, precio, limite) {
-  saasItemTemporal.variacionNombre = nombre;
-  saasItemTemporal.precio = precio;
-  saasItemTemporal.limite = limite;
-  
-  let totalPorciones = 0;
-  for (const ing in saasItemTemporal.seleccionados) {
-    totalPorciones += saasItemTemporal.seleccionados[ing];
-  }
-  
-  if (totalPorciones > limite) {
-    for (const ing in saasItemTemporal.seleccionados) {
-      saasItemTemporal.seleccionados[ing] = 0;
-    }
-  }
-  renderizarCuerpoConstructor();
-}
-
-function cerrarSaasModal() {
-  document.getElementById('saas-modal').style.display = 'none';
-  saasItemTemporal = null;
-}
 
 function procesarSeleccionSaasModal() {
   if (!saasItemTemporal) return;
