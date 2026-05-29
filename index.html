@@ -1825,6 +1825,37 @@ function obtenerConfigExtras(nombreCategoria) {
   if (!CONFIG.extras_categorias) return null;
   return CONFIG.extras_categorias.find(ec => ec.categoria === nombreCategoria) || null;
 }
+// --- PASO 5.4: ACCIÓN DEL TACHO (RESET TOTAL DE LA TARJETA) ---
+function limpiarTarjetaConstructor(productoId, variacionNombre) {
+  const sizeKey = `${productoId}-${variacionNombre}`; // Ej. "16-Grande"
+
+  // 1. Apagamos el estado confirmado en la memoria
+  constructorConfirmadoStatus[sizeKey] = false;
+  
+  // 2. Reseteamos el contador de la tarjeta principal a 1
+  constructorUnidadesTemporales[sizeKey] = 1;
+  const elQty = document.getElementById(`constructor-qty-${sizeKey}`);
+  if (elQty) elQty.innerText = 1;
+
+  // 3. Limpiamos la memoria de ingredientes de todas las unidades posibles de este tamaño
+  for (const llave in constructorIngredientesSeleccionados) {
+    if (llave.startsWith(`${sizeKey}-`)) {
+      delete constructorIngredientesSeleccionados[llave];
+    }
+  }
+
+  // 4. Limpiamos el rastro de este producto en el carrito de compras
+  for (const llave in memoriaCarrito) {
+    if (llave.startsWith(`inline-${sizeKey}-`)) {
+      delete memoriaCarrito[llave];
+    }
+  }
+
+  // 5. RE-RENDERIZADO AUTOMÁTICO DE LA INTERFAZ CENTRAL
+  // Volverá a dibujar la tarjeta limpia, con el botón en negro "CONFIRMAR" y el nido oculto
+  renderizarMenu();
+  calcularPrecios();
+}
 
 inicializarAplicacion();
 </script>
