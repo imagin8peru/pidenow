@@ -1138,8 +1138,8 @@ async function inicializarAplicacion() {
   try {
     const timestamp = Date.now();
     const [resConfig, resProductos] = await Promise.all([
-      fetch("config.json?v=" + timestamp),
-      fetch("productos.json?v=" + timestamp)
+      fetch("https://raw.githubusercontent.com/imagin8peru/pidenow/main/config.json?v=" + timestamp),
+      fetch("https://raw.githubusercontent.com/imagin8peru/pidenow/main/productos.json?v=" + timestamp)
     ]);
     CONFIG = await resConfig.json();
     PRODUCTOS = await resProductos.json();
