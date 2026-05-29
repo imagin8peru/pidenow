@@ -1613,20 +1613,41 @@ function renderizarBloquesConstructorInline(productoId, variacionNombre) {
 function cambiarUnidadesConstructor(productoId, variacionNombre, cambio) {
   if (CONFIG.local_abierto === false) return;
 
-  const sizeKey = `${productoId}-${variacionNombre}`; 
-  let unidades = constructorUnidadesTemporales[sizeKey] || 1;
+  const sizeKey = `${productoId}-${variacionNombre}`; // Ej. "16-Grande"
+  let unidadesAnteriores = constructorUnidadesTemporales[sizeKey] || 1;
   
-  unidades = unidades + cambio;
-  if (unidades < 1) unidades = 1; 
+  let nuevasUnidades = unidadesAnteriores + cambio;
+  if (nuevasUnidades < 1) nuevasUnidades = 1; // Evitamos cero o negativos
   
-  constructorUnidadesTemporales[sizeKey] = unidades;
-  
-  const elQty = document.getElementById(`constructor-qty-${sizeKey}`);
-  if (elQty) elQty.innerText = unidades;
+  // 🚨 SI EL USUARIO REDUJO LA CANTIDAD, LIMPIAMOS LA MEMORIA SOBRANTE
+  if (nuevasUnidades < unidadesAnteriores) {
+    // Si bajó de 2 a 1, indexAEliminar será 2
+    for (let i = nuevasUnidades + 1; i <= unidadesAnteriores; i++) {
+      const unidadKeyAEliminar = `${sizeKey}-u${i}`;
+      const carritoIdAEliminar = `inline-${sizeKey}-pizza-${i}`;
+      
+      // Borramos la selección de ingredientes de esa pizza específica
+      delete constructorIngredientesSeleccionados[unidadKeyAEliminar];
+      
+      // Borramos la pizza de la memoria real del carrito
+      delete memoriaCarrito[carritoIdAEliminar];
+    }
+  }
 
+  // Guardamos el nuevo valor en la memoria de control
+  constructorUnidadesTemporales[sizeKey] = nuevasUnidades;
+  
+  // Actualizamos el número visual de la tarjeta
+  const elQty = document.getElementById(`constructor-qty-${sizeKey}`);
+  if (elQty) elQty.innerText = nuevasUnidades;
+
+  // Si la sección ya estaba abierta, redibujamos las pizzas que quedan
   if (constructorConfirmadoStatus[sizeKey] === true) {
     renderBloquesOInstancias(productoId, variacionNombre);
   }
+
+  // Recalculamos los precios globales de inmediato para actualizar la barra y el resumen
+  calcularPrecios();
 }
 
 function renderBloquesOInstancias(productoId, variacionNombre) {
