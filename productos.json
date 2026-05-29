@@ -97,7 +97,7 @@
     "img": "https://res.cloudinary.com/dtwjcqjkg/image/upload/v1779926002/ftncvci4lq7vbkqz5oud.jpg",
     "categoria": "Enchiladas ​🌯",
     "tipo_modulo": "simple",
-    "activo": false,
+    "activo": true,
     "precio": 19
   },
   {
@@ -146,7 +146,7 @@
     "img": "https://res.cloudinary.com/dtwjcqjkg/image/upload/v1779929142/bkwxx8fcx0mapugzrlzs.jpg",
     "categoria": "Pizza de la casa 🍕",
     "tipo_modulo": "matriz_precios",
-    "activo": false,
+    "activo": true,
     "variaciones": [
       {
         "nombre": "Grande",
