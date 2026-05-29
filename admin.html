@@ -178,9 +178,11 @@
       </div>
       
       <!-- Status Card (Hero banner matching style) -->
-      <div class="bg-neutral-900 text-white rounded-md p-5 relative overflow-hidden shadow-lg border border-neutral-800 flex flex-col justify-between min-h-[160px]">
+      <div id="status-card-container" class="bg-gradient-to-br from-slate-900 via-zinc-900 to-emerald-950/20 text-white rounded-md p-5 relative overflow-hidden shadow-lg border border-emerald-900/30 flex flex-col justify-between min-h-[160px] transition-all duration-500">
+        <!-- Glow effect behind the store -->
+        <div id="status-card-glow" class="absolute -right-6 -bottom-6 w-36 h-36 rounded-full blur-3xl z-0 pointer-events-none transition-all duration-500 bg-emerald-500/20"></div>
         <!-- Storefront 3D image -->
-        <img src="./storefront_3d.png" alt="PidePe Store" class="absolute right-2 -bottom-2 w-28 h-28 object-contain z-10 select-none">
+        <img src="./storefront_3d.png" alt="PidePe Store" class="absolute right-1 -bottom-1 w-36 h-36 object-contain z-10 select-none transition-all duration-300 hover:scale-105">
         
         <div class="flex flex-col gap-2 max-w-[65%] z-20">
           <div id="lbl-estado-badge" class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-extrabold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 w-fit">
@@ -1033,8 +1035,21 @@ function actualizarBotonEstadoLocal(abierto) {
   }
   
   // Card elements
+  const card = document.getElementById('status-card-container');
+  const glow = document.getElementById('status-card-glow');
   const badge = document.getElementById('lbl-estado-badge');
   const descText = document.getElementById('lbl-estado-desc');
+  
+  if (card && glow) {
+    if (abierto) {
+      card.className = 'bg-gradient-to-br from-slate-900 via-zinc-900 to-emerald-950/20 text-white rounded-md p-5 relative overflow-hidden shadow-lg border border-emerald-900/30 flex flex-col justify-between min-h-[160px] transition-all duration-500';
+      glow.className = 'absolute -right-6 -bottom-6 w-36 h-36 rounded-full blur-3xl z-0 pointer-events-none transition-all duration-500 bg-emerald-500/20';
+    } else {
+      card.className = 'bg-gradient-to-br from-slate-900 via-zinc-900 to-rose-950/20 text-white rounded-md p-5 relative overflow-hidden shadow-lg border border-rose-900/30 flex flex-col justify-between min-h-[160px] transition-all duration-500';
+      glow.className = 'absolute -right-6 -bottom-6 w-36 h-36 rounded-full blur-3xl z-0 pointer-events-none transition-all duration-500 bg-rose-500/20';
+    }
+  }
+
   if (badge) {
     if (abierto) {
       badge.className = 'inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-extrabold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20';
