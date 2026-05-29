@@ -1145,77 +1145,83 @@ function abrirMatrizPrecios(productoId) {
   document.getElementById('saas-modal').style.display = 'flex';
 }
 
-function abrirConstructorLibre(productoId) {
+// --- PASO 5: RENDERIZADO DEL CATÁLOGO DE INGREDIENTES INTERNO ---
+function renderizarCatalogoIngredientesUnidad(productoId, variacionNombre, unidadIndex, limiteMax) {
+  const sizeKey = `${productoId}-${variacionNombre}`; // Ej. "16-Grande"
+  const unidadKey = `${sizeKey}-u${unidadIndex}`; // Ej. "16-Grande-u1"
+  const contenedorInterfaz = document.getElementById(`constructor-interfaz-armado-${unidadKey}`);
+  
+  if (!contenedorInterfaz) return;
+
   const producto = PRODUCTOS.find(p => p.id == productoId);
   if (!producto) return;
 
-  const varInicial = producto.variaciones[0];
-
-  saasItemTemporal = {
-    id: producto.id,
-    nombreBase: producto.nombre,
-    tipo_modulo: 'constructor_libre',
-    variacionNombre: varInicial.nombre,
-    precio: varInicial.precio,
-    limite: varInicial.limite_ingredientes,
-    ingredientesDisponibles: producto.ingredientes_disponibles,
-    seleccionados: {}
-  };
-
-  producto.ingredientes_disponibles.forEach(ing => {
-    saasItemTemporal.seleccionados[ing] = 0;
-  });
-
-  document.getElementById('saas-modal-contador-global').style.display = 'block';
-  renderizarCuerpoConstructor();
-  document.getElementById('saas-modal').style.display = 'flex';
-}
-
-function renderizarCuerpoConstructor() {
-  const producto = PRODUCTOS.find(p => p.id == saasItemTemporal.id);
-  
-  document.getElementById('saas-modal-titulo').innerText = saasItemTemporal.nombreBase;
-  document.getElementById('saas-modal-subtitulo').innerText = "Formato: " + saasItemTemporal.variacionNombre;
-  
+  // 1. Contamos cuántas porciones totales van en esta pizza individual
   let totalPorciones = 0;
-  for (const ing in saasItemTemporal.seleccionados) {
-    totalPorciones += saasItemTemporal.seleccionados[ing];
+  for (const ing in constructorIngredientesSeleccionados[unidadKey]) {
+    totalPorciones += constructorIngredientesSeleccionados[unidadKey][ing];
   }
-  
-  document.getElementById('saas-modal-total-ingredientes').innerText = totalPorciones;
-  document.getElementById('saas-modal-max-ingredientes').innerText = saasItemTemporal.limite;
 
-  let html = '';
+  // 2. ACTUALIZAMOS EL MARCADOR DE LA CABECERA EN TIEMPO REAL
+  const elConteoContenedor = document.getElementById(`constructor-conteo-unidad-${unidadKey}`);
+  if (elConteoContenedor) elConteoContenedor.innerText = totalPorciones;
 
-  html += `<div style="background:#f1f3f5; padding:10px; border-radius:12px; display:flex; gap:10px; margin-bottom:10px;">`;
-  producto.variaciones.forEach(v => {
-    const activo = saasItemTemporal.variacionNombre === v.nombre ? 'checked' : '';
-    html += `
-      <label style="flex:1; text-align:center; font-weight:700; font-size:0.9rem; cursor:pointer;">
-        <input type="radio" name="saas-size-toggle" value="` + v.nombre + `" ` + activo + ` onchange="cambiarTamañoConstructor('${v.nombre}', ${v.precio}, ${v.limite_ingredientes})">
-        ` + v.nombre + `
-      </label>
+  // ==========================================
+  // 🟢 ESTADO COMPLETO: RENDER RESUMEN VERDE (image_1d849f.png)
+  // ==========================================
+  if (totalPorciones >= limiteMax) {
+    let htmlResumen = `
+      <div style="background-color: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 12px; padding: 12px; margin-top: 5px;">
+        <div style="font-size: 0.9rem; font-weight: 700; color: #16a34a; margin-bottom: 8px; display: flex; align-items: center; gap: 6px;">
+          🍕 ¡PIZZA COMPLETA! (${totalPorciones}/${limiteMax})
+        </div>
+        <div style="display: flex; flex-direction: column; gap: 6px;">
     `;
-  });
-  html += `</div>`;
+
+    for (const ing in constructorIngredientesSeleccionados[unidadKey]) {
+      const cant = constructorIngredientesSeleccionados[unidadKey][ing];
+      if (cant > 0) {
+        const multiplicadorText = cant > 1 ? ` <b>(x${cant})</b>` : '';
+        htmlResumen += `
+          <div style="display: flex; justify-content: space-between; align-items: center; background: white; padding: 8px 12px; border-radius: 8px; border: 1px solid #e2e8f0; font-size: 0.9rem; font-weight: 600; color: #334155;">
+            <span>✓ ${ing}${multiplicadorText}</span>
+            <span style="color: #ef4444; font-weight: 800; cursor: pointer; padding: 0 4px;" onclick="quitarIngredienteConstructor('${productoId}', '${variacionNombre}', ${unidadIndex}, '${ing.replace(/'/g, "\\'")}', ${limiteMax})">×</span>
+          </div>
+        `;
+      }
+    }
+
+    htmlResumen += `</div></div>`;
+    contenedorInterfaz.innerHTML = htmlResumen;
+    return;
+  }
+
+  // ==========================================
+  // 🟡 ESTADO INCOMPLETO: RENDER GRID DE BOTONES (image_1d7fe1.png)
+  // ==========================================
+  let htmlGrid = `
+    <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin-top: 5px; width: 100%;">
+  `;
 
   producto.ingredientes_disponibles.forEach(ing => {
-    const cantidadActual = saasItemTemporal.seleccionados[ing] || 0;
-    const deshabilitarMas = totalPorciones >= saasItemTemporal.limite ? 'disabled style="opacity: 0.3; cursor: not-allowed;"' : '';
-    
-    html += `
-      <div class="modal-ingrediente-row">
-        <div class="modal-row-title">` + ing + `</div>
-        <div class="modal-counter-wrapper">
-          <button class="modal-counter-btn" onclick="modificarCantidadIngrediente('` + ing + `', -1)">−</button>
-          <span class="modal-counter-num">` + cantidadActual + `</span>
-          <button class="modal-counter-btn" onclick="modificarCantidadIngrediente('` + ing + `', 1)" ` + deshabilitarMas + `>+</button>
+    const cantActual = constructorIngredientesSeleccionados[unidadKey][ing] || 0;
+    const cardBg = cantActual > 0 ? '#fef9c3' : 'white';
+    const cardBorder = cantActual > 0 ? '#f59e0b' : '#e2e8f0';
+
+    htmlGrid += `
+      <div style="background-color: ${cardBg}; border: 1px solid ${cardBorder}; border-radius: 12px; padding: 10px; display: flex; flex-direction: column; align-items: center; gap: 8px; justify-content: space-between; text-align: center; min-height: 80px;">
+        <span style="font-size: 0.85rem; font-weight: 700; color: #1e293b; line-height: 1.2;">${ing}</span>
+        <div class="quantity-control" style="padding: 2px 8px; gap: 8px; scale: 0.9;">
+          <button class="qty-btn" onclick="modificarIngredienteConstructor('${productoId}', '${variacionNombre}', ${unidadIndex}, '${ing.replace(/'/g, "\\'")}', -1, ${limiteMax})">−</button>
+          <span class="qty-val">${cantActual}</span>
+          <button class="qty-btn" onclick="modificarIngredienteConstructor('${productoId}', '${variacionNombre}', ${unidadIndex}, '${ing.replace(/'/g, "\\'")}', 1, ${limiteMax})">+</button>
         </div>
       </div>
     `;
   });
 
-  document.getElementById('saas-modal-cuerpo').innerHTML = html;
+  htmlGrid += `</div>`;
+  contenedorInterfaz.innerHTML = htmlGrid;
 }
 
 function modificarCantidadIngrediente(ingrediente, cambio) {
