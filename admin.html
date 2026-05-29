@@ -338,7 +338,7 @@
           </div>
           <label class="relative inline-block w-9 h-5 flex-shrink-0 cursor-pointer">
             <input type="checkbox" id="cfg-banner-activo" class="opacity-0 w-0 h-0 peer">
-            <span class="absolute inset-0 bg-gray-200 rounded-full transition-all peer-checked:bg-emerald-500 slider before:absolute before:content-[''] before:h-4 before:w-4 before:left-0.5 before:top-0.5 before:bg-white before:transition-all before:rounded-full peer-checked:before:translate-x-4"></span>
+            <span class="absolute inset-0 bg-gray-200 rounded-full transition-all peer-checked:bg-primary slider before:absolute before:content-[''] before:h-4 before:w-4 before:left-0.5 before:top-0.5 before:bg-[#151816] before:transition-all before:rounded-full peer-checked:before:translate-x-4"></span>
           </label>
         </div>
         
@@ -395,7 +395,7 @@
           </div>
           <label class="relative inline-block w-9 h-5 flex-shrink-0 cursor-pointer">
             <input type="checkbox" id="cfg-recojo-local" class="opacity-0 w-0 h-0 peer" onchange="actualizarEstadisticas()">
-            <span class="absolute inset-0 bg-gray-200 rounded-full transition-all peer-checked:bg-emerald-500 slider before:absolute before:content-[''] before:h-4 before:w-4 before:left-0.5 before:top-0.5 before:bg-white before:transition-all before:rounded-full peer-checked:before:translate-x-4"></span>
+            <span class="absolute inset-0 bg-gray-200 rounded-full transition-all peer-checked:bg-primary slider before:absolute before:content-[''] before:h-4 before:w-4 before:left-0.5 before:top-0.5 before:bg-[#151816] before:transition-all before:rounded-full peer-checked:before:translate-x-4"></span>
           </label>
         </div>
       </section>
@@ -412,7 +412,7 @@
             </div>
             <label class="relative inline-block w-9 h-5 flex-shrink-0 cursor-pointer">
               <input type="checkbox" id="pago-yape" class="opacity-0 w-0 h-0 peer" onchange="actualizarEstadoPago('yape')">
-              <span class="absolute inset-0 bg-gray-200 rounded-full transition-all peer-checked:bg-emerald-500 slider before:absolute before:content-[''] before:h-4 before:w-4 before:left-0.5 before:top-0.5 before:bg-white before:transition-all before:rounded-full peer-checked:before:translate-x-4"></span>
+              <span class="absolute inset-0 bg-gray-200 rounded-full transition-all peer-checked:bg-primary slider before:absolute before:content-[''] before:h-4 before:w-4 before:left-0.5 before:top-0.5 before:bg-[#151816] before:transition-all before:rounded-full peer-checked:before:translate-x-4"></span>
             </label>
           </div>
           <!-- PLIN -->
@@ -423,7 +423,7 @@
             </div>
             <label class="relative inline-block w-9 h-5 flex-shrink-0 cursor-pointer">
               <input type="checkbox" id="pago-plin" class="opacity-0 w-0 h-0 peer" onchange="actualizarEstadoPago('plin')">
-              <span class="absolute inset-0 bg-gray-200 rounded-full transition-all peer-checked:bg-emerald-500 slider before:absolute before:content-[''] before:h-4 before:w-4 before:left-0.5 before:top-0.5 before:bg-white before:transition-all before:rounded-full peer-checked:before:translate-x-4"></span>
+              <span class="absolute inset-0 bg-gray-200 rounded-full transition-all peer-checked:bg-primary slider before:absolute before:content-[''] before:h-4 before:w-4 before:left-0.5 before:top-0.5 before:bg-[#151816] before:transition-all before:rounded-full peer-checked:before:translate-x-4"></span>
             </label>
           </div>
           <!-- TARJETA -->
@@ -434,7 +434,7 @@
             </div>
             <label class="relative inline-block w-9 h-5 flex-shrink-0 cursor-pointer">
               <input type="checkbox" id="pago-tarjeta" class="opacity-0 w-0 h-0 peer" onchange="actualizarEstadoPago('tarjeta')">
-              <span class="absolute inset-0 bg-gray-200 rounded-full transition-all peer-checked:bg-emerald-500 slider before:absolute before:content-[''] before:h-4 before:w-4 before:left-0.5 before:top-0.5 before:bg-white before:transition-all before:rounded-full peer-checked:before:translate-x-4"></span>
+              <span class="absolute inset-0 bg-gray-200 rounded-full transition-all peer-checked:bg-primary slider before:absolute before:content-[''] before:h-4 before:w-4 before:left-0.5 before:top-0.5 before:bg-[#151816] before:transition-all before:rounded-full peer-checked:before:translate-x-4"></span>
             </label>
           </div>
           <!-- EFECTIVO -->
@@ -445,7 +445,7 @@
             </div>
             <label class="relative inline-block w-9 h-5 flex-shrink-0 cursor-pointer">
               <input type="checkbox" id="pago-efectivo" class="opacity-0 w-0 h-0 peer" onchange="actualizarEstadoPago('efectivo')">
-              <span class="absolute inset-0 bg-gray-200 rounded-full transition-all peer-checked:bg-emerald-500 slider before:absolute before:content-[''] before:h-4 before:w-4 before:left-0.5 before:top-0.5 before:bg-white before:transition-all before:rounded-full peer-checked:before:translate-x-4"></span>
+              <span class="absolute inset-0 bg-gray-200 rounded-full transition-all peer-checked:bg-primary slider before:absolute before:content-[''] before:h-4 before:w-4 before:left-0.5 before:top-0.5 before:bg-[#151816] before:transition-all before:rounded-full peer-checked:before:translate-x-4"></span>
             </label>
           </div>
         </div>
@@ -873,7 +873,7 @@ function renderizarUltimosProductos() {
       <div class="flex items-center gap-2 flex-shrink-0">
         <label class="relative inline-block w-9 h-5 cursor-pointer">
           <input type="checkbox" ${p.activo !== false ? 'checked' : ''} class="opacity-0 w-0 h-0 peer" onchange="conmutarProducto('${p.id}')">
-          <span class="absolute inset-0 bg-gray-200 rounded-full transition-all peer-checked:bg-emerald-500 slider before:absolute before:content-[''] before:h-4 before:w-4 before:left-0.5 before:top-0.5 before:bg-white before:transition-all before:rounded-full peer-checked:before:translate-x-4"></span>
+          <span class="absolute inset-0 bg-gray-200 rounded-full transition-all peer-checked:bg-primary slider before:absolute before:content-[''] before:h-4 before:w-4 before:left-0.5 before:top-0.5 before:bg-[#151816] before:transition-all before:rounded-full peer-checked:before:translate-x-4"></span>
         </label>
         <button type="button" class="w-7 h-7 rounded-full border border-sky-100 bg-sky-50 text-sky-600 hover:bg-sky-100 flex items-center justify-center text-[10px] transition-all active:scale-90" onclick="editarProductoVisual('${p.id}')">
           ✏️
@@ -1139,9 +1139,9 @@ function actualizarEstadoPago(metodo) {
   const activo = checkbox.checked;
   METODOS_PAGO_LOCAL[metodo] = activo;
   if (activo) {
-    row.className = "flex items-center justify-between p-3.5 rounded-sm bg-emerald-50/30 border border-emerald-100 transition-all shadow-sm";
-    estado.innerText = '🟢 Activo';
-    estado.className = 'text-[9px] font-bold text-emerald-600 uppercase mt-0.5';
+    row.className = "flex items-center justify-between p-3.5 rounded-sm bg-orange-50/30 border border-orange-100 transition-all shadow-sm";
+    estado.innerText = '🟠 Activo';
+    estado.className = 'text-[9px] font-bold text-primary uppercase mt-0.5';
   } else {
     row.className = "flex items-center justify-between p-3.5 rounded-sm bg-gray-50/50 border border-gray-150 transition-all opacity-60";
     estado.innerText = '🔴 Desactivado';
@@ -1280,7 +1280,7 @@ function renderizarListasAdmin() {
           </button>
           <label class="relative inline-block w-9 h-5 cursor-pointer ml-0.5">
             <input type="checkbox" ${p.activo !== false ? 'checked' : ''} class="opacity-0 w-0 h-0 peer" onchange="conmutarProducto('${p.id}')">
-            <span class="absolute inset-0 bg-gray-200 rounded-full transition-all peer-checked:bg-emerald-500 slider before:absolute before:content-[''] before:h-4 before:w-4 before:left-0.5 before:top-0.5 before:bg-white before:transition-all before:rounded-full peer-checked:before:translate-x-4"></span>
+            <span class="absolute inset-0 bg-gray-200 rounded-full transition-all peer-checked:bg-primary slider before:absolute before:content-[''] before:h-4 before:w-4 before:left-0.5 before:top-0.5 before:bg-[#151816] before:transition-all before:rounded-full peer-checked:before:translate-x-4"></span>
           </label>
           <button type="button" class="w-7 h-7 rounded-full border border-sky-100 bg-sky-50 text-sky-600 hover:bg-sky-100 flex items-center justify-center text-xs transition-all active:scale-90 ml-0.5" onclick="editarProductoVisual('${p.id}')" title="Editar">
             ✏️
@@ -1567,7 +1567,7 @@ function renderizarListaExtrasModal(nombreCategoria) {
       <div class="flex items-center gap-2 flex-shrink-0">
         <label class="relative inline-block w-9 h-5 flex-shrink-0 cursor-pointer">
           <input type="checkbox" ${extra.activo ? 'checked' : ''} class="opacity-0 w-0 h-0 peer" onchange="toggleExtraEnModal('${nombreCategoria.replace(/'/g, "\\'")}', ${idx}, this.checked)">
-          <span class="absolute inset-0 bg-gray-200 rounded-full transition-all peer-checked:bg-emerald-500 slider before:absolute before:content-[''] before:h-4 before:w-4 before:left-0.5 before:top-0.5 before:bg-white before:transition-all before:rounded-full peer-checked:before:translate-x-4"></span>
+          <span class="absolute inset-0 bg-gray-200 rounded-full transition-all peer-checked:bg-primary slider before:absolute before:content-[''] before:h-4 before:w-4 before:left-0.5 before:top-0.5 before:bg-[#151816] before:transition-all before:rounded-full peer-checked:before:translate-x-4"></span>
         </label>
         <button type="button" class="w-8 h-8 rounded-sm bg-gray-50 border border-gray-100 hover:bg-gray-100 text-gray-600 flex items-center justify-center text-xs transition-all active:scale-95" onclick="editarExtraEnModal('${nombreCategoria.replace(/'/g, "\\'")}', ${idx})">✏️</button>
         <button type="button" class="w-8 h-8 rounded-sm bg-rose-50 border border-rose-100 hover:bg-rose-100 text-rose-500 flex items-center justify-center text-xs transition-all active:scale-95 border-none cursor-pointer" onclick="eliminarExtraEnModal('${nombreCategoria.replace(/'/g, "\\'")}', ${idx})">🗑️</button>
