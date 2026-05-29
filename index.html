@@ -1815,9 +1815,17 @@ function sincronizarConstructorConCarrito(productoId, variacionNombre) {
 }
 
 // Función auxiliar de formateo estético para limpiar variables
+// REEMPLAZA CON ESTE BLOQUE EXACTO:
 function vNombreOCorrecion(nombre) {
   return nombre;
 }
+
+// --- FUNCIÓN RECUPERADA: MOTOR DE EXTRAS SIMPLES ---
+function obtenerConfigExtras(nombreCategoria) {
+  if (!CONFIG.extras_categorias) return null;
+  return CONFIG.extras_categorias.find(ec => ec.categoria === nombreCategoria) || null;
+}
+
 inicializarAplicacion();
 </script>
 </body>
