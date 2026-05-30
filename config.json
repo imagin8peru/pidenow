@@ -117,6 +117,41 @@
           "activo": true
         }
       ]
+    },
+    {
+      "categoria": "Enchiladas ​🌯",
+      "limite": 3,
+      "extras": [
+        {
+          "nombre": "Ketchup",
+          "activo": true
+        },
+        {
+          "nombre": "Mostaza",
+          "activo": true
+        },
+        {
+          "nombre": "Mayonesa",
+          "activo": true
+        },
+        {
+          "nombre": "Tártara",
+          "activo": true
+        },
+        {
+          "nombre": "Ají de la casa",
+          "activo": true
+        },
+        {
+          "nombre": "Ají achorado",
+          "activo": true
+        },
+        {
+          "nombre": "Guacamole",
+          "activo": true
+        }
+      ],
+      "etiqueta": "Cremas"
     }
   ]
 }
