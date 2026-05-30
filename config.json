@@ -40,7 +40,7 @@
   "categorias": [
     {
       "nombre": "Sanguchones 🍔",
-      "activa": false
+      "activa": true
     },
     {
       "nombre": "Enchiladas ​🌯",
