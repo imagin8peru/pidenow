@@ -37,7 +37,7 @@
     "img": "https://res.cloudinary.com/dtwjcqjkg/image/upload/v1779923734/b0qxiutoeftd8k9qwiha.jpg",
     "categoria": "Sanguchones 🍔",
     "tipo_modulo": "simple",
-    "activo": false,
+    "activo": true,
     "precio": 18
   },
   {
@@ -57,7 +57,7 @@
     "img": "https://res.cloudinary.com/dtwjcqjkg/image/upload/v1779925880/b53aomzredkydojhbx0a.jpg",
     "categoria": "Sanguchones 🍔",
     "tipo_modulo": "simple",
-    "activo": false,
+    "activo": true,
     "precio": 18
   },
   {
@@ -67,7 +67,7 @@
     "img": "https://res.cloudinary.com/dtwjcqjkg/image/upload/v1779925928/zflz7gntt8bbpx3nbdpu.jpg",
     "categoria": "Sanguchones 🍔",
     "tipo_modulo": "simple",
-    "activo": false,
+    "activo": true,
     "precio": 18
   },
   {
@@ -77,7 +77,7 @@
     "img": "https://res.cloudinary.com/dtwjcqjkg/image/upload/v1779925959/om0hgpmuisbartnc6uqj.jpg",
     "categoria": "Sanguchones 🍔",
     "tipo_modulo": "simple",
-    "activo": false,
+    "activo": true,
     "precio": 18
   },
   {
@@ -87,7 +87,7 @@
     "img": "https://res.cloudinary.com/dtwjcqjkg/image/upload/v1779925853/vpxa0fuozzt6kqbp0y1i.jpg",
     "categoria": "Sanguchones 🍔",
     "tipo_modulo": "simple",
-    "activo": false,
+    "activo": true,
     "precio": 22
   },
   {
