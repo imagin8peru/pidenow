@@ -88,6 +88,10 @@
         {
           "nombre": "Salsa de la casa",
           "activo": true
+        },
+        {
+          "nombre": "Salsa de Trufa",
+          "activo": true
         }
       ]
     },
