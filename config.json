@@ -43,7 +43,7 @@
       "activa": true
     },
     {
-      "nombre": "Enchiladas ​🌯",
+      "nombre": "Enchiladas 🌯",
       "activa": true
     },
     {
@@ -97,29 +97,6 @@
     },
     {
       "categoria": "Enchiladas 🌯",
-      "etiqueta": "Salsas",
-      "limite": 3,
-      "extras": [
-        {
-          "nombre": "Ketchup",
-          "activo": true
-        },
-        {
-          "nombre": "Mayonesa",
-          "activo": true
-        },
-        {
-          "nombre": "Ají amarillo",
-          "activo": true
-        },
-        {
-          "nombre": "Chimichurri",
-          "activo": true
-        }
-      ]
-    },
-    {
-      "categoria": "Enchiladas ​🌯",
       "limite": 3,
       "extras": [
         {
@@ -148,6 +125,14 @@
         },
         {
           "nombre": "Guacamole",
+          "activo": true
+        },
+        {
+          "nombre": "Ají amarillo",
+          "activo": true
+        },
+        {
+          "nombre": "Chimichurri",
           "activo": true
         }
       ],
