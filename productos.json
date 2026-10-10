@@ -45,7 +45,7 @@
     "nombre": "Enchilada Simple",
     "desc": "1 proteína a elección, ensalada y papas al hilo",
     "img": "https://res.cloudinary.com/dtwjcqjkg/image/upload/v1779925818/lwthmaj2v6wyodtynnwl.jpg",
-    "categoria": "Enchiladas ​🌯",
+    "categoria": "Enchiladas 🌯",
     "tipo_modulo": "simple",
     "activo": true,
     "precio": 15
@@ -95,7 +95,7 @@
     "nombre": "Enchilada Mixta",
     "desc": "2 proteínas a elección, ensalada y papas al hilo",
     "img": "https://res.cloudinary.com/dtwjcqjkg/image/upload/v1779926002/ftncvci4lq7vbkqz5oud.jpg",
-    "categoria": "Enchiladas ​🌯",
+    "categoria": "Enchiladas 🌯",
     "tipo_modulo": "simple",
     "activo": true,
     "precio": 19
@@ -105,7 +105,7 @@
     "nombre": "Enchilada Triple",
     "desc": "3 proteínas a elección, ensalada y papas al hilo",
     "img": "https://res.cloudinary.com/dtwjcqjkg/image/upload/v1779926037/rq3qo1xdlipd6axbomwh.jpg",
-    "categoria": "Enchiladas ​🌯",
+    "categoria": "Enchiladas 🌯",
     "tipo_modulo": "simple",
     "activo": true,
     "precio": 23
